@@ -7,12 +7,40 @@ class User(AbstractUser):
 
 
 class TimeEvent(models.Model):
-    user = models.ForeignKey(User, on_delete=models.CASCADE, related_name='user_event')
     description = models.TextField(max_length=512)
+    color = models.CharField(max_length=7, default='#f01e2c')
+    # picture = models.ImageField(null=True, blank=True, upload_to='images')
+
+    class Meta:
+        abstract = True
+
+
+
+class OneTimeEvent(TimeEvent):
+    user = models.ForeignKey(User, on_delete=models.CASCADE, related_name='user_one_event')
     start = models.DateTimeField()
     end = models.DateTimeField()
-    color = models.CharField(max_length=7, default='#f01e2c')
-    picture = models.ImageField(null=True, blank=True, upload_to='images')
+
+class WeaklyEvent(TimeEvent):
+    user = models.ForeignKey(User, on_delete=models.CASCADE, related_name='user_weak_event')
+    DAY_CHOICES = (
+        ('MON', 'monday'),
+        ('TUE', 'monday'),
+        ('WED', 'monday'),
+        ('THU', 'monday'),
+        ('FRI', 'monday'),
+        ('SAT', 'monday'),
+        ('SUN', 'monday'),
+    )
+
+    day = models.CharField(max_length=9, choices=DAY_CHOICES, default='MON')
+    start = models.TimeField()
+    end = models.TimeField()
+    
+class DaylyEvent(TimeEvent):
+    user = models.ForeignKey(User, on_delete=models.CASCADE, related_name='user_day_event')
+    start = models.TimeField()
+    end = models.TimeField()
 
 
 
@@ -21,10 +49,11 @@ class Note(models.Model):
     contents = models.TextField()
 
 
+
 class Goal(models.Model):
     user = models.ForeignKey(User, on_delete=models.CASCADE, related_name='user_goal')
     notes = models.ForeignKey(Note, on_delete=models.CASCADE, related_name='notes', blank=True, null=True)
-    events = models.ForeignKey(TimeEvent, on_delete=models.CASCADE, related_name='events', blank=True, null=True)
+    events = models.ForeignKey(DaylyEvent, on_delete=models.CASCADE, related_name='events', blank=True, null=True)
     contents = models.TextField()
     reached = models.BooleanField()
     
