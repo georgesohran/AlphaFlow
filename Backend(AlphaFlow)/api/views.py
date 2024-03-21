@@ -8,10 +8,26 @@ from .serializer import *
 
 # Create your views here.
 @api_view(['GET'])
-def get_events(request):
+def get_dayly_events(request):
     
-    events = TimeEvent.objects.filter(user = request.user)
-    serialized_events = TimeEventSerializer(events, many=True)
+    events = DaylyEvent.objects.filter(user = request.user)
+    serialized_events = DaylyEventSerializer(events, many=True)
+
+    return Response(serialized_events.data)
+
+@api_view(['GET'])
+def get_weakly_events(request):
+    
+    events = WeaklyEvent.objects.filter(user = request.user)
+    serialized_events = WeaklyEventSerializer(events, many=True)
+
+    return Response(serialized_events.data)
+
+@api_view(['GET'])
+def get_onetime_events(request):
+    
+    events = OneTimeEvent.objects.filter(user = request.user)
+    serialized_events = OneTimeEventSerializer(events, many=True)
 
     return Response(serialized_events.data)
 

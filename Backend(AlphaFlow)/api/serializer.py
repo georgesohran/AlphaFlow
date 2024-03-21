@@ -1,10 +1,21 @@
 from rest_framework import serializers
 from .models import *
 
-class TimeEventSerializer(serializers.ModelSerializer):
+class DaylyEventSerializer(serializers.ModelSerializer):
     class Meta():
-        model = TimeEvent
+        model = DaylyEvent
         fields = '__all__'
+
+class WeaklyEventSerializer(serializers.ModelSerializer):
+    class Meta():
+        model = WeaklyEvent
+        fields = '__all__'
+
+class OneTimeEventSerializer(serializers.ModelSerializer):
+    class Meta():
+        model = OneTimeEvent
+        fields = '__all__'
+
 
 
 class GoalSerializer(serializers.ModelSerializer):

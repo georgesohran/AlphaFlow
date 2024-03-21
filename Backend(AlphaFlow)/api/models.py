@@ -25,12 +25,12 @@ class WeaklyEvent(TimeEvent):
     user = models.ForeignKey(User, on_delete=models.CASCADE, related_name='user_weak_event')
     DAY_CHOICES = (
         ('MON', 'monday'),
-        ('TUE', 'monday'),
-        ('WED', 'monday'),
-        ('THU', 'monday'),
-        ('FRI', 'monday'),
-        ('SAT', 'monday'),
-        ('SUN', 'monday'),
+        ('TUE', 'tuesday'),
+        ('WED', 'wednesday'),
+        ('THU', 'thursday'),
+        ('FRI', 'friday'),
+        ('SAT', 'saturday'),
+        ('SUN', 'sunday'),
     )
 
     day = models.CharField(max_length=9, choices=DAY_CHOICES, default='MON')
