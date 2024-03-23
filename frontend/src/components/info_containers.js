@@ -4,7 +4,7 @@ const InfoContainerMain = (props) => {
     return (
         <div className="bg-gray-800 text-white
         p-4 rounded-lg
-        mx-auto w-3/4 my-32
+        mx-auto w-3/4 my-64
         md:w-2/4
         ">
             <p className="text-center text-4xl">
@@ -66,7 +66,7 @@ const BigInfoContainer = (props) => {
     return (
         <div className="bg-gray-800 text-white rounded-md 
         
-        p-8 mx-8 my-8 md:mx-32 lg:mx-64">
+        p-8 mx-8 my-8 text-xl md:mx-32 lg:mx-64">
             <p>{props.text}</p>
         </div>
     )

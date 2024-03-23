@@ -7,7 +7,11 @@ module.exports = {
     "./public/index.html"
   ],
   theme: {
-    extend: {},
+    extend: {
+      backgroundImage: {
+        "dudles": "url('/src/images/BgDudles.svg')"
+      }
+    },
   },
   plugins: [],
 
