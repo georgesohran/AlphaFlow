@@ -61,7 +61,20 @@ const ChesGridContainers = (props) => {
     )
 }
 
+
+const BigInfoContainer = (props) => {
+    return (
+        <div className="bg-gray-800 text-white rounded-md 
+        
+        p-8 mx-8 my-8 md:mx-32 lg:mx-64">
+            <p>{props.text}</p>
+        </div>
+    )
+}
+
+
 export {
     ChesGridContainers, 
     InfoContainerMain,
+    BigInfoContainer
 }
