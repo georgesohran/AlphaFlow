@@ -5,7 +5,8 @@ import MyFooter from '../components/footer'
 
 const LoginPage = () => {
     const fields = [
-        <input />
+        <InputField name='username'/>,
+        <InputField name='password'/>
     ]
     return (
         <div className='min-h-screen bg-gray-900'>
@@ -22,3 +23,17 @@ const LoginPage = () => {
 }
 
 export default LoginPage
+
+
+const InputField = (props) => {
+    return (
+        <div className='mb-4'>
+            <input type='text' placeholder={props.name} name={props.name} 
+            className='rounded-md p-1 text-gray-200 bg-gray-700 
+            hover:bg-gray-600
+            focus:outline-none focus:ring focus:border-blue-300 focus:bg-gray-600
+            '/>
+        </div>
+        
+    )
+}
