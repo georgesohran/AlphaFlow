@@ -1,7 +1,7 @@
 from rest_framework import serializers
 from .models import *
 
-class DaylyEventSerializer(serializers.ModelSerializer):
+class DailyEventSerializer(serializers.ModelSerializer):
     class Meta():
         model = DailyEvent
         fields = '__all__'
