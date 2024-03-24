@@ -6,9 +6,7 @@ import { useState } from "react";
 const Dashboard = () => {
     let [notes, setNotes] = useState([])
 
-    useEffect(getNotes, [])
-
-    async function getNotes() {
+    const getNotes = async() => {
         fetch('http://127.0.0.1:8000/api/get_notes')
         .then(response => response.json())
         .then((notes_data) => {
@@ -19,8 +17,11 @@ const Dashboard = () => {
         setNotes(notes)
     }
 
+    useEffect(getNotes, [])
+
     return (
         <div>
+            <p>Im here</p>
             {notes.map((note, index) => {
                 <p className="text-5xl" key={index}>{note.contents}</p>
             })}
