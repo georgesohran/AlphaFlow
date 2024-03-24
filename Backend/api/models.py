@@ -37,7 +37,7 @@ class WeaklyEvent(TimeEvent):
     start = models.TimeField()
     end = models.TimeField()
     
-class DaylyEvent(TimeEvent):
+class DailyEvent(TimeEvent):
     user = models.ForeignKey(User, on_delete=models.CASCADE, related_name='user_day_event')
     start = models.TimeField()
     end = models.TimeField()
@@ -53,7 +53,7 @@ class Note(models.Model):
 class Goal(models.Model):
     user = models.ForeignKey(User, on_delete=models.CASCADE, related_name='user_goal')
     notes = models.ForeignKey(Note, on_delete=models.CASCADE, related_name='notes', blank=True, null=True)
-    events = models.ForeignKey(DaylyEvent, on_delete=models.CASCADE, related_name='events', blank=True, null=True)
+    events = models.ForeignKey(DailyEvent, on_delete=models.CASCADE, related_name='events', blank=True, null=True)
     contents = models.TextField()
     reached = models.BooleanField()
     

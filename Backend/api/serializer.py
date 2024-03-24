@@ -3,7 +3,7 @@ from .models import *
 
 class DaylyEventSerializer(serializers.ModelSerializer):
     class Meta():
-        model = DaylyEvent
+        model = DailyEvent
         fields = '__all__'
 
 class WeaklyEventSerializer(serializers.ModelSerializer):
