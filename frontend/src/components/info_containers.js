@@ -74,8 +74,25 @@ const BigInfoContainer = (props) => {
 }
 
 
+
+const LoginContainer = (props) => {
+    return (
+        <div className="bg-gray-800 text-white
+        p-4 rounded-lg text-center
+        mx-auto w-3/4 my-32
+        md:w-2/4">
+            {props.fields}
+            <button className="bg-blue-800 text-white
+            px-4 py-2 rounded-md">
+                login
+            </button>
+        </div>
+    )
+} 
+
 export {
     ChesGridContainers, 
     InfoContainerMain,
-    BigInfoContainer
+    BigInfoContainer,
+    LoginContainer
 }

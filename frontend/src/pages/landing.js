@@ -1,6 +1,7 @@
 import React from 'react'
 import TopNavBar from '../components/navbar'
 import {BigInfoContainer, ChesGridContainers, InfoContainerMain} from '../components/info_containers'
+import MyFoter from '../components/footer'
 
 const LandingPage = () => {
     return (
@@ -14,10 +15,8 @@ const LandingPage = () => {
                 </div>
                 
                 <BigInfoContainer text="Some text"/>
-                    
-                <br />
-                <footer className='bg-gray-800 text-white w-auto py-8' >Something</footer>
             </div>
+            <MyFoter text='some text'/>
         </div>
     )
 }
