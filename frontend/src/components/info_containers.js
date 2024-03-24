@@ -4,7 +4,7 @@ const InfoContainerMain = (props) => {
     return (
         <div className="bg-gray-800 text-white
         p-4 rounded-lg
-        mx-auto w-3/4 my-64
+        mx-auto w-3/4 my-56
         md:w-2/4
         ">
             <p className="text-center text-4xl">
@@ -80,11 +80,33 @@ const LoginContainer = (props) => {
         <div className="bg-gray-800 text-white
         p-4 rounded-lg text-center
         mx-auto w-2/4 mb-32 mt-28
-        md:w-1/4">
+        md:w-1/3">
+            <div>
+                <p className="text-4xl mb-6">Log In</p>
+            </div>
             {props.fields}
             <button className="bg-blue-800 text-white
-            px-4 py-2 rounded-md">
+            px-4 py-2 rounded-md
+            hover:bg-blue-900">
                 login
+            </button>
+        </div>
+    )
+}
+const RegisterContainer = (props) => {
+    return (
+        <div className="bg-gray-800 text-white
+        p-4 rounded-lg text-center
+        mx-auto w-2/4 mb-32 mt-28
+        md:w-1/3">
+            <div>
+                <p className="text-4xl mb-6">Register</p>
+            </div>
+            {props.fields}
+            <button className="bg-blue-800 text-white
+            px-4 py-2 rounded-md
+            hover:bg-blue-900">
+                register
             </button>
         </div>
     )
@@ -94,5 +116,6 @@ export {
     ChesGridContainers, 
     InfoContainerMain,
     BigInfoContainer,
-    LoginContainer
+    LoginContainer,
+    RegisterContainer
 }
