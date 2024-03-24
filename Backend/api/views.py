@@ -36,8 +36,11 @@ def get_onetime_events(request):
 @api_view(['GET'])
 def get_notes(request):
     
-    notes = Note.objects.filter(user=request.user)
+    notes = Note.objects.all()
+    #for now it is all, later user-specific
+
     serialized_notes = NoteSerializer(notes, many=True)
+    print(serialized_notes.data)
 
     return Response(serialized_notes.data)
 

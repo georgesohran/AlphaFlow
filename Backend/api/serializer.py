@@ -25,6 +25,8 @@ class GoalSerializer(serializers.ModelSerializer):
 
 
 class NoteSerializer(serializers.Serializer):
+    contents = serializers.CharField(required=False, max_length=1000, allow_null=True)
+    
     class Meta():
         model = Note
         fields = '__all__'

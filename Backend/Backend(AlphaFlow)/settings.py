@@ -46,12 +46,13 @@ INSTALLED_APPS = [
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
+    'corsheaders.middleware.CorsMiddleware',
     'django.middleware.common.CommonMiddleware',
     'django.middleware.csrf.CsrfViewMiddleware',
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
-    'corsheaders.middleware.CorsMiddleware'
+    
 ]
 
 ROOT_URLCONF = 'Backend(AlphaFlow).urls'
@@ -74,8 +75,18 @@ TEMPLATES = [
 
 WSGI_APPLICATION = 'Backend(AlphaFlow).wsgi.application'
 
-#changethat later, when i get my domain
+#change that later, when i get my domain
 CORS_ALLOW_ALL_ORIGINS = True
+
+# REST_FRAMEWORK = {
+#     'DEFAULT_PERMISSION_CLASSES': [
+#         'rest_framework.permissions.IsAuthenticated'
+#     ],
+#     'DEFAULT_AUTHENTICATION_CLASSES': [
+#         'rest_framework.authentication.SessionAuthentication'
+#     ] 
+# }
+
 # Database
 # https://docs.djangoproject.com/en/4.2/ref/settings/#databases
 
@@ -137,3 +148,5 @@ MEDIA_ROOT = os.path.join(BASE_DIR, "media")
 STATICFILES_DIRS = (
     BASE_DIR / 'static',
 )
+
+
