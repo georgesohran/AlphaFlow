@@ -53,7 +53,7 @@ const ChesGridContainers = (props) => {
     })
 
     return (
-        <div className="md:mx-32 lg:mx-64">
+        <div className="md:mx-32 lg:mx-64 my-32">
             <div className="grid grid-cols-2 ">
                 {infoContainers}
             </div>
@@ -65,9 +65,10 @@ const ChesGridContainers = (props) => {
 const BigInfoContainer = (props) => {
     return (
         <div className="bg-gray-800 text-white rounded-md 
-        
-        p-8 mx-8 my-8 text-xl md:mx-32 lg:mx-64">
+        p-8 mx-8 my-32 text-xl text-center md:mx-32 lg:mx-64">
             <p>{props.text}</p>
+            <br />
+            <button className="bg-blue-700 rounded-md p-2 hover:bg-blue-900">Some button</button>
         </div>
     )
 }

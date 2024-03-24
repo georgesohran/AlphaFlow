@@ -4,7 +4,7 @@ import React from "react";
 const TopNavBar = () => {
     return (
         <nav className="bg-gray-800 text-blue-50 
-        w-full sticky top-0 border-gray-900">
+        w-full sticky top-0 border-gray-700 border-y-2">
             <div className="max-w-screen-xl items-center 
             flex flex-wrap justify-between mx-auto p-4">
             

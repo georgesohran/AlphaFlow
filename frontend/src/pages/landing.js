@@ -7,12 +7,13 @@ const LandingPage = () => {
         <div>
             <div className='bg-gray-900 min-h-screen'>
 
-                <div className='bg-dudles bg-no-repeat bg-center bg-auto bg-fixed'> 
-                    <TopNavBar />
+                <div className='bg-gradient-to-t from-gray-900 to-indigo-900'> 
+                    <TopNavBar />                    
                     <InfoContainerMain heading="Some Heading" text="some text" />
                     <ChesGridContainers texts={["text1", "text2", "text3", "text4"]}/>
-                    <BigInfoContainer text="Some text"/>
                 </div>
+                
+                <BigInfoContainer text="Some text"/>
                     
                 <br />
                 <footer className='bg-gray-800 text-white w-auto py-8' >Something</footer>
