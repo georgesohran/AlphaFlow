@@ -10,10 +10,10 @@ const Dashboard = () => {
     let [notes, setNotes] = useState([])
 
     const getNotes = async() => {
-        const notes_data = await fetch('/api/get_notes').then(response => {console.log(response);response.json()})
+        let res = await fetch('api/get_notes')
+        let notes_data = await res.json() 
         setNotes(notes_data)
     }
-
     useEffect(() => {
         getNotes()
     }, [])
