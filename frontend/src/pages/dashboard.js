@@ -4,27 +4,28 @@ import { useState } from "react";
 
 
 const Dashboard = () => {
+    localStorage.clear();
+    sessionStorage.clear();
+
     let [notes, setNotes] = useState([])
 
     const getNotes = async() => {
-        fetch('http://127.0.0.1:8000/api/get_notes')
-        .then(response => response.json())
-        .then((notes_data) => {
-            console.log(notes_data)
-            setNotes(notes_data)
-        })
-        
-        setNotes(notes)
+        const notes_data = await fetch('/api/get_notes').then(response => {console.log(response);response.json()})
+        setNotes(notes_data)
     }
 
-    useEffect(getNotes, [])
+    useEffect(() => {
+        getNotes()
+    }, [])
 
     return (
         <div>
             <p>Im here</p>
-            {notes.map((note, index) => {
-                <p className="text-5xl" key={index}>{note.contents}</p>
-            })}
+            <div>
+                {notes.map((note, index) => 
+                    (<p className="text-xl" key={index}>{note.contents}</p>)
+                )}
+            </div>
         </div>
     )
 }
