@@ -1,4 +1,6 @@
-import React from "react";
+import React, { useState } from "react";
+import { redirect } from "react-router-dom";
+import InputField from "./inputfield";
 
 const InfoContainerMain = (props) => {
     return (
@@ -34,7 +36,6 @@ const InfoContainer = (props) => {
 
 
 const MultiContainer = (props) => {
-    
     return (
         <div className="text-white text-center bg-gray-800 rounded-md  
         my-2 m-2 h-auto p-4 mx-8 md:w-1/4 md:mx-4 md:my-28 ">
@@ -104,6 +105,27 @@ const BigInfoContainer = (props) => {
 
 
 const LoginContainer = (props) => {
+
+    const [username, setUsername] = useState('')
+    const [password, setPassword] = useState('')
+    const [detail, setDetail] = useState('')
+    
+    const loginUser = async() => {
+        let res = await fetch(`${process.env.REACT_APP_BACKEND_API}/api/login`, {
+            method:'POST',
+            headers:{
+                'Content-Type': 'aplication/json'
+            },
+            body:JSON.stringify({
+                username:username,
+                password:password
+            })
+        })
+        let res_data = await res.json()
+        setDetail(res_data.detail)
+        redirect('/dashboard')
+    }
+    
     return (
         <div className="bg-gray-800 text-white
         p-4 rounded-lg text-center
@@ -112,12 +134,14 @@ const LoginContainer = (props) => {
             <div>
                 <p className="text-4xl mb-6">Log In</p>
             </div>
-            {props.fields}
-            <button className="bg-blue-800 text-white
+            <InputField name='username' value={username} change={setUsername} type='text'/>
+            <InputField name='password' value={password} change={setPassword} type='password'/>
+            <button onClick={loginUser} className="bg-blue-800 text-white
             px-4 py-2 rounded-md
             hover:bg-blue-900">
                 login
             </button>
+            <p className="mb-3 text-gray-300">{detail}</p>
         </div>
     )
 }

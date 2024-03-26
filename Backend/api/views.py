@@ -17,9 +17,9 @@ def api_login(request):
     username = data.get('username')
     password = data.get('password')
 
-    if username is None:
+    if not username:
         return Response({"detail":"insert your username"})
-    if password is None:
+    if not password:
         return Response({"detail":"insert your password"}) 
     
     user = authenticate(username=username, password=password)
@@ -47,20 +47,20 @@ def api_register(request):
     password = data.get('password')
     password_repeat = data.get('password_repeat')
 
-    if username is None:
+    if not username:
         return Response({"detail": "insert your username"})
     
-    if email is None:
+    if not email:
         return Response({"detail": "insert your email"})
     
-    if password is None or password_repeat is None:
+    if not password or not password_repeat :
         return Response({"detail": "insert your password"})
     
     if password != password_repeat:
         return Response({"detail":"1th password doesn't match 2nd"})
 
     try:
-        new_user = User(username=username, email=email, password=password)
+        new_user = User.objects.create(username=username, email=email, password=password)
         new_user.save()
     except Exception:
         return Response({"detail":"something went wrong"})
