@@ -33,6 +33,34 @@ const InfoContainer = (props) => {
 
 
 
+const MultiContainer = (props) => {
+    
+    return (
+        <div className="text-white text-center bg-gray-800 rounded-md  
+        my-2 m-2 h-auto p-4 mx-8 md:w-1/4 md:mx-4 md:my-28 ">
+            <p className="text-4xl p-2 bg-gray-700 rounded-md">{props.title}</p>
+            <div className="divide-y divide-solid divide-gray-600">
+                <p className="mt-2 mb-2">{props.description}</p>
+                <div className="mt-2 text-left mx-12 text-gray-300 ">
+                    {
+                        props.items?
+                        (
+                            props.items.map((item, index) => (
+                                <div className="list-item" key={index}>{item.contents}</div>
+                            ))
+                        )
+                        :
+                        (<div className="list-item">no items</div>)
+                    }
+                </div>
+            </div>
+                        
+        </div>
+    )
+}
+
+
+
 const ChesGridContainers = (props) => {
     let infoContainers = []
 
@@ -110,12 +138,13 @@ const RegisterContainer = (props) => {
             </button>
         </div>
     )
-} 
+}
 
 export {
     ChesGridContainers, 
     InfoContainerMain,
     BigInfoContainer,
     LoginContainer,
-    RegisterContainer
+    RegisterContainer,
+    MultiContainer
 }

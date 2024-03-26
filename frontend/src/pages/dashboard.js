@@ -2,15 +2,18 @@ import React from "react";
 import { useEffect } from "react";
 import { useState } from "react";
 
+import { MultiContainer } from "../components/info_containers";
+import TopNavBar from "../components/navbar";
+import MyFooter from "../components/footer";
+
+
 
 const Dashboard = () => {
-    localStorage.clear();
-    sessionStorage.clear();
 
     let [notes, setNotes] = useState([])
 
     const getNotes = async() => {
-        let res = await fetch('api/get_notes')
+        let res = await fetch(`${process.env.REACT_APP_BACKEND_API}/api/get_notes`)
         let notes_data = await res.json() 
         setNotes(notes_data)
     }
@@ -19,13 +22,19 @@ const Dashboard = () => {
     }, [])
 
     return (
-        <div>
-            <p>Im here</p>
-            <div>
-                {notes.map((note, index) => 
-                    (<p className="text-xl" key={index}>{note.contents}</p>)
-                )}
+        <div className='bg-gray-900 min-h-screen'>
+
+            <div className='bg-gradient-to-t from-gray-900 to-indigo-800'>
+                <TopNavBar />
+                <div className='mx-auto justify-center md:flex mb-56'>
+                    <MultiContainer title='Notes' description='All of your notes' items={notes}/>
+                    <br/>
+                    <MultiContainer title='Goals' description='All of your goals' items={notes}/>  
+                </div> 
+                                    
+                
             </div>
+            <MyFooter text='something'/>
         </div>
     )
 }
