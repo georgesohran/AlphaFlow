@@ -1,13 +1,79 @@
-from django.shortcuts import render
 from rest_framework.response import Response
-from rest_framework.decorators import api_view
+from rest_framework.decorators import api_view, permission_classes, authentication_classes
+from rest_framework.permissions import IsAuthenticated
+from rest_framework.authentication import BasicAuthentication, SessionAuthentication
+from django.contrib.auth import login, logout, authenticate
+from django.views.decorators.csrf import ensure_csrf_cookie
 
 from .models import * 
 from .serializer import *
 
+import json
 
-# Create your views here.
+
+@api_view(['POST'])
+def api_login(request):
+    data = json.loads(request.body)
+    username = data.get('username')
+    password = data.get('password')
+
+    if username is None:
+        return Response({"detail":"insert your username"})
+    if password is None:
+        return Response({"detail":"insert your password"}) 
+    
+    user = authenticate(username=username, password=password)
+
+    if user is None:
+        return Response({"detail":"invalid password/username"})
+    
+    login(request,user)
+    return Response({"detail":"success"})
+
+
+@api_view(['POST'])
+def api_logout(request):
+    if not request.user.is_authenticated:
+        return Response({"detail":"You are not even logged in!"})
+    
+    return Response({"detail":"success"})
+
+@api_view(['POST'])
+def api_register(request):
+    data = json.loads(request.body)
+
+    username = data.get('username')
+    email = data.get('email')
+    password = data.get('password')
+    password_repeat = data.get('password_repeat')
+
+    if username is None:
+        return Response({"detail": "insert your username"})
+    
+    if email is None:
+        return Response({"detail": "insert your email"})
+    
+    if password is None or password_repeat is None:
+        return Response({"detail": "insert your password"})
+    
+    if password != password_repeat:
+        return Response({"detail":"1th password doesn't match 2nd"})
+
+    try:
+        new_user = User(username=username, email=email, password=password)
+        new_user.save()
+    except Exception:
+        return Response({"detail":"something went wrong"})
+
+    login(new_user)
+
+    return Response({"detail": "success"})
+
+
+
 @api_view(['GET'])
+@authentication_classes([SessionAuthentication, BasicAuthentication])
+@permission_classes([IsAuthenticated])
 def get_daily_events(request):
     
     events = DailyEvent.objects.filter(user = request.user)
@@ -16,6 +82,8 @@ def get_daily_events(request):
     return Response(serialized_events.data)
 
 @api_view(['GET'])
+@authentication_classes([SessionAuthentication, BasicAuthentication])
+@permission_classes([IsAuthenticated])
 def get_weakly_events(request):
     
     events = WeaklyEvent.objects.filter(user = request.user)
@@ -24,6 +92,8 @@ def get_weakly_events(request):
     return Response(serialized_events.data)
 
 @api_view(['GET'])
+@authentication_classes([SessionAuthentication, BasicAuthentication])
+@permission_classes([IsAuthenticated])
 def get_onetime_events(request):
     
     events = OneTimeEvent.objects.filter(user = request.user)
@@ -34,10 +104,11 @@ def get_onetime_events(request):
 
 
 @api_view(['GET'])
+@authentication_classes([SessionAuthentication, BasicAuthentication])
+@permission_classes([IsAuthenticated])
 def get_notes(request):
     
-    notes = Note.objects.all()
-    #for now it is all, later user-specific
+    notes = Note.objects.filter(user = request.user)
 
     serialized_notes = NoteSerializer(notes, many=True)
     print(serialized_notes.data)
@@ -47,6 +118,8 @@ def get_notes(request):
 
 
 @api_view(['GET'])
+@authentication_classes([SessionAuthentication, BasicAuthentication])
+@permission_classes([IsAuthenticated])
 def get_goals(request):
     
     goals = Goal.objects.filter(user=request.user)
