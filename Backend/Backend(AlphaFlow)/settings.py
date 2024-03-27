@@ -119,9 +119,9 @@ AUTH_USER_MODEL = 'api.User'
 
 CSRF_COOKIE_SAMESITE = 'Strict'
 SESSION_COOKIE_SAMESITE = 'Strict'
-CSRF_COOKIE_HTTPONLY = False
+CSRF_COOKIE_HTTPONLY = True
 SESSION_COOKIE_HTTPONLY = True
-
+CSRF_TRUSTED_ORIGINS = ['http://localhost:81']
 
 # Internationalization
 # https://docs.djangoproject.com/en/4.2/topics/i18n/

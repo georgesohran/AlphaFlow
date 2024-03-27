@@ -9,6 +9,7 @@ import {
   Route,
   Link
 } from "react-router-dom";
+import { useState } from "react";
 
 
 const router = createBrowserRouter([
@@ -32,6 +33,23 @@ const router = createBrowserRouter([
 
 
 function App() {
+  const [csrf, setCsrf] = useState('')
+  const [isAuthenticated, setAuth] = useState(false)
+
+  const getCSRF = () => {
+    fetch("/api/csrf/", {
+      credentials: "same-origin",
+    })
+    .then((res) => {
+      let csrfToken = res.headers.get("X-CSRFToken")
+      setCsrf(csrfToken)
+      console.log(csrfToken)
+    })
+    .catch((err) => {
+      console.log(err)
+    })
+  }
+
   return (
     <div>
       <RouterProvider router={router}/>

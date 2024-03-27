@@ -116,13 +116,16 @@ const LoginContainer = (props) => {
     
     const navigate = useNavigate()
 
-    const loginUser = async() => {
-        let res = await fetch(`${process.env.REACT_APP_BACKEND_API}/api/login`, {
+    const loginUser = async(e) => {
+        e.preventDefault()
+
+        let res = await fetch(`/api/login`, {
             method:'POST',
             headers:{
                 'Content-Type': 'aplication/json',
                 "X-CSRFToken": cookies.get("csrftoken"),
             },
+            credentials: "same-origin",
             body:JSON.stringify({
                 username:username,
                 password:password

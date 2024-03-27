@@ -5,6 +5,7 @@ urlpatterns = [
     path('login', view=views.api_login, name='login'),
     path('logout', view=views.api_logout, name='logout'),
     path('register', view=views.api_register, name='register'),
+    path('csrf', views.get_csrf, name='api_csrf'),
 
     path('get_daily_events', view=views.get_daily_events, name='get_daily_events'),
     path('get_weakly_events', view=views.get_weakly_events, name='get_weakly_events'),
