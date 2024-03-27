@@ -1,7 +1,9 @@
 import React from "react";
-import { Link } from "react-router-dom";
 import LoginPage from "../pages/login";
 import RegisterPage from "../pages/register";
+import { Link } from "react-router-dom";
+
+
 
 const TopNavBar = () => {
     let loginp = <LoginPage />
@@ -14,11 +16,11 @@ const TopNavBar = () => {
             flex flex-wrap justify-between mx-auto p-4">
             
                 <div className="flex items-center space-x-3">
-                    <TopNavBarButton link=".." name="Main"/>
+                    <TopNavBarButton link="/" name="Main"/>
                 </div>
                 <div className="flex items-center space-x-3">
-                    <TopNavBarButton link="../register" name="Register"/>
-                    <TopNavBarButton link="../login" name="Login"/>
+                    <TopNavBarButton link="/register" name="Register"/>
+                    <TopNavBarButton link="/login" name="Login"/>
                 </div>
             </div>
         </nav>
