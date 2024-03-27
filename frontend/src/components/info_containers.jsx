@@ -1,6 +1,10 @@
 import React, { useState } from "react";
-import { redirect } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 import InputField from "./inputfield";
+
+import Cookies from "universal-cookie";
+const cookies = new Cookies();
+
 
 const InfoContainerMain = (props) => {
     return (
@@ -110,11 +114,14 @@ const LoginContainer = (props) => {
     const [password, setPassword] = useState('')
     const [detail, setDetail] = useState('')
     
+    const navigate = useNavigate()
+
     const loginUser = async() => {
         let res = await fetch(`${process.env.REACT_APP_BACKEND_API}/api/login`, {
             method:'POST',
             headers:{
-                'Content-Type': 'aplication/json'
+                'Content-Type': 'aplication/json',
+                "X-CSRFToken": cookies.get("csrftoken"),
             },
             body:JSON.stringify({
                 username:username,
@@ -123,7 +130,7 @@ const LoginContainer = (props) => {
         })
         let res_data = await res.json()
         setDetail(res_data.detail)
-        redirect('/dashboard')
+        return navigate('/dashboard')
     }
     
     return (

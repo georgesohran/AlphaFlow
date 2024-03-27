@@ -38,6 +38,7 @@ def api_logout(request):
     
     return Response({"detail":"success"})
 
+
 @api_view(['POST'])
 def api_register(request):
     data = json.loads(request.body)
