@@ -116,24 +116,29 @@ const LoginContainer = (props) => {
     
     const navigate = useNavigate()
 
-    const loginUser = async(e) => {
+    const loginUser = (e) => {
         e.preventDefault()
 
-        let res = await fetch(`/api/login`, {
+        fetch(`/api/login`, {
             method:'POST',
             headers:{
-                'Content-Type': 'aplication/json',
+                'Content-Type': 'application/json',
                 "X-CSRFToken": cookies.get("csrftoken"),
             },
             credentials: "same-origin",
             body:JSON.stringify({
                 username:username,
-                password:password
+                password:password,
             })
         })
-        let res_data = await res.json()
-        setDetail(res_data.detail)
-        return navigate('/dashboard')
+        .then(res => res.json())
+        .then((res_data) => {
+            setDetail(res_data.detail)
+            if(res.status >= 200 && res.status < 300){
+                return navigate('/dashboard')
+            }
+            return
+        })
     }
     
     return (

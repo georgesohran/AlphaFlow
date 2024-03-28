@@ -12,48 +12,48 @@ import {
 import { useState } from "react";
 
 
-const router = createBrowserRouter([
-  {
-    path: '/',
-    element: <LandingPage />
-  },
-  {
-    path: '/login',
-    element: <LoginPage/>
-  },
-  {
-    path: '/register',
-    element: <RegisterPage />
-  },
-  {
-    path: '/dashboard',
-    element: <Dashboard />
-  },
+ const router = createBrowserRouter([
+   {
+     path: '/',
+     element: <LandingPage />
+   },
+   {
+     path: '/login',
+     element: <LoginPage/>
+   },
+   {
+     path: '/register',
+     element: <RegisterPage />
+   },
+   {
+     path: '/dashboard',
+     element: <Dashboard />
+   },
 ])
 
 
 function App() {
-  const [csrf, setCsrf] = useState('')
-  const [isAuthenticated, setAuth] = useState(false)
 
-  const getCSRF = () => {
-    fetch("/api/csrf/", {
+  const getSession = () => {
+    fetch("/api/session/", {
       credentials: "same-origin",
     })
-    .then((res) => {
-      let csrfToken = res.headers.get("X-CSRFToken")
-      setCsrf(csrfToken)
-      console.log(csrfToken)
+    .then((res) => res.json())
+    .then((data) => {
+      console.log(data)
+      if (data.isAuthenticated) {
+        this.setState({isAuthenticated: true})
+      } else {
+        this.setState({isAuthenticated: false})
+      }
     })
     .catch((err) => {
-      console.log(err)
-    })
+      console.log(err);
+    });
   }
-
+  
   return (
-    <div>
-      <RouterProvider router={router}/>
-    </div>  
+    <RouterProvider router={router} /> 
   )
 }
 

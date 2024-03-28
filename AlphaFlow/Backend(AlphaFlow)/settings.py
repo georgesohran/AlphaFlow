@@ -79,8 +79,10 @@ WSGI_APPLICATION = 'Backend(AlphaFlow).wsgi.application'
 CORS_ALLOW_ALL_ORIGINS = True
 
 REST_FRAMEWORK = {
+    'DEFAULT_PERMISSION_CLASSES': [
+        'rest_framework.permissions.isAuthenticated'
+    ],
     'DEFAULT_AUTHENTICATION_CLASSES': [
-        'rest_framework.authentication.BasicAuthentication',
         'rest_framework.authentication.SessionAuthentication',
     ]
 }
@@ -114,9 +116,6 @@ AUTH_PASSWORD_VALIDATORS = [
     },
 ]
 
-
-AUTH_USER_MODEL = 'api.User'
-
 CSRF_COOKIE_SAMESITE = 'Strict'
 SESSION_COOKIE_SAMESITE = 'Strict'
 CSRF_COOKIE_HTTPONLY = False  
@@ -149,5 +148,5 @@ MEDIA_URL = '/media/'
 MEDIA_ROOT = os.path.join(BASE_DIR, "media")
 
 STATICFILES_DIRS = (
-    BASE_DIR.joinpath('frontend', 'dist'),  # new
+    BASE_DIR.joinpath('frontend', 'dist'),
 )

@@ -1,15 +1,14 @@
 from django.db import models
-from django.contrib.auth.models import AbstractUser
+from django.contrib.auth.models import User
 
-# Create your models here.
-class User(AbstractUser):
-    pass
+
+class UserProfile(models.Model):
+    user = models.OneToOneField(User, on_delete=models.CASCADE,)
 
 
 class TimeEvent(models.Model):
     description = models.TextField(max_length=512)
     color = models.CharField(max_length=7, default='#f01e2c')
-    # picture = models.ImageField(null=True, blank=True, upload_to='images')
 
     class Meta:
         abstract = True

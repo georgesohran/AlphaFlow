@@ -19,9 +19,8 @@ def get_csrf(request):
 
 @api_view(['POST'])
 def api_login(request):
-    data = json.loads(request.body)
-    username = data.get('username')
-    password = data.get('password')
+    username = request.body.get('username')
+    password = request.body.get('password')
 
     if not username:
         return Response({"detail":"insert your username"})
@@ -41,7 +40,7 @@ def api_login(request):
 def api_logout(request):
     if not request.user.is_authenticated:
         return Response({"detail":"You are not even logged in!"})
-    
+    logout(request.user)
     return Response({"detail":"success"})
 
 

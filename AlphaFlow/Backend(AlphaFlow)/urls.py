@@ -18,6 +18,7 @@ from django.contrib import admin
 from django.urls import path, include
 from . import settings
 from django.shortcuts import render
+from django.urls import re_path
 
 def index_view(request):
     return render(request, 'dist/index.html')
@@ -25,5 +26,5 @@ def index_view(request):
 urlpatterns = [
     path('admin/', admin.site.urls),
     path('api/', include('api.urls')),
-    path('', index_view, name='index'),
+    re_path(r'.*', index_view, name='index'),
 ]
