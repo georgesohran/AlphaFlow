@@ -8,7 +8,7 @@ const LandingPage = () => {
         <div className='bg-gray-900 min-h-screen'>
 
             <div className='bg-gradient-to-t from-gray-900 to-indigo-800 '> 
-                <TopNavBar />                    
+                <TopNavBar authorized={false}/>                    
                 <InfoContainerMain heading="Some Heading" text="some text" />
                 <ChesGridContainers texts={["text1", "text2", "text3", "text4"]}/>
             </div>

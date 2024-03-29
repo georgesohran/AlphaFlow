@@ -1,8 +1,10 @@
 from rest_framework.response import Response
-from rest_framework.decorators import api_view, permission_classes, authentication_classes
+from rest_framework.decorators import api_view
 from django.contrib.auth import login, logout, authenticate
 from django.views.decorators.csrf import ensure_csrf_cookie
 from django.middleware.csrf import get_token
+from django.contrib.auth.decorators import login_required
+from django.db import IntegrityError
 
 from .models import * 
 from .serializer import *
@@ -39,20 +41,18 @@ def api_login(request):
 @ensure_csrf_cookie
 def api_logout(request):
     if not request.user.is_authenticated:
-        return Response({"detail":"You are not even logged in!"}, status=400)
-    logout(request.user)
+        return Response({"detail":"You are not even logged in yet!"}, status=400)
+    logout(request)
     return Response({"detail":"success"}, status=200)
 
 
 @api_view(['POST'])
 @ensure_csrf_cookie
 def api_register(request):
-    data = json.loads(request.body)
-
-    username = data.get('username')
-    email = data.get('email')
-    password = data.get('password')
-    password_repeat = data.get('password_repeat')
+    username = request.data.get('username')
+    email = request.data.get('email')
+    password = request.data.get('password')
+    password_repeat = request.data.get('password_repeat')
 
     if not username:
         return Response({"detail": "insert your username"}, status=400)
@@ -69,10 +69,12 @@ def api_register(request):
     try:
         new_user = User.objects.create(username=username, email=email, password=password)
         new_user.save()
-    except Exception:
-        return Response({"detail":"something went wrong"}, status=400)
+    except IntegrityError:
+        return Response({"detail":"username has already been taken"}, status=400)
+    
+    user = User.objects.get(username=username)
 
-    login(new_user)
+    login(request,user)
 
     return Response({"detail": "success"}, status=200)
 
@@ -106,13 +108,10 @@ def onetime_events(request):
 
 @api_view(['GET'])
 @ensure_csrf_cookie
+@login_required(login_url='/login')
 def notes(request):
-    
     notes = Note.objects.filter(user = request.user)
-
     serialized_notes = NoteSerializer(notes, many=True)
-    print(serialized_notes.data)
-
     return Response(serialized_notes.data)
 
 

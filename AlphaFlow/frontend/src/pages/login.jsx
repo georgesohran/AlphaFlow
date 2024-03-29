@@ -8,7 +8,7 @@ const LoginPage = () => {
     return (
         <div className='min-h-screen bg-gray-900'>
             <div className='bg-gradient-to-t from-gray-900 to-indigo-800 '>
-                <TopNavBar />
+                <TopNavBar authorized={false}/>
                 <div className='mb-96'>
                     <LoginContainer />
                 </div>
