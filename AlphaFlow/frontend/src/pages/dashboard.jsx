@@ -13,9 +13,7 @@ const Dashboard = () => {
     let [notes, setNotes] = useState([])
 
     const getNotes = async() => {
-        let res = await fetch(`${process.env.REACT_APP_BACKEND_API}/api/get_notes`)
-        let notes_data = await res.json() 
-        setNotes(notes_data)
+        fetch('api/get_notes')
     }
     useEffect(() => {
         getNotes()

@@ -7,9 +7,9 @@ urlpatterns = [
     path('register', view=views.api_register, name='register'),
     path('csrf', views.get_csrf, name='api_csrf'),
 
-    path('get_daily_events', view=views.get_daily_events, name='get_daily_events'),
-    path('get_weakly_events', view=views.get_weakly_events, name='get_weakly_events'),
-    path('get_onetime_events', view=views.get_onetime_events, name='get_onetime_events'),
-    path('get_notes', view=views.get_notes, name='get_notes'),
-    path('get_goals', view=views.get_goals, name='get_goals'),
+    path('daily_events', view=views.daily_events, name='daily_events'),
+    path('weakly_events', view=views.weakly_events, name='weakly_events'),
+    path('onetime_events', view=views.onetime_events, name='onetime_events'),
+    path('notes', view=views.notes, name='notes'),
+    path('goals', view=views.goals, name='goals'),
 ]

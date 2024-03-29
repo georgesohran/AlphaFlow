@@ -131,13 +131,16 @@ const LoginContainer = (props) => {
                 password:password,
             })
         })
-        .then(res => res.json())
-        .then((res_data) => {
-            setDetail(res_data.detail)
-            if(res.status >= 200 && res.status < 300){
-                return navigate('/dashboard')
+        .then(res => {
+            if (res.status == 200){
+                navigate('/dashboard') 
             }
-            return
+            return res.json()
+        })
+        .then((res_data) => {
+            if(res_data.hasOwnProperty('detail')){
+                setDetail(res_data.detail)
+            }
         })
     }
     
