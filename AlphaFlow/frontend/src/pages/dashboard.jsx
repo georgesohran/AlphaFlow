@@ -15,16 +15,20 @@ const cookies = new Cookies();
 
 const Dashboard = () => {
     let [notes, setNotes] = useState([])
+    let [goals, setGoals] = useState([])
 
     const navigate = useNavigate()
 
-    useEffect(async() => {
-        let isAuth = await getAuth()
-        if(isAuth) {
-            getNotes()
-        } else {
-            navigate('/login')
-        }
+    //protection
+    useEffect(() => {
+        getAuth().then((auth) => {
+            if(auth) {
+                getNotes()
+                getGoals()
+            } else {
+                navigate('/login')
+            }
+        })
     }, [])
 
     const getNotes = async() => {
@@ -35,9 +39,42 @@ const Dashboard = () => {
             },
             credentials:'same-origin'
         })
-        .then(res => res.json())
+        .then(res => {
+            if(res.status == 200) {
+                return res.json()
+            } else {
+                return null
+            }
+        })
         .then(res_data => {
-            setNotes(res_data)
+            if(res_data != null) {
+                setNotes(res_data)
+            } else {
+                console.log('unauthorized')
+            }
+        })
+    }
+    const getGoals = async() => {
+        fetch('api/goals', {
+            method:'GET',
+            headers: {
+                'X-CSRFToken': cookies.get('csrftoken'),
+            },
+            credentials:'same-origin'
+        })
+        .then(res => {
+            if(res.status == 200) {
+                return res.json()
+            } else {
+                return null
+            }
+        })
+        .then(res_data => {
+            if(res_data != null) {
+                setGoals(res_data)
+            } else {
+                console.log('unauthorized')
+            }
         })
     }
 
@@ -49,7 +86,7 @@ const Dashboard = () => {
                 <div className='mx-auto justify-center md:flex mb-56'>
                     <MultiContainer title='Notes' description='All of your notes' items={notes}/>
                     <br/>
-                    <MultiContainer title='Goals' description='All of your goals' items={notes}/>  
+                    <MultiContainer title='Goals' description='All of your goals' items={goals}/>  
                 </div> 
                 
             </div>

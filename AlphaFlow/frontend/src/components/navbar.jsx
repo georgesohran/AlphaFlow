@@ -9,7 +9,7 @@ const TopNavBar = (props) => {
 
     const navigate = useNavigate()
 
-    const logout = async() => {
+    const logout = () => {
         fetch('api/logout', {
             method:'POST',
             headers: {

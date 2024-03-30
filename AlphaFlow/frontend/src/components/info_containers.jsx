@@ -108,7 +108,7 @@ const BigInfoContainer = (props) => {
 
 
 
-const LoginContainer = (props) => {
+const LoginContainer = () => {
 
     const [username, setUsername] = useState('')
     const [password, setPassword] = useState('')
@@ -116,9 +116,7 @@ const LoginContainer = (props) => {
 
     const navigate = useNavigate()
 
-    const loginUser = (e) => {
-        e.preventDefault()
-
+    const loginUser = () => {
         fetch(`/api/login`, {
             method:'POST',
             headers:{

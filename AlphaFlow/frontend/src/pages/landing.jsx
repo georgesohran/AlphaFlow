@@ -7,11 +7,12 @@ import { getAuth } from "../util";
 
 const LandingPage = () => {
 
-    const [isAuthenticated, setIsAuthenticated] = useState()
+    const [isAuthenticated, setIsAuthenticated] = useState(false)
 
-    useEffect(async() => {
-        const authorized = await getAuth()
-        setIsAuthenticated(authorized)
+    useEffect(() => {
+        getAuth().then((auth) => {
+            setIsAuthenticated(auth)
+        })
     }, [])
 
     return (

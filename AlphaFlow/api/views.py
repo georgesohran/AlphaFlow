@@ -82,7 +82,10 @@ def api_register(request):
 
 
 @api_view(['GET'])
+@ensure_csrf_cookie
 def daily_events(request):
+    if not request.user.is_authenticated:
+        return Response({"detail":"not authorized"}, status=400)
     
     events = DailyEvent.objects.filter(user = request.user)
     serialized_events = DailyEventSerializer(events, many=True)
@@ -90,7 +93,10 @@ def daily_events(request):
     return Response(serialized_events.data)
 
 @api_view(['GET'])
+@ensure_csrf_cookie
 def weakly_events(request):
+    if not request.user.is_authenticated:
+        return Response({"detail":"not authorized"}, status=400)
     
     events = WeaklyEvent.objects.filter(user = request.user)
     serialized_events = WeaklyEventSerializer(events, many=True)
@@ -98,7 +104,10 @@ def weakly_events(request):
     return Response(serialized_events.data)
 
 @api_view(['GET'])
+@ensure_csrf_cookie
 def onetime_events(request):
+    if not request.user.is_authenticated:
+        return Response({"detail":"not authorized"}, status=400)
     
     events = OneTimeEvent.objects.filter(user = request.user)
     serialized_events = OneTimeEventSerializer(events, many=True)
@@ -109,8 +118,10 @@ def onetime_events(request):
 
 @api_view(['GET'])
 @ensure_csrf_cookie
-@login_required(login_url='/login')
 def notes(request):
+    if not request.user.is_authenticated:
+        return Response({"detail":"not authorized"}, status=400)
+    
     notes = Note.objects.filter(user = request.user)
     serialized_notes = NoteSerializer(notes, many=True)
     return Response(serialized_notes.data)
@@ -118,8 +129,11 @@ def notes(request):
 
 
 @api_view(['GET'])
+@ensure_csrf_cookie
 def goals(request):
-    
+    if not request.user.is_authenticated:
+        return Response({"detail":"not authorized"}, status=400)
+
     goals = Goal.objects.filter(user=request.user)
     serialized_goals = GoalSerializer(goals, many=True)
 

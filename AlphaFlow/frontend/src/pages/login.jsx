@@ -1,11 +1,27 @@
-import React from 'react'
+import React, { useEffect } from 'react'
 import TopNavBar from '../components/navbar'
 import { LoginContainer } from '../components/info_containers'
 import MyFooter from '../components/footer'
 
+import { getAuth } from '../util'
+
+import { useNavigate } from 'react-router-dom'
 
 
 const LoginPage = () => {
+
+    const navigate = useNavigate()
+
+    //some extra protection
+    useEffect(() => {
+        getAuth().then((auth) => {
+            if(auth) {
+                navigate('/dashboard')
+            } else {
+                return
+            }
+        })
+    }, [])
 
     return (
         <div className='min-h-screen bg-gray-900'>
