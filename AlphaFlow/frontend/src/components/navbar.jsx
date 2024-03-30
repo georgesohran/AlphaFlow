@@ -1,11 +1,13 @@
 import React from "react";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 
 import Cookies from "universal-cookie";
 const cookies = new Cookies();
 
 
 const TopNavBar = (props) => {
+
+    const navigate = useNavigate()
 
     const logout = async() => {
         fetch('api/logout', {
@@ -15,9 +17,12 @@ const TopNavBar = (props) => {
             },
             credentials:'same-origin'
         })
-        .then(res => {res.json()})
-        .then(res_data => {
-            console.log(res_data)
+        .then(res => {
+            if(res.status == 200){
+                navigate('/login')
+            } else {
+                return
+            }
         })
     }
 
@@ -29,7 +34,7 @@ const TopNavBar = (props) => {
                 flex flex-wrap justify-between mx-auto p-4">
                 
                     <div className="flex items-center space-x-3">
-                        <TopNavBarLinkButton link="/" name="Main"/>
+                        Icon here
                     </div>
                     <div className="flex items-center space-x-3">
                         <TopNavBarButton click={logout} name="Logout"/>

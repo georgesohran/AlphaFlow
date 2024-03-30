@@ -2,17 +2,30 @@ import { MultiContainer } from "../components/info_containers";
 import TopNavBar from "../components/navbar";
 import MyFooter from "../components/footer";
 
+import { getAuth } from "../util";
+
 import React from "react";
 import { useEffect } from "react";
 import { useState } from "react";
+import { useNavigate } from "react-router-dom";
 
 import Cookies from "universal-cookie";
 const cookies = new Cookies();
 
 
 const Dashboard = () => {
-
     let [notes, setNotes] = useState([])
+
+    const navigate = useNavigate()
+
+    useEffect(async() => {
+        let isAuth = await getAuth()
+        if(isAuth) {
+            getNotes()
+        } else {
+            navigate('/login')
+        }
+    }, [])
 
     const getNotes = async() => {
         fetch('api/notes', {
@@ -22,15 +35,11 @@ const Dashboard = () => {
             },
             credentials:'same-origin'
         })
-        .then(res => {console.log(res); return res.json()})
+        .then(res => res.json())
         .then(res_data => {
-            console.log(res_data)
             setNotes(res_data)
         })
     }
-    useEffect(() => {
-        getNotes()
-    }, [])
 
     return (
         <div className='bg-gray-900 min-h-screen'>

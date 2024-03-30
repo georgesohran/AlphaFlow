@@ -9,12 +9,13 @@ from django.db import IntegrityError
 from .models import * 
 from .serializer import *
 
-import json
 
-def get_csrf(request):
-    response = Response({'detail': 'CSRF cookie set'})
-    response['X-CSRFToken'] = get_token(request)
-    return response
+@api_view(['GET'])
+def session_view(request):
+    if request.user.is_authenticated:
+        return Response({"isauthenticated":True})
+    return Response({"isauthenticated":False})
+
 
 
 @api_view(['POST'])
