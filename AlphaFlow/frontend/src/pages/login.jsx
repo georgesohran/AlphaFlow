@@ -17,8 +17,6 @@ const LoginPage = () => {
         getAuth().then((auth) => {
             if(auth) {
                 navigate('/dashboard')
-            } else {
-                return
             }
         })
     }, [])

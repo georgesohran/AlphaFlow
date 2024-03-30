@@ -14,8 +14,6 @@ const RegisterPage = () => {
         getAuth().then((auth) => {
             if(auth) {
                 navigate('/dashboard')
-            } else {
-                return
             }
         })
     }, [])

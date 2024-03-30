@@ -5,13 +5,16 @@ import MyFoter from '../components/footer'
 
 import { getAuth } from "../util";
 
-const LandingPage = () => {
+import { useNavigate } from 'react-router-dom';
 
-    const [isAuthenticated, setIsAuthenticated] = useState(false)
+const LandingPage = () => {
+    const navigate = useNavigate()
 
     useEffect(() => {
         getAuth().then((auth) => {
-            setIsAuthenticated(auth)
+            if(auth) {
+                navigate('/dashboard')
+            }
         })
     }, [])
 
@@ -19,7 +22,7 @@ const LandingPage = () => {
         <div className='bg-gray-900 min-h-screen'>
 
             <div className='bg-gradient-to-t from-gray-900 to-indigo-800 '> 
-                <TopNavBar authorized={isAuthenticated}/>                    
+                <TopNavBar authorized={false}/>                    
                 <InfoContainerMain heading="Some Heading" text="some text" />
                 <ChesGridContainers texts={["text1", "text2", "text3", "text4"]}/>
             </div>
