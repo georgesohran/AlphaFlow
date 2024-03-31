@@ -1,6 +1,6 @@
 import React, { useEffect } from 'react'
 import TopNavBar from '../components/navbar'
-import { LoginContainer } from '../components/info_containers'
+import LoginContainer from '../components/login_container'
 import MyFooter from '../components/footer'
 
 import { getAuth } from '../util'

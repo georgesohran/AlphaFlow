@@ -116,19 +116,32 @@ def onetime_events(request):
 
 
 
-@api_view(['GET'])
+@api_view(['GET', 'POST'])
 @ensure_csrf_cookie
 def notes(request):
-    if not request.user.is_authenticated:
-        return Response({"detail":"not authorized"}, status=400)
+    if request.method == 'GET':
+        if not request.user.is_authenticated:
+            return Response({"detail":"not authorized"}, status=400)
     
+        
+    if request.method == 'POST':
+        if not request.user.is_authenticated:
+            return Response({"detail":"not authorized"}, status=400)
+        contents = request.data.get('contents')
+
+        if not contents:
+            return Response({"detail":"no contents found"}, status=400)
+
+        new_note = Note(user = request.user, contents=request.data.get('contents'))
+        new_note.save()
+
     notes = Note.objects.filter(user = request.user)
     serialized_notes = NoteSerializer(notes, many=True)
     return Response(serialized_notes.data)
 
 
 
-@api_view(['GET'])
+@api_view(['GET', 'POST'])
 @ensure_csrf_cookie
 def goals(request):
     if not request.user.is_authenticated:

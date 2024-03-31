@@ -1,6 +1,6 @@
 import React from "react"
 import TopNavBar from '../components/navbar'
-import { RegisterContainer } from '../components/info_containers'
+import RegisterContainer from '../components/register_container'
 import MyFooter from '../components/footer'
 
 import { getAuth } from "../util"

@@ -1,10 +1,6 @@
-import React, { useState } from "react";
-import { useNavigate } from "react-router-dom";
-import InputField from "./inputfield";
+import React, { useEffect, useState } from "react";
 
-import Cookies from "universal-cookie";
-const cookies = new Cookies();
-
+import { ButtonSubmit1 } from "./buttons";
 
 const InfoContainerMain = (props) => {
     return (
@@ -40,6 +36,10 @@ const InfoContainer = (props) => {
 
 
 const MultiContainer = (props) => {
+    
+    const [adding, setAdding] = useState(false)
+    const [editing, setEditing] = useState(false)
+
     return (
         <div className="text-white text-center bg-gray-800 rounded-md  
         my-2 m-2 h-auto p-4 mx-8 md:w-1/4 md:mx-4 md:my-28 ">
@@ -51,15 +51,41 @@ const MultiContainer = (props) => {
                         props.items?
                         (
                             props.items.map((item, index) => (
-                                <div className="list-item" key={index}>{item.contents}</div>
+                                <div className="list-item whitespace-pre-line" key={index}>
+                                    {item.contents}
+                                </div>
                             ))
-                        )
-                        :
+                        ):
                         (<div className="list-item">no items</div>)
                     }
+                    {adding ? (<></>):(<ButtonSubmit1 text='Add...' onClick={setAdding(true)} />)}
                 </div>
+                {adding? 
+                    (
+                        <div>
+                            <textarea name="" cols="30" rows="10" placeholder="Type your constnt here" />
+                            <div className="flex">
+                                <ButtonSubmit1 text={'Add new'} onClick={props.addCommand}/>
+                                <ButtonSubmit1 text={'Cancel'} onClick={setAdding(false)}/>
+                            </div>
+                        </div>
+                    ):
+                    (<></>)
+                }
+
+                {editing? 
+                    (
+                        <div>
+                            <textarea name="" cols="30" rows="10" placeholder="Type your constnt here" onChange={(ev) => {props.setContent(ev.target.value)}} />
+                            <div className="flex">
+                                <ButtonSubmit1 text={'Save eddit'} onClick={props.addCommand}/>
+                                <ButtonSubmit1 text={'Cancel'} onClick={setAdding(false)}/>
+                            </div>
+                        </div>
+                    ):
+                    (<></>)
+                }
             </div>
-                        
         </div>
     )
 }
@@ -108,126 +134,9 @@ const BigInfoContainer = (props) => {
 
 
 
-const LoginContainer = () => {
-
-    const [username, setUsername] = useState('')
-    const [password, setPassword] = useState('')
-    const [detail, setDetail] = useState('')
-
-    const navigate = useNavigate()
-
-    const loginUser = () => {
-        fetch(`/api/login`, {
-            method:'POST',
-            headers:{
-                'Content-Type': 'application/json',
-                'X-CSRFToken': cookies.get('csrftoken'),
-            },
-            credentials: 'same-origin',
-            body:JSON.stringify({
-                username:username,
-                password:password,
-            })
-        })
-        .then(res => {
-            if (res.status == 200){
-                navigate('/dashboard') 
-            }
-            return res.json()
-        })
-        .then((res_data) => {
-            if(res_data.hasOwnProperty('detail')){
-                setDetail(res_data.detail)
-            }
-        })
-    }
-    
-    return (
-        <div className="bg-gray-800 text-white
-        p-4 rounded-lg text-center
-        mx-auto w-2/4 mb-32 mt-28
-        md:w-1/3">
-            <div>
-                <p className="text-4xl mb-6">Log In</p>
-            </div>
-            <InputField name='username' value={username} change={setUsername} type='text'/>
-            <InputField name='password' value={password} change={setPassword} type='password'/>
-            <button onClick={loginUser} className="bg-blue-800 text-white
-            px-4 py-2 rounded-md
-            hover:bg-blue-900">
-                login
-            </button>
-            <p className="mb-3 text-gray-300">{detail}</p>
-        </div>
-    )
-}
-const RegisterContainer = (props) => {
-
-    const [username, setUsername] = useState('')
-    const [email, setEmail] = useState('')
-    const [password, setPassword] = useState('')
-    const [password2, SetPassword2 ] = useState('')
-    const [detail, setDetail] = useState('')
-
-    const navigate = useNavigate()
-
-    const registerUser = (e) => {
-        e.preventDefault()
-
-        fetch('api/register', {
-            method:'POST',
-            headers:{
-                'Content-Type': 'application/json',
-                'X-CSRFToken': cookies.get('csrftoken'),
-            },
-            credentials:'same-origin',
-            body:JSON.stringify({
-                email:email,
-                username:username,
-                password:password,
-                password_repeat:password2,
-            })
-        })
-        .then(res => {
-            if (res.status == 200){
-                navigate('/dashboard') 
-            }
-            return res.json()
-        })
-        .then((res_data) => {
-            if(res_data.hasOwnProperty('detail')){
-                setDetail(res_data.detail)
-            }
-        })
-    }
-
-    return (
-        <div className="bg-gray-800 text-white
-        p-4 rounded-lg text-center
-        mx-auto w-2/4 mb-32 mt-28
-        md:w-1/3">
-            <div>
-                <p className="text-4xl mb-6">Register</p>
-            </div>
-            <InputField name='username' value={username} change={setUsername} type='text'/>
-            <InputField name='email' value={email} change={setEmail} type='text'/>
-            <InputField name='password' value={password} change={setPassword} type='password'/>
-            <InputField name='password again' value={password2} change={SetPassword2} type='password'/>
-            <button onClick={registerUser} className="bg-blue-800 text-white
-            px-4 py-2 rounded-md
-            hover:bg-blue-900">
-                register
-            </button>
-            <p className="mb-3 text-gray-300">{detail}</p>
-        </div>
-    )
-}
-
 export {
     ChesGridContainers, 
     InfoContainerMain,
     BigInfoContainer,
-    LoginContainer,
-    RegisterContainer,
     MultiContainer
 }
