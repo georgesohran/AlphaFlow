@@ -34,64 +34,6 @@ const InfoContainer = (props) => {
 }
 
 
-
-const MultiContainer = (props) => {
-    
-    const [adding, setAdding] = useState(false)
-    const [editing, setEditing] = useState(false)
-
-    return (
-        <div className="text-white text-center bg-gray-800 rounded-md  
-        my-2 m-2 h-auto p-4 mx-8 md:w-1/4 md:mx-4 md:my-28 ">
-            <p className="text-4xl p-2 bg-gray-700 rounded-md">{props.title}</p>
-            <div className="divide-y divide-solid divide-gray-600">
-                <p className="mt-2 mb-2">{props.description}</p>
-                <div className="mt-2 text-left mx-12 text-gray-300 ">
-                    {
-                        props.items?
-                        (
-                            props.items.map((item, index) => (
-                                <div className="list-item whitespace-pre-line" key={index}>
-                                    {item.contents}
-                                </div>
-                            ))
-                        ):
-                        (<div className="list-item">no items</div>)
-                    }
-                    {adding ? (<></>):(<ButtonSubmit1 text='Add...' onClick={setAdding(true)} />)}
-                </div>
-                {adding? 
-                    (
-                        <div>
-                            <textarea name="" cols="30" rows="10" placeholder="Type your constnt here" />
-                            <div className="flex">
-                                <ButtonSubmit1 text={'Add new'} onClick={props.addCommand}/>
-                                <ButtonSubmit1 text={'Cancel'} onClick={setAdding(false)}/>
-                            </div>
-                        </div>
-                    ):
-                    (<></>)
-                }
-
-                {editing? 
-                    (
-                        <div>
-                            <textarea name="" cols="30" rows="10" placeholder="Type your constnt here" onChange={(ev) => {props.setContent(ev.target.value)}} />
-                            <div className="flex">
-                                <ButtonSubmit1 text={'Save eddit'} onClick={props.addCommand}/>
-                                <ButtonSubmit1 text={'Cancel'} onClick={setAdding(false)}/>
-                            </div>
-                        </div>
-                    ):
-                    (<></>)
-                }
-            </div>
-        </div>
-    )
-}
-
-
-
 const ChesGridContainers = (props) => {
     let infoContainers = []
 
@@ -138,5 +80,5 @@ export {
     ChesGridContainers, 
     InfoContainerMain,
     BigInfoContainer,
-    MultiContainer
+
 }

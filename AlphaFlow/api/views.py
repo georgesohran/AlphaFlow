@@ -122,7 +122,6 @@ def notes(request):
     if request.method == 'GET':
         if not request.user.is_authenticated:
             return Response({"detail":"not authorized"}, status=400)
-    
         
     if request.method == 'POST':
         if not request.user.is_authenticated:
