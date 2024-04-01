@@ -44,16 +44,10 @@ const Dashboard = () => {
             },
             credentials:'same-origin'
         })
-        .then(res => {
-            if(res.status == 200) {
-                return res.json()
-            } else {
-                return null
-            }
-        })
+        .then(res => res.json())
         .then(res_data => {
-            if(res_data == null) {
-                console.log('unauthorized')
+            if('detail' in res_data) {
+                console.log(res_data.detail)
             } else {
                 setNotes(res_data)
             }
@@ -67,16 +61,10 @@ const Dashboard = () => {
             },
             credentials:'same-origin'
         })
-        .then(res => {
-            if(res.status == 200) {
-                return res.json()
-            } else {
-                return null
-            }
-        })
+        .then(res => res.json())
         .then(res_data => {
-            if(res_data == null) {
-                console.log('unauthorized')
+            if('detail' in res_data) {
+                console.log(res_data.detail)
             } else {
                 setGoals(res_data)
             }
@@ -85,6 +73,7 @@ const Dashboard = () => {
 
     
     const addNote = async() => {
+        console.log(newNoteContent)
         fetch('api/notes', {
             method:'POST',
             headers:{
@@ -93,21 +82,16 @@ const Dashboard = () => {
             },
             credentials:'same-origin',
             body:JSON.stringify({
-                content:newNoteContent
+                contents:newNoteContent
             })
         })
-        .then(res => {
-            if(res.status == 200) {
-                return res.json()
-            } else {
-                return null
-            }
-        })
+        .then(res => res.json())
         .then(res_data => {
-            if(res_data != null) {
-                setNotes([res_data])
+            if('detail' in res_data) {
+                console.log(res_data.detail)
             } else {
-                console.log('unauthorized')
+                setNotes(res_data)
+                setMode('default')
             }
         })
     }
@@ -123,18 +107,13 @@ const Dashboard = () => {
                 content:newGoalContent
             })
         })
-        .then(res => {
-            if(res.status == 200) {
-                return res.json()
-            } else {
-                return null
-            }
-        })
+        .then(res => res.json())
         .then(res_data => {
-            if(res_data != null) {
-                setGoals([res_data])
+            if('detail' in res_data) {
+                console.log(res_data.detail)
             } else {
-                console.log('unauthorized')
+                setGoals(res_data)
+                setMode('default')
             }
         })
     }
@@ -146,9 +125,10 @@ const Dashboard = () => {
             <div className='bg-gradient-to-t from-gray-900 to-indigo-800'>
                 <TopNavBar authorized={true}/>
                 <div className='mx-auto justify-center md:flex mb-56'>
-                    <NotesContainer items={notes} addCommand={addNote} change={setNotes} 
+                    <NotesContainer items={notes} addCommand={addNote} 
                         addItem={addNote}
-                        mode={mode} setMode={setMode}/>
+                        mode={mode} setMode={setMode}
+                        changeNewContents={setNewNoteContent}/>
                     <br/>
                 </div> 
                 
@@ -168,23 +148,56 @@ const NotesContainer = (props) => {
         my-2 m-2 h-auto p-4 mx-8 md:w-1/4 md:mx-4 md:my-28 ">
             <p className="text-4xl p-2 bg-gray-700 rounded-md">Notes</p>
             <div className="divide-y divide-solid divide-gray-600">
-                <p className="mt-2 mb-2">All notes</p>
-                <div className="mt-2 text-left mx-12 text-gray-300 ">
-                    {props.items == []?
-                        (<div>No notes</div>):
-                        (props.items.map((item, index) => (
-                            <div className="list-item whitespace-pre-line" key={index}>
-                                {item.contents}
-                            </div>)
-                        ))
-                    }
+                <div className="mt-2 text-gray-300 ">
+                    <p className="text-lg">All notes</p>
                 </div>
-                <ButtonSubmit1 text='Add new note' onClick={() => {props.setMode('addNote')}}/>
+                <div>
+                    <div className="mx-6 my-4 text-left">
+                        {props.items == []?
+                            (<div>No notes</div>):
+                            (props.items.map((item, index) => (
+                                <div 
+                                onMouseEnter={() => {document.getElementById(`edit-btn-${index}`).style.display = 'block'}} 
+                                onMouseLeave={() => {document.getElementById(`edit-btn-${index}`).style.display = 'none'}} 
+                                className="list-item whitespace-pre-line" key={index}>
+                                    <div style={props.mode=='editNote'? {display:'none'} : {display:'block'}}
+                                    className="flex flex-wrap items-center justify-between p-2">
+                                        <div>{item.contents}</div>
+                                        <div>
+                                            <button id={`edit-btn-${index}`} style={{display:'none'}} onClick={() => {setMode('editNote')}} 
+                                            className="text-gray-500">edit</button>
+                                        </div>
+                                    </div>
+                                    <div style={props.mode=='editNote'? {display:'block'} : {display:'none'}}>
+                                        <textarea cols={30} rows={4} value={item.contents}
+                                        className="bg-gray-800 text-gray-100 rounded-md p-2
+                                        border-2 border-gray-400
+                                        focus:outline-none focus:ring focus:border-blue-400" 
+                                        onChange={(ev) => {props.changeNewContents(ev.target.value)}}/>
+
+                                        <div className="flex">
+                                            <ButtonSubmit1 text='Eddit note' onClick={props.addItem}/>
+                                            <ButtonSubmit1 text='Cancel' onClick={() => {props.setMode('default')}}/>
+                                        </div>
+                                    </div>
+                                </div>)
+                            ))
+                        }
+                    </div>
+                </div>  
+            </div>
+            <div>
+                {props.mode == 'default'? 
+                (<ButtonSubmit1 text='Add new note' onClick={() => {props.setMode('addNote')}}/>):
+                (<></>)}
             </div>
             <div style={props.mode=='addNote'? {display:'block'} : {display:'none'}}>
                 <textarea cols={30} rows={4} placeholder="Your new note here" 
                 className="bg-gray-800 text-gray-100 rounded-md p-2
-                focus:outline-none focus:ring focus:border-blue-400" />
+                border-2 border-gray-400
+                focus:outline-none focus:ring focus:border-blue-400" 
+                onChange={(ev) => {props.changeNewContents(ev.target.value)}}/>
+
                 <div className="flex">
                     <ButtonSubmit1 text='Add note' onClick={props.addItem}/>
                     <ButtonSubmit1 text='Cancel' onClick={() => {props.setMode('default')}}/>
