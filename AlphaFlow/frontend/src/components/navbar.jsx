@@ -45,7 +45,8 @@ const TopNavBar = (props) => {
     } else {
         return (
             <nav className="bg-gray-800 text-blue-50 
-            w-full sticky top-0 border-gray-700 border-y-2">
+            w-full sticky top-0 z-50
+            border-gray-700 border-y-2">
                 <div className="max-w-screen-xl items-center 
                 flex flex-wrap justify-between mx-auto p-4">
                 

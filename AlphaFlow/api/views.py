@@ -116,6 +116,10 @@ def onetime_events(request):
 
 
 
+
+
+
+
 @api_view(['GET', 'POST', 'PUT', 'DELETE'])
 @ensure_csrf_cookie
 def notes(request):
@@ -128,7 +132,7 @@ def notes(request):
         if not contents:
             return Response({"detail":"no contents found"}, status=400)
 
-        new_note = Note(user = request.user, contents=request.data.get('contents'))
+        new_note = Note(user = request.user, contents=contents)
         new_note.save()
 
     if request.method == 'PUT':
@@ -137,6 +141,8 @@ def notes(request):
 
         if not contents:
             return Response({"detail":"no contents found"}, status=400)
+        if not id:
+            return Response({"detail":"no id found"}, status=400)
 
         note = Note.objects.get(id=id)
         note.contents = contents
@@ -144,6 +150,9 @@ def notes(request):
 
     if request.method == 'DELETE':
         id = request.data.get('id')
+        if not id:
+            return Response({'detail':'no id found'})
+
         note = Note.objects.get(id=id)
         note.delete()
 
@@ -153,13 +162,42 @@ def notes(request):
 
 
 
-@api_view(['GET', 'POST'])
+@api_view(['GET', 'POST', 'PUT', 'DELETE'])
 @ensure_csrf_cookie
 def goals(request):
     if not request.user.is_authenticated:
         return Response({"detail":"not authorized"}, status=400)
 
+    if request.method == 'POST':
+        contents = request.data.get('contents')
+
+        if not contents:
+            return Response({'detail':'no contents found'}, status=400)
+
+        goal = Goal.objects.create(user=request.user, contents=contents)
+        goal.save()
+    
+    if request.method == 'PUT':
+        contents = request.data.get('contents')
+        id = request.data.get('id')
+
+        if not contents:
+            return Response({"detail":"no contents found"}, status=400)
+        if not id:
+            return Response({"detail":"no id found"}, status=400)
+        
+        goal = Goal.objects.get(id=id)
+        goal.contents = contents
+        goal.save()
+
+    if request.method == 'DELETE':
+        id = request.data.get('id')
+        if not id:
+            return Response({'detail':'no id found'})
+        
+        goal = Goal.objects.get(id=id)
+        goal.delete()
+
     goals = Goal.objects.filter(user=request.user)
     serialized_goals = GoalSerializer(goals, many=True)
-
     return Response(serialized_goals.data)

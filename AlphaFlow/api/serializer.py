@@ -20,9 +20,11 @@ class OneTimeEventSerializer(serializers.ModelSerializer):
 
 
 class GoalSerializer(serializers.ModelSerializer):
+    id = serializers.IntegerField(read_only=True)
+    contents = serializers.CharField(required=False, max_length=1000, allow_null=True)
     class Meta():
         model = Goal
-        fields = '__all__'
+        fields = ('contents', 'id')
 
 
 class NoteSerializer(serializers.Serializer):
