@@ -4,7 +4,7 @@ import {ButtonSubmit1} from "../components/buttons"
 
 import { getAuth } from "../util";
 
-import React from "react";
+import React, { useRef } from "react";
 import { useEffect } from "react";
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
@@ -119,6 +119,63 @@ const Dashboard = () => {
     }
 
 
+    const editNote = async(index) => {
+        fetch('api/notes', {
+            method:'PUT',
+            headers:{
+                'Content-Type': 'application/json',
+                'X-CSRFToken': cookies.get('csrftoken')
+            },
+            credentials:'same-origin',
+            body:JSON.stringify({
+                contents: newNoteContent,
+                id: notes[index].id
+            })
+        })
+        .then(res => res.json())
+        .then((res_data) => {
+            if('detail' in res_data) {
+                console.log(res_data)
+            } else {
+                setNotes(res_data)
+            }
+            setMode('default')
+        })
+    }
+    const editGoal = async(index) => {
+        fetch()
+        .then()
+        .then()
+    }
+
+    const deleteNote = async(index) => {
+        fetch('api/notes', {
+            method:'DELETE',
+            headers: {
+                'Content-Type': 'application/json',
+                'X-CSRFToken': cookies.get('csrftoken')
+            },
+            credentials:'same-origin',
+            body: JSON.stringify({
+                id:notes[index].id
+            })
+        })
+        .then(res => res.json())
+        .then(res_data => {
+            if('detail' in res_data) {
+                console.log(res_data.detail)
+            } else {
+                setNotes(res_data)
+            }
+        })
+    }
+
+    const deleteGoal = async(index) => {
+        fetch()
+        .then()
+        .then()
+    }
+
     return (
         <div className='bg-gray-900 min-h-screen'>
 
@@ -126,9 +183,9 @@ const Dashboard = () => {
                 <TopNavBar authorized={true}/>
                 <div className='mx-auto justify-center md:flex mb-56'>
                     <NotesContainer items={notes} addCommand={addNote} 
-                        addItem={addNote}
-                        mode={mode} setMode={setMode}
-                        changeNewContents={setNewNoteContent}/>
+                        addItem={addNote} editItem={editNote} deleteItem={deleteNote}
+                        newContent={newNoteContent} changeNewContent={setNewNoteContent}
+                        mode={mode} setMode={setMode}/>
                     <br/>
                 </div> 
                 
@@ -157,26 +214,34 @@ const NotesContainer = (props) => {
                             (<div>No notes</div>):
                             (props.items.map((item, index) => (
                                 <div 
-                                onMouseEnter={() => {document.getElementById(`edit-btn-${index}`).style.display = 'block'}} 
-                                onMouseLeave={() => {document.getElementById(`edit-btn-${index}`).style.display = 'none'}} 
+                                onMouseEnter={() => {document.getElementById(`edit-sec-${index}`).style.display = 'block'}} 
+                                onMouseLeave={() => {document.getElementById(`edit-sec-${index}`).style.display = 'none'}} 
                                 className="list-item whitespace-pre-line" key={index}>
-                                    <div style={props.mode=='editNote'? {display:'none'} : {display:'block'}}
-                                    className="flex flex-wrap items-center justify-between p-2">
-                                        <div>{item.contents}</div>
-                                        <div>
-                                            <button id={`edit-btn-${index}`} style={{display:'none'}} onClick={() => {setMode('editNote')}} 
-                                            className="text-gray-500">edit</button>
+                                    {/* notes info */}
+                                    <div style={props.mode==`editNote-${index}`? {display:'none'} : {display:'block'}}
+                                    className="grid-cols-2">
+                                        <div className="flex items-center space-x-1">{item.contents}</div>
+
+                                        <div className="flex items-center space-x-1" id={`edit-sec-${index}`} 
+                                        style={props.mode==`editNote-${index}`? {display:'block'} : {display:'none'}}>
+
+                                            <button onClick={() => {props.setMode(`editNote-${index}`)}} 
+                                            className="text-gray-500 hover:text-green-600">edit</button>
+                                            <button onClick={() => {props.deleteItem(index)}} 
+                                            className="text-gray-500 hover:text-red-600">delete</button>
                                         </div>
+
                                     </div>
-                                    <div style={props.mode=='editNote'? {display:'block'} : {display:'none'}}>
-                                        <textarea cols={30} rows={4} value={item.contents}
+                                    {/* edit content */}
+                                    <div style={props.mode==`editNote-${index}`? {display:'block'} : {display:'none'}}>
+                                        <textarea cols={30} rows={4} 
                                         className="bg-gray-800 text-gray-100 rounded-md p-2
                                         border-2 border-gray-400
                                         focus:outline-none focus:ring focus:border-blue-400" 
-                                        onChange={(ev) => {props.changeNewContents(ev.target.value)}}/>
+                                        onChange={(ev) => {props.changeNewContent(ev.target.value)}}>{item.contents}</textarea>
 
                                         <div className="flex">
-                                            <ButtonSubmit1 text='Eddit note' onClick={props.addItem}/>
+                                            <ButtonSubmit1 text='Edit note' onClick={() => {props.editItem(index)}}/>
                                             <ButtonSubmit1 text='Cancel' onClick={() => {props.setMode('default')}}/>
                                         </div>
                                     </div>
@@ -186,6 +251,7 @@ const NotesContainer = (props) => {
                     </div>
                 </div>  
             </div>
+            {/* add new section */}
             <div>
                 {props.mode == 'default'? 
                 (<ButtonSubmit1 text='Add new note' onClick={() => {props.setMode('addNote')}}/>):
@@ -196,7 +262,7 @@ const NotesContainer = (props) => {
                 className="bg-gray-800 text-gray-100 rounded-md p-2
                 border-2 border-gray-400
                 focus:outline-none focus:ring focus:border-blue-400" 
-                onChange={(ev) => {props.changeNewContents(ev.target.value)}}/>
+                onChange={(ev) => {props.changeNewContent(ev.target.value)}}>{props.newContent}</textarea>
 
                 <div className="flex">
                     <ButtonSubmit1 text='Add note' onClick={props.addItem}/>

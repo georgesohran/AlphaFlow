@@ -116,16 +116,13 @@ def onetime_events(request):
 
 
 
-@api_view(['GET', 'POST'])
+@api_view(['GET', 'POST', 'PUT', 'DELETE'])
 @ensure_csrf_cookie
 def notes(request):
-    if request.method == 'GET':
-        if not request.user.is_authenticated:
-            return Response({"detail":"not authorized"}, status=400)
+    if not request.user.is_authenticated:
+        return Response({"detail":"not authorized"}, status=400)
         
     if request.method == 'POST':
-        if not request.user.is_authenticated:
-            return Response({"detail":"not authorized"}, status=400)
         contents = request.data.get('contents')
 
         if not contents:
@@ -133,6 +130,22 @@ def notes(request):
 
         new_note = Note(user = request.user, contents=request.data.get('contents'))
         new_note.save()
+
+    if request.method == 'PUT':
+        contents = request.data.get('contents')
+        id = request.data.get('id')
+
+        if not contents:
+            return Response({"detail":"no contents found"}, status=400)
+
+        note = Note.objects.get(id=id)
+        note.contents = contents
+        note.save()
+
+    if request.method == 'DELETE':
+        id = request.data.get('id')
+        note = Note.objects.get(id=id)
+        note.delete()
 
     notes = Note.objects.filter(user = request.user)
     serialized_notes = NoteSerializer(notes, many=True)

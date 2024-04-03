@@ -1,4 +1,4 @@
-import { useState } from "react"
+import { useState, useRef } from "react"
 import { useNavigate } from "react-router-dom";
 import InputField from "./inputfield"; 
 import { ButtonSubmit1 } from "./buttons";
@@ -9,8 +9,8 @@ const cookies = new Cookies();
 
 const LoginContainer = () => {
 
-    const [username, setUsername] = useState('')
-    const [password, setPassword] = useState('')
+    const username = useRef(null)
+    const password = useRef(null)
     const [detail, setDetail] = useState('')
 
     const navigate = useNavigate()
@@ -24,8 +24,8 @@ const LoginContainer = () => {
             },
             credentials: 'same-origin',
             body:JSON.stringify({
-                username:username,
-                password:password,
+                username:username.current.value,
+                password:password.current.value,
             })
         })
         .then(res => {
@@ -49,8 +49,8 @@ const LoginContainer = () => {
             <div>
                 <p className="text-4xl mb-6">Log In</p>
             </div>
-            <InputField name='username' value={username} change={setUsername} type='text'/>
-            <InputField name='password' value={password} change={setPassword} type='password'/>
+            <InputField name='username' value={username} type='text'/>
+            <InputField name='password' value={password} type='password'/>
             <ButtonSubmit1 text={'login'} onClick={loginUser}/>
             <p className="mb-3 text-gray-300">{detail}</p>
         </div>

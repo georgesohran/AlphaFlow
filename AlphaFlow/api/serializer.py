@@ -26,7 +26,8 @@ class GoalSerializer(serializers.ModelSerializer):
 
 
 class NoteSerializer(serializers.Serializer):
+    id = serializers.IntegerField(read_only=True)
     contents = serializers.CharField(required=False, max_length=1000, allow_null=True)
     class Meta():
         model = Note
-        fields = '__all__'
+        fields = ('contents', 'id')
