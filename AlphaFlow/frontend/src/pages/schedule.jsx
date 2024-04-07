@@ -59,15 +59,21 @@ const addEventBar = () => {
 }
 
 const EventsVisualizer = (props) => {
+    let used_events
+
+    if(window.screen.width >= 768) {
+        // aply some filter
+        used_events = props.events
+    } else {
+
+    }
+
     return (
         <div>
-            <div class="p-4 bg-gray-500">
-                <div class=" h-40 p-4 bg-gray-800 w-auto rounded-md relative">
-                    {/* give here some js logic later */}
-                    <div class="h-32 bg-red-500 absolute w-16 left-0 top-0">aaa1</div>
-                    <div class="h-32 bg-red-500 absolute w-16 left-64 top-0">aaa2</div>
-                    <div class="h-32 bg-red-500 absolute w-16 left-32 top-0">aaa3</div>
-                </div>
+            <div class=" h-40 bg-gray-800 w-auto rounded-md relative border-2 border-gray-400">
+                <div class="h-32 bg-red-500 w-16 absolute rounded-md top-4">{}</div>
+                <div class="h-32 bg-red-500 w-16 absolute rounded-md top-4">{}</div>
+                <div class="h-32 bg-red-500 w-16 absolute rounded-md top-4">{}</div>
             </div>
         </div>
     )
