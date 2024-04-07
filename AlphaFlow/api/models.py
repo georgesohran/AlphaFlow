@@ -54,6 +54,7 @@ class Goal(models.Model):
     notes = models.ForeignKey(Note, on_delete=models.CASCADE, related_name='notes', blank=True, null=True)
     events = models.ForeignKey(DailyEvent, on_delete=models.CASCADE, related_name='events', blank=True, null=True)
     contents = models.TextField()
+    deadline = models.DateField()
     reached = models.BooleanField(default=False)
     
 

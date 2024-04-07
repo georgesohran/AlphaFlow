@@ -21,10 +21,11 @@ class OneTimeEventSerializer(serializers.ModelSerializer):
 
 class GoalSerializer(serializers.ModelSerializer):
     id = serializers.IntegerField(read_only=True)
-    contents = serializers.CharField(required=False, max_length=1000, allow_null=True)
+    contents = serializers.CharField(max_length=216)
+    deadline = serializers.DateField()
     class Meta():
         model = Goal
-        fields = ('contents', 'id')
+        fields = ('contents', 'id', 'deadline')
 
 
 class NoteSerializer(serializers.Serializer):

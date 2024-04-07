@@ -2,9 +2,8 @@ from rest_framework.response import Response
 from rest_framework.decorators import api_view
 from django.contrib.auth import login, logout, authenticate
 from django.views.decorators.csrf import ensure_csrf_cookie
-from django.middleware.csrf import get_token
-from django.contrib.auth.decorators import login_required
 from django.db import IntegrityError
+from django.utils import timezone
 
 from .models import * 
 from .serializer import *
@@ -115,7 +114,26 @@ def onetime_events(request):
     return Response(serialized_events.data)
 
 
+@api_view(['GET'])
+@ensure_csrf_cookie
+def get_upcoming_events(request):
+    if not request.user.is_authenticated:
+        return Response({"detail":"not authorized"}, status=400)
+    
+    events = OneTimeEvent.objects.filter(user=request.user)
+    onetime_events_ser = OneTimeEventSerializer(events, many=True)
+    
+    events = DailyEvent.objects.filter(user=request.user)
+    daily_events_ser = DailyEventSerializer(events, many=True)
 
+    events = WeaklyEvent.objects.filter(user=request.user)
+    weakly_events_ser = WeaklyEventSerializer(events, many=True)
+    
+    return Response({
+        "onetime_events": onetime_events_ser.data,
+        "daily_events": daily_events_ser.data,
+        "weakly_events": weakly_events_ser.data
+    })
 
 
 

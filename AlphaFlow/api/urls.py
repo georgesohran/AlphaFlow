@@ -10,6 +10,8 @@ urlpatterns = [
     path('daily_events', view=views.daily_events, name='daily_events'),
     path('weakly_events', view=views.weakly_events, name='weakly_events'),
     path('onetime_events', view=views.onetime_events, name='onetime_events'),
+    path('get_upcoming_events', view=views.get_upcoming_events, name='get_upcoming_events'),
+
     path('notes', view=views.notes, name='notes'),
     path('goals', view=views.goals, name='goals'),
 ]
