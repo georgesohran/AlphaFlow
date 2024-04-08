@@ -1,13 +1,18 @@
 import { useEffect, useState } from "react"
 
+import TopNavBar from "../components/navbar"
+import MyFooter from "../components/footer"
+import { getAuth }from "../util" 
+
 import { DateTime } from "luxon"
+import { Stage, Layer, Text, Line } from 'react-konva';
 
 import Cookies from "universal-cookie"
 const cookies = new Cookies()  
 
 
 const SchedulePage = () => {
-    const [eventsData, setEventData] = useState({})
+    const [eventsData, setEventData] = useState([])
 
     useEffect(() => {
         getAuth().then((auth) => {
@@ -43,7 +48,7 @@ const SchedulePage = () => {
 
         <div className='bg-gradient-to-t from-gray-900 to-indigo-800'>
             <TopNavBar authorized={true}/>
-
+            <EventsVisualizer />
         </div>
         <MyFooter text='something'/>
     </div>
@@ -58,24 +63,47 @@ const addEventBar = () => {
     )
 }
 
+
+
 const EventsVisualizer = (props) => {
     let used_events
 
-    if(window.screen.width >= 768) {
-        // aply some filter
-        used_events = props.events
-    } else {
-
-    }
+    let time_period
 
     return (
-        <div>
-            <div class=" h-40 bg-gray-800 w-auto rounded-md relative border-2 border-gray-400">
-                <div class="h-32 bg-red-500 w-16 absolute rounded-md top-4">{}</div>
-                <div class="h-32 bg-red-500 w-16 absolute rounded-md top-4">{}</div>
-                <div class="h-32 bg-red-500 w-16 absolute rounded-md top-4">{}</div>
+        <div className="my-20 mx-8">
+            <div class=" h-40 bg-gray-800 w-auto rounded-md relative border-2 border-red-600">
+                <TimeMarksCanvas height={156 /* h-40 == 160px, so i need that minus border-2 */}/>
+                <div class="h-32 bg-red-500 w-16 absolute rounded-md top-4">e</div>
+                <div class="h-32 bg-red-500 w-16 absolute rounded-md top-4">e</div>
+                <div class="h-32 bg-red-500 w-16 absolute rounded-md top-4">e</div>
             </div>
         </div>
+    )
+}
+
+
+
+const TimeMarksCanvas = (props) => {
+    let startX = 10
+    let offX = 80
+    
+    let lines = [
+        <Line x={startX} y={0} points={[0,0, 0,40]} stroke='black'></Line>,
+        <Line x={startX + offX} y={0} points={[0,0, 0,40]}></Line>,
+        <Line x={startX + offX*2} y={0} points={[0,0, 0,40]}></Line>,
+        <Line x={startX + offX*3} y={0} points={[0,0, 0,40]}></Line>,
+        <Line x={startX + offX*4} y={0} points={[0,0, 0,40]}></Line>,
+    ]
+
+    
+    return (
+        <Stage width={window.innerWidth-64} height={props.height}>    
+            <Layer>
+                <Line x={startX} y={0} points={[0,0, 0,props.height]} stroke={'black'} />
+                <Line x={startX+offX} y={0} points={[0,0, 0,props.height]} stroke={'black'} />
+            </Layer>
+        </Stage>
     )
 }
 
