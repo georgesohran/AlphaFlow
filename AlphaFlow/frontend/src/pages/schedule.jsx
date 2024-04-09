@@ -6,6 +6,7 @@ import { getAuth }from "../util"
 
 import { DateTime } from "luxon"
 import { Stage, Layer, Text, Line } from 'react-konva';
+import {Html} from 'react-konva-utils'
 
 import Cookies from "universal-cookie"
 const cookies = new Cookies()  
@@ -66,6 +67,9 @@ const addEventBar = () => {
 
 
 const EventsVisualizer = (props) => {
+    const startX = 10
+    const offX = 80
+
     let used_events
 
     let time_period
@@ -73,10 +77,17 @@ const EventsVisualizer = (props) => {
     return (
         <div className="my-20 mx-8">
             <div class=" h-40 bg-gray-800 w-auto rounded-md relative border-2 border-red-600">
-                <TimeMarksCanvas height={156 /* h-40 == 160px, so i need that minus border-2 */}/>
-                <div class="h-32 bg-red-500 w-16 absolute rounded-md top-4">e</div>
-                <div class="h-32 bg-red-500 w-16 absolute rounded-md top-4">e</div>
-                <div class="h-32 bg-red-500 w-16 absolute rounded-md top-4">e</div>
+                <Stage width={window.innerWidth-64} height={props.height}>    
+                    <Layer >
+                        <Line x={startX} y={0} points={[0,0, 0,props.height]} stroke={'black'} />
+                        <Line x={startX+offX} y={0} points={[0,0, 0,props.height]} stroke={'black'} />
+                    </Layer>
+                    <Layer>
+                        <Html>
+                            <div className="bg-red-600 ">hi</div>
+                        </Html>
+                    </Layer>
+                </Stage>
             </div>
         </div>
     )
