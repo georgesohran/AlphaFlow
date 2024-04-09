@@ -237,7 +237,7 @@ const Dashboard = () => {
 
             <div className='bg-gradient-to-t from-gray-900 to-indigo-800'>
                 <TopNavBar authorized={true}/>
-                <div className='mx-auto justify-center md:flex'>
+                <div className='mx-auto justify-center md:mb-40 md:flex mb-32'>
                     <NotesContainer items={notes}  
                         addItem={addNote} editItem={editNote} deleteItem={deleteNote}
                         newContent={newNoteContent} changeNewContent={setNewNoteContent}
@@ -270,53 +270,50 @@ const NotesContainer = (props) => {
                 <div className="mt-2 text-gray-300 ">
                     <p className="text-lg">All notes</p>
                 </div>
-                <section>
-                    <div className="mx-6 my-4">
-                        {props.items == []?
-                            (<div>No notes</div>):
-                            (props.items.map((item, index) => (
-                                <div 
-                                onMouseEnter={() => {document.getElementById(`edit-note-sec-${index}`).style.display = 'block'}} 
-                                onMouseLeave={() => {document.getElementById(`edit-note-sec-${index}`).style.display = 'none'}} 
-                                className="block whitespace-pre-line" key={index}>
-                                    {/* notes info */}
-                                    <div style={props.mode==`editNote-${index}`? {display:'none'} : {display:'block'}}>
-                                        <div className="text-left w-1/2 float-left">- {item.contents}</div>
+                <div>
+                {!props.items.length?
+                    ('No notes created'):
+                    (props.items.map((item, index) => (<>
+                        <div className="grid grid-cols-2" style={props.mode==`editNote-${index}`?{display:'none'}:{display:'grid'}}
+                        onMouseEnter={() => {document.getElementById(`edit-note-sec-${index}`).style.display='block'}}
+                        onMouseLeave={() => {document.getElementById(`edit-note-sec-${index}`).style.display='none'}}>
+                            <div className="col-span-1 text-left">
+                            - {item.contents}
+                            </div>
+                            <div className="col-span-1 text-right">
+                                <div id={`edit-note-sec-${index}`} style={{display:'none'}}>
+                                    <button className="mx-1 text-gray-500 hover:text-green-500"
+                                    onClick={() => {props.setMode(`editNote-${index}`)}}>
+                                        edit
+                                    </button>
+                                    <button className="mx-1 text-gray-500 hover:text-red-500"
+                                    onClick={() => {props.deleteItem(index)}}>
+                                        delete
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                        <div style={props.mode==`editNote-${index}`?{display:'block'}:{display:'none'}}>
+                            <textarea cols={30} rows={4} 
+                            className="bg-gray-800 text-gray-100 rounded-md p-2
+                            border-2 border-gray-400
+                            focus:outline-none focus:ring focus:border-blue-400" 
+                            onChange={(ev) => {props.changeNewContent(ev.target.value)}}>{props.newContent}</textarea>
 
-                                        <div className="text-right w-1/2 float-right" id={`edit-note-sec-${index}`} 
-                                        style={props.mode==`editNote-${index}`? {display:'block'} : {display:'none'}}>
-
-                                            <button onClick={() => {props.setMode(`editNote-${index}`)}} 
-                                            className="text-gray-500 hover:text-green-600 mx-1">edit</button>
-                                            <button onClick={() => {props.deleteItem(index)}} 
-                                            className="text-gray-500 hover:text-red-600 mx-1" >delete</button>
-                                        </div>
-
-                                    </div>
-                                    {/* edit content */}
-                                    <div style={props.mode==`editNote-${index}`? {display:'block'} : {display:'none'}}
-                                    className="w-auto items-center">
-                                        <textarea cols={30} rows={4} 
-                                        className="bg-gray-800 text-gray-100 rounded-md p-2
-                                        border-2 border-gray-400
-                                        focus:outline-none focus:ring focus:border-blue-400" 
-                                        onChange={(ev) => {props.changeNewContent(ev.target.value)}}>{item.contents}</textarea>
-
-                                        <div className="mx-auto w-auto flex-wrap">
-                                            <ButtonSubmit1 text='Edit note' onClick={() => {props.editItem(index)}}/>
-                                            <ButtonSubmit1 text='Cancel' onClick={() => {props.setMode('default')}}/>
-                                        </div>
-                                    </div>
-                                </div>)
-                            ))
-                        }
-                    </div>
-                </section>  
+                            <div className="mx-auto w-auto flex-wrap">
+                                <ButtonSubmit1 text='Edit Note' onClick={() => {props.editItem(index)}}/>
+                                <ButtonSubmit1 text='Cancel' onClick={() => {props.setMode('default')}}/>
+                            </div>
+                        </div>
+                        </>)
+                    ))
+                }
+                </div>
             </div>
             {/* add new section */}
-            <section className="z-10">
+            <div className="z-10">
                 <div>
-                    {props.mode != 'addNote'? 
+                    {props.mode == 'default'? 
                     (<ButtonSubmit1 text='Add new note' onClick={() => {props.setMode('addNote')}}/>):
                     (<></>)}
                 </div>
@@ -333,7 +330,7 @@ const NotesContainer = (props) => {
                         <ButtonSubmit1 text='Cancel' onClick={() => {props.setMode('default')}}/>
                     </div>
                 </div>
-            </section>
+            </div>
         </div>
     )
 }
@@ -346,54 +343,54 @@ const GoalsContainer = (props) => {
             <p className="text-4xl p-2 bg-gray-700 rounded-md">Goals</p>
             <div className="divide-y divide-solid divide-gray-600">
                 <div className="mt-2 text-gray-300 ">
-                    <p className="text-lg">All goals</p>
+                    <p className="text-lg">All Goals</p>
                 </div>
                 <div>
-                    <div className="mx-6 my-4 text-left">
-                        {props.items == []?
-                            (<div>No goals set</div>):
-                            (props.items.map((item, index) => (
-                                <div 
-                                onMouseEnter={() => {document.getElementById(`edit-goal-sec-${index}`).style.display = 'block'}} 
-                                onMouseLeave={() => {document.getElementById(`edit-goal-sec-${index}`).style.display = 'none'}} 
-                                className="whitespace-pre-line" key={index}>
-                                    {/* goals info */}
-                                    <div className="text-left w-1/2 float-left">- {item.contents}</div>
-                                         
-                                    <div className="text-right w-1/2 float-left" id={`edit-goal-sec-${index}`} >
-                                        <button onClick={() => {
-                                            if (props.mode == `viewGoal-${index}`) {
-                                                props.setMode('default')
-                                            } else {
-                                                props.setMode(`viewGoal-${index}`)
-                                            }
-                                        }} 
-                                        className="text-gray-500 hover:text-green-600">
-                                            {props.mode==`viewGoal-${index}`? 'close':'more...'}
-                                        </button>
-                                    </div>
+                {!props.items.length?
+                    ('No goals set'):
+                    (props.items.map((item, index) => (<>
+                        <div className="grid grid-cols-2" style={props.mode==`editGoal-${index}`?{display:'none'}:{display:'grid'}}
+                        onMouseEnter={() => {document.getElementById(`edit-goal-sec-${index}`).style.display='block'}}
+                        onMouseLeave={() => {document.getElementById(`edit-goal-sec-${index}`).style.display='none'}}>
+                            <div className="col-span-1 text-left">
+                            - {item.contents}
+                            </div>
+                            <div className="col-span-1 text-right">
+                                <div id={`edit-goal-sec-${index}`} style={{display:'none'}}>
+                                    <button className="mx-1 text-gray-500 hover:text-green-500"
+                                    onClick={() => {props.setMode(`editGoal-${index}`)}}>
+                                        edit
+                                    </button>
+                                    <button className="mx-1 text-gray-500 hover:text-red-500"
+                                    onClick={() => {props.deleteItem(index)}}>
+                                        delete
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                        <div style={props.mode==`editGoal-${index}`?{display:'block'}:{display:'none'}}>
+                            {props.changeNewContent(item.contents)}
+                            <textarea cols={30} rows={4} 
+                            className="bg-gray-800 text-gray-100 rounded-md p-2
+                            border-2 border-gray-400
+                            focus:outline-none focus:ring focus:border-blue-400" 
+                            onChange={(ev) => {props.changeNewContent(ev.target.value)}}>{props.newContent}</textarea>
 
-                                    {/* view content */}
-                                    <div style={props.mode==`viewGoal-${index}`? {display:'block'} : {display:'none'}}
-                                    className="w-auto items-center">
-                                        <div className="mx-auto w-auto flex-wrap">
-                                            <p>Deadline: {item.deadline}</p>
-                                        </div>
-                                        <div className="mx-auto w-auto flex-wrap">
-                                            <p>Achieved: <input type="checkbox" value={item.reached}/></p>
-                                        </div>
-                                    </div>
-                                </div>)
-                            ))
-                        }
-                    </div>
+                            <div className="mx-auto w-auto flex-wrap">
+                                <ButtonSubmit1 text='edit' onClick={() => {props.editItem(index)}}/>
+                                <ButtonSubmit1 text='Cancel' onClick={() => {props.setMode('default')}}/>
+                            </div>
+                        </div>
+                        </>)
+                    ))
+                }
                 </div>  
             </div>
             {/* add new section */}
-            <div className="z-10">
+            <div className="">
                 <div>
                     {props.mode != 'addGoal'? 
-                    (<ButtonSubmit1 text='Add new goal' onClick={() => {props.setMode('addGoal')}}/>):
+                    (<ButtonSubmit1 text='Set new goal' onClick={() => {props.setMode('addGoal')}}/>):
                     (<div className="w-auto items-center">
                         <textarea cols={30} rows={4} placeholder="Your new goal here" 
                         className="bg-gray-800 text-gray-100 rounded-md p-2
