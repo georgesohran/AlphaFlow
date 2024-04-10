@@ -397,7 +397,9 @@ const GoalsContainer = (props) => {
                         border-2 border-gray-400
                         focus:outline-none focus:ring focus:border-blue-400" 
                         onChange={(ev) => {props.changeNewContent(ev.target.value)}}>{props.newContent}</textarea>
+                        
                         <p className="text-red-600">Warning! you can't change goals contents later</p>
+                        
                         <div className="mx-auto w-auto flex-wrap">
                             <ButtonSubmit1 text='Add goal' onClick={props.addItem}/>
                             <ButtonSubmit1 text='Cancel' onClick={() => {props.setMode('default')}}/>

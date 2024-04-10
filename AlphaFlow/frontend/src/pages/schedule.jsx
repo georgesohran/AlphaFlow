@@ -5,7 +5,7 @@ import MyFooter from "../components/footer"
 import { getAuth }from "../util" 
 
 import { DateTime } from "luxon"
-import { Stage, Layer, Text, Line } from 'react-konva';
+import { Stage, Layer, Text, Line} from 'react-konva';
 import {Html} from 'react-konva-utils'
 
 import Cookies from "universal-cookie"
@@ -49,7 +49,9 @@ const SchedulePage = () => {
 
         <div className='bg-gradient-to-t from-gray-900 to-indigo-800'>
             <TopNavBar authorized={true}/>
-            <EventsVisualizer />
+            <div>
+            <EventsVisualizer/>
+            </div>
         </div>
         <MyFooter text='something'/>
     </div>
@@ -67,54 +69,16 @@ const addEventBar = () => {
 
 
 const EventsVisualizer = (props) => {
-    const startX = 10
-    const offX = 80
-
-    let used_events
-
-    let time_period
-
+    
     return (
-        <div className="my-20 mx-8">
-            <div class=" h-40 bg-gray-800 w-auto rounded-md relative border-2 border-red-600">
-                <Stage width={window.innerWidth-64} height={props.height}>    
-                    <Layer >
-                        <Line x={startX} y={0} points={[0,0, 0,props.height]} stroke={'black'} />
-                        <Line x={startX+offX} y={0} points={[0,0, 0,props.height]} stroke={'black'} />
-                    </Layer>
-                    <Layer>
-                        <Html>
-                            <div className="bg-red-600 ">hi</div>
-                        </Html>
-                    </Layer>
-                </Stage>
+        <div className="h-96 flex-wrap">
+            <div className="size-36 bg-black text-white text-center mb-4">
+                hi
+            </div>
+            <div className="size-36 bg-black text-white text-center">
+                hi 2
             </div>
         </div>
-    )
-}
-
-
-
-const TimeMarksCanvas = (props) => {
-    let startX = 10
-    let offX = 80
-    
-    let lines = [
-        <Line x={startX} y={0} points={[0,0, 0,40]} stroke='black'></Line>,
-        <Line x={startX + offX} y={0} points={[0,0, 0,40]}></Line>,
-        <Line x={startX + offX*2} y={0} points={[0,0, 0,40]}></Line>,
-        <Line x={startX + offX*3} y={0} points={[0,0, 0,40]}></Line>,
-        <Line x={startX + offX*4} y={0} points={[0,0, 0,40]}></Line>,
-    ]
-
-    
-    return (
-        <Stage width={window.innerWidth-64} height={props.height}>    
-            <Layer>
-                <Line x={startX} y={0} points={[0,0, 0,props.height]} stroke={'black'} />
-                <Line x={startX+offX} y={0} points={[0,0, 0,props.height]} stroke={'black'} />
-            </Layer>
-        </Stage>
     )
 }
 
