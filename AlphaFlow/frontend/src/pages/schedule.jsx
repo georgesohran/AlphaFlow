@@ -55,14 +55,6 @@ const SchedulePage = () => {
         )
 }
 
-const addEventBar = () => {
-    return (
-        <div>
-
-        </div>
-    )
-}
-
 
 
 const EventsVisualizer = (props) => {
@@ -71,19 +63,20 @@ const EventsVisualizer = (props) => {
         <div className="w-52 bg-no-repeat bg-time-marks
         flex-wrap relative z-0" 
         style={{height:1100}}>
-        
+            <EventElement/>
             
         </div>
     )
 }
 
 
-const eventElement = (event) => {
+
+const EventElement = (props) => {
+    const evenTime = props.eventTime
     // somehow transform date time data into height and x cords
     return (
-        <div className="w-36 bg-red-700/80 text-center absolute rounded-xl
-        left-12 top-3"
-        style={{height:100}}>
+        <div className="w-36 bg-red-700/80 text-center absolute rounded-xl left-12 "
+        style={{height:100, top:12}}>
             hi
         </div>
     )
