@@ -5,8 +5,7 @@ import MyFooter from "../components/footer"
 import { getAuth }from "../util" 
 
 import { DateTime } from "luxon"
-import { Stage, Layer, Text, Line} from 'react-konva';
-import {Html} from 'react-konva-utils'
+
 
 import Cookies from "universal-cookie"
 const cookies = new Cookies()  
@@ -16,13 +15,13 @@ const SchedulePage = () => {
     const [eventsData, setEventData] = useState([])
 
     useEffect(() => {
-        getAuth().then((auth) => {
-            if(auth) {
-                getEvents()
-            } else {
-                navigate('/login')
-            }
-        })
+        // getAuth().then((auth) => {
+        //     if(auth) {
+        //         getEvents()
+        //     } else {
+        //         navigate('/login')
+        //     }
+        // })
     }, [])
 
 
@@ -46,15 +45,13 @@ const SchedulePage = () => {
     
     return (
         <div className='bg-gray-900 min-h-screen'>
-
-        <div className='bg-gradient-to-t from-gray-900 to-indigo-800'>
             <TopNavBar authorized={true}/>
-            <div>
-            <EventsVisualizer/>
+            <div className='bg-gradient-to-t from-gray-900 to-indigo-800 p-2'>
+                
+                <EventsVisualizer />
             </div>
+            <MyFooter text='something'/>
         </div>
-        <MyFooter text='something'/>
-    </div>
         )
 }
 
@@ -71,15 +68,26 @@ const addEventBar = () => {
 const EventsVisualizer = (props) => {
     
     return (
-        <div className="h-96 flex-wrap">
-            <div className="size-36 bg-black text-white text-center mb-4">
-                hi
-            </div>
-            <div className="size-36 bg-black text-white text-center">
-                hi 2
-            </div>
+        <div className="w-52 bg-no-repeat bg-time-marks
+        flex-wrap relative z-0" 
+        style={{height:1100}}>
+        
+            
         </div>
     )
 }
+
+
+const eventElement = (event) => {
+    // somehow transform date time data into height and x cords
+    return (
+        <div className="w-36 bg-red-700/80 text-center absolute rounded-xl
+        left-12 top-3"
+        style={{height:100}}>
+            hi
+        </div>
+    )
+}
+
 
 export default SchedulePage

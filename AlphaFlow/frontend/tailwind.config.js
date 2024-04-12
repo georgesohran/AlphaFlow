@@ -6,7 +6,11 @@ export default {
     "./src/*.jsx"
   ],
   theme: {
-    extend: {},
+    extend: {
+      backgroundImage: {
+        'time-marks':"url('/src/images/time_marks.svg')"
+      }
+    },
   },
   plugins: [],
 }
