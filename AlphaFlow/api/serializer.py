@@ -7,9 +7,9 @@ class DailyEventSerializer(serializers.ModelSerializer):
         model = DailyEvent
         fields = '__all__'
 
-class WeaklyEventSerializer(serializers.ModelSerializer):
+class WeeklyEventSerializer(serializers.ModelSerializer):
     class Meta():
-        model = WeaklyEvent
+        model = WeeklyEvent
         fields = '__all__'
 
 class OneTimeEventSerializer(serializers.ModelSerializer):

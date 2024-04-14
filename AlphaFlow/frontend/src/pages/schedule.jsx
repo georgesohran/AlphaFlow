@@ -5,23 +5,25 @@ import MyFooter from "../components/footer"
 import { getAuth }from "../util" 
 
 import { DateTime } from "luxon"
+import { Info } from "luxon"
 
 
 import Cookies from "universal-cookie"
 const cookies = new Cookies()  
+const weekDays = { 'MON':1, 'TUE':2, 'WED':3, 'THU':4, 'FRI':5, 'SAT':6, 'SUN':7}
 
 
 const SchedulePage = () => {
-    const [eventsData, setEventData] = useState([])
+    const [eventsData, setEventData] = useState({})
 
     useEffect(() => {
-        // getAuth().then((auth) => {
-        //     if(auth) {
-        //         getEvents()
-        //     } else {
-        //         navigate('/login')
-        //     }
-        // })
+        getAuth().then((auth) => {
+            if(auth) {
+                getEvents()
+            } else {
+                navigate('/login')
+            }
+        })
     }, [])
 
 
@@ -35,11 +37,52 @@ const SchedulePage = () => {
         })
         .then(res => res.json())
         .then(res_data => {
-            console.log(res_data)
-            const event1start = DateTime.fromISO(res_data.onetime_events[0].start)
-            const event1finish = DateTime.fromISO(res_data.onetime_events[0].end)
-            const now = DateTime.now()
-            console.log(event1start, event1finish, now)
+
+            let tempTimeEventsData = {
+                1:[],
+                2:[],
+                3:[],
+                4:[],
+                5:[],
+                6:[],
+                7:[],
+            }
+
+            for(let timeEvent of res_data['onetime_events']) {
+                let dateTimeEvent = {
+                    start: DateTime.fromISO(timeEvent.start),
+                    finish: DateTime.fromISO(timeEvent.finish),
+                    color: timeEvent.color,
+                    description: timeEvent.description
+                }
+                tempTimeEventsData[dateTimeEvent.start.weekday].push(dateTimeEvent)
+            }
+
+            for(let timeEvent of res_data['weekly_events']) {
+                let dateTimeEvent = {
+                    start: DateTime.fromISO(timeEvent.start),
+                    finish: DateTime.fromISO(timeEvent.finish),
+                    color: timeEvent.color,
+                    description: timeEvent.description
+                }
+                console.log(timeEvent.day, weekDays)
+                tempTimeEventsData[weekDays[timeEvent.day]].push(dateTimeEvent)
+            }
+
+            for(let timeEvent of res_data['daily_events']) {
+                let dateTimeEvent = {
+                    start: DateTime.fromISO(timeEvent.start),
+                    finish: DateTime.fromISO(timeEvent.finish),
+                    color: timeEvent.color,
+                    description: timeEvent.description,
+                }
+                for(let i = 1; i < 8; i++) {
+                    tempTimeEventsData[i].push(dateTimeEvent)
+                }
+            }
+
+            console.log(tempTimeEventsData)
+            setEventData(tempTimeEventsData)
         })
     } 
     
@@ -47,8 +90,16 @@ const SchedulePage = () => {
         <div className='bg-gray-900 min-h-screen'>
             <TopNavBar authorized={true}/>
             <div className='bg-gradient-to-t from-gray-900 to-indigo-800 p-2'>
-                
-                <EventsVisualizer />
+                <div className="flex overflow-x-scroll">
+                    {
+                    [0,1,2,3,4,5,6].map((num, index) => (
+                        <EventsVisualizer key={index} 
+                        events={eventsData[DateTime.now().plus({days: num}).weekday]} 
+                        day={Info.weekdays('short')[DateTime.now().plus({days: num}).weekday]} />
+                    ))
+                    }
+                </div>
+
             </div>
             <MyFooter text='something'/>
         </div>
@@ -58,13 +109,18 @@ const SchedulePage = () => {
 
 
 const EventsVisualizer = (props) => {
-    
+    console.log(props.events)
     return (
-        <div className="w-52 bg-no-repeat bg-time-marks
-        flex-wrap relative z-0" 
-        style={{height:1100}}>
-            <EventElement/>
-            
+        <div className="relative">
+            <p className="text-xl text-center bg-gray-800 rounded-t-xl 
+            w-48 h-16 mx-auto text-white">{props.day}</p>
+            <div className="w-52 bg-no-repeat bg-time-marks 
+            flex-wrap relative -top-6 z-0" 
+            style={{height:1100}}>
+                {props.events.map((timeEvent, index) => (
+                    <EventElement timeEvent={timeEvent} key={index}/>
+                ))}
+            </div>
         </div>
     )
 }
@@ -72,12 +128,11 @@ const EventsVisualizer = (props) => {
 
 
 const EventElement = (props) => {
-    const evenTime = props.eventTime
     // somehow transform date time data into height and x cords
     return (
         <div className="w-36 bg-red-700/80 text-center absolute rounded-xl left-12 "
         style={{height:100, top:12}}>
-            hi
+            {props.timeEvent.description}
         </div>
     )
 }

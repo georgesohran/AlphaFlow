@@ -8,7 +8,7 @@ urlpatterns = [
     path('session', views.session_view, name='session'),
 
     path('daily_events', view=views.daily_events, name='daily_events'),
-    path('weakly_events', view=views.weakly_events, name='weakly_events'),
+    path('weekly_events', view=views.Weekly_events, name='weekly_events'),
     path('onetime_events', view=views.onetime_events, name='onetime_events'),
     path('get_upcoming_events', view=views.get_upcoming_events, name='get_upcoming_events'),
 

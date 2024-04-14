@@ -18,9 +18,9 @@ class TimeEvent(models.Model):
 class OneTimeEvent(TimeEvent):
     user = models.ForeignKey(User, on_delete=models.CASCADE, related_name='user_one_event')
     start = models.DateTimeField()
-    end = models.DateTimeField()
+    finish = models.DateTimeField()
 
-class WeaklyEvent(TimeEvent):
+class WeeklyEvent(TimeEvent):
     user = models.ForeignKey(User, on_delete=models.CASCADE, related_name='user_weak_event')
     DAY_CHOICES = (
         ('MON', 'monday'),
@@ -34,12 +34,12 @@ class WeaklyEvent(TimeEvent):
 
     day = models.CharField(max_length=9, choices=DAY_CHOICES, default='MON')
     start = models.TimeField()
-    end = models.TimeField()
+    finish = models.TimeField()
     
 class DailyEvent(TimeEvent):
     user = models.ForeignKey(User, on_delete=models.CASCADE, related_name='user_day_event')
     start = models.TimeField()
-    end = models.TimeField()
+    finish = models.TimeField()
 
 
 

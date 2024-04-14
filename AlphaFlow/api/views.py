@@ -93,12 +93,12 @@ def daily_events(request):
 
 @api_view(['GET'])
 @ensure_csrf_cookie
-def weakly_events(request):
+def Weekly_events(request):
     if not request.user.is_authenticated:
         return Response({"detail":"not authorized"}, status=400)
     
-    events = WeaklyEvent.objects.filter(user = request.user)
-    serialized_events = WeaklyEventSerializer(events, many=True)
+    events = WeeklyEvent.objects.filter(user = request.user)
+    serialized_events = WeeklyEventSerializer(events, many=True)
 
     return Response(serialized_events.data)
 
@@ -126,13 +126,13 @@ def get_upcoming_events(request):
     events = DailyEvent.objects.filter(user=request.user)
     daily_events_ser = DailyEventSerializer(events, many=True)
 
-    events = WeaklyEvent.objects.filter(user=request.user)
-    weakly_events_ser = WeaklyEventSerializer(events, many=True)
+    events = WeeklyEvent.objects.filter(user=request.user)
+    Weekly_events_ser = WeeklyEventSerializer(events, many=True)
     
     return Response({
         "onetime_events": onetime_events_ser.data,
         "daily_events": daily_events_ser.data,
-        "weakly_events": weakly_events_ser.data
+        "weekly_events": Weekly_events_ser.data
     })
 
 
