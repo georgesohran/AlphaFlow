@@ -16,6 +16,9 @@ const weekDays = { 'MON':1, 'TUE':2, 'WED':3, 'THU':4, 'FRI':5, 'SAT':6, 'SUN':7
 
 const SchedulePage = () => {
     const [eventsData, setEventData] = useState({})
+    const [offsetHours, setOffsetHours] = useState(11)
+    const secNum = (window.innerWidth - 300) / 210
+    console.log(Array.from({length: secNum}, (v, index) => index))
 
     const navigate = useNavigate()
 
@@ -40,6 +43,8 @@ const SchedulePage = () => {
         })
         .then(res => res.json())
         .then(res_data => {
+
+            console.log(res_data)
 
             let tempTimeEventsData = {
                 1:[],
@@ -91,10 +96,10 @@ const SchedulePage = () => {
         <div className='bg-gray-900 min-h-screen'>
             <TopNavBar authorized={true}/>
             <div className='bg-gradient-to-t from-gray-900 to-indigo-800 p-2'>
-                <div className="flex overflow-x-scroll">
+                <div className="flex">
                     {
-                    [0,1,2,3,4,5,6].map((num, index) => (
-                        <EventsVisualizer key={index} 
+                    Array.from({length: secNum}, (v, index) => index).map((num, index) => (
+                        <EventsVisualizer key={index} offset={offsetHours}
                         events={eventsData[DateTime.now().plus({days: num}).weekday]} 
                         day={Info.weekdays('short')[DateTime.now().plus({days: num}).weekday-1]} />
                     ))
@@ -118,7 +123,7 @@ const EventsVisualizer = (props) => {
             flex-wrap relative -top-6 z-0" 
             style={{height:950}}>
                 {props.events && props.events.map((timeEvent, index) => (
-                    <EventElement timeEvent={timeEvent} key={index}/>
+                    <EventElement timeEvent={timeEvent} key={index} offset={props.offset}/>
                 ))}
             </div>
         </div>
@@ -131,7 +136,10 @@ const EventElement = (props) => {
     // somehow transform date time data into height and x cords
     return (
         <div className="w-36 bg-red-700/80 text-center absolute rounded-xl left-12 "
-        style={{height:100, top: props.timeEvent.start.minutes}}>
+        style={{
+            height: (props.timeEvent.finish.hour-props.timeEvent.start.hour)*76 + (props.timeEvent.finish.minute-props.timeEvent.start.minute) , 
+            top: (props.timeEvent.start.hour - props.offset)*76 + props.timeEvent.start.minute + 46
+        }}>
             {props.timeEvent.description}
         </div>
     )
