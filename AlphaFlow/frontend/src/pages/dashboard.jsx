@@ -1,6 +1,7 @@
 import TopNavBar from "../components/navbar";
 import MyFooter from "../components/footer";
 import {ButtonSubmit1} from "../components/buttons"
+import { LargeInputField } from "../components/inputfield";
 
 import { getAuth } from "../util";
 
@@ -294,11 +295,7 @@ const NotesContainer = (props) => {
                             </div>
                         </div>
                         <div style={props.mode==`editNote-${index}`?{display:'block'}:{display:'none'}}>
-                            <textarea cols={30} rows={4} 
-                            className="bg-gray-800 text-gray-100 rounded-md p-2
-                            border-2 border-gray-400
-                            focus:outline-none focus:ring focus:border-blue-400" 
-                            onChange={(ev) => {props.changeNewContent(ev.target.value)}}>{props.newContent}</textarea>
+                            <LargeInputField value={props.newContent} changeValue={props.changeNewContent}/>
 
                             <div className="mx-auto w-auto flex-wrap">
                                 <ButtonSubmit1 text='Edit Note' onClick={() => {props.editItem(index)}}/>
@@ -370,11 +367,7 @@ const GoalsContainer = (props) => {
                         </div>
                         <div style={props.mode==`editGoal-${index}`?{display:'block'}:{display:'none'}}>
                             {props.changeNewContent(item.contents)}
-                            <textarea cols={30} rows={4} 
-                            className="bg-gray-800 text-gray-100 rounded-md p-2
-                            border-2 border-gray-400
-                            focus:outline-none focus:ring focus:border-blue-400" 
-                            onChange={(ev) => {props.changeNewContent(ev.target.value)}}>{props.newContent}</textarea>
+                            <LargeInputField value={props.newContent} changeValue={props.changeNewContent}/>
 
                             <div className="mx-auto w-auto flex-wrap">
                                 <ButtonSubmit1 text='edit' onClick={() => {props.editItem(index)}}/>

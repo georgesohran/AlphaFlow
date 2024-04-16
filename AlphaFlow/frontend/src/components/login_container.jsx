@@ -1,6 +1,6 @@
 import { useState, useRef } from "react"
 import { useNavigate } from "react-router-dom";
-import InputField from "./inputfield"; 
+import { InputField } from "./inputfield"; 
 import { ButtonSubmit1 } from "./buttons";
 
 import Cookies from "universal-cookie";

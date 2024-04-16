@@ -3,10 +3,9 @@ import { useEffect, useState } from "react"
 import TopNavBar from "../components/navbar"
 import MyFooter from "../components/footer"
 import { getAuth }from "../util" 
+import { TimeInputField, LargeInputField, InputField} from "../components/inputfield"
 
 import { DateTime } from "luxon"
-import { Info } from "luxon"
-
 
 import Cookies from "universal-cookie"
 import { useNavigate } from "react-router-dom"
@@ -18,14 +17,15 @@ const SchedulePage = () => {
     const [eventsData, setEventData] = useState({})
     const [offsetHours, setOffsetHours] = useState(11)
     const secNum = (window.innerWidth - 300) / 210
-    console.log(Array.from({length: secNum}, (v, index) => index))
+
+    const [selectedEventIndex, setSelectedEventIndex] = useState(0)
 
     const navigate = useNavigate()
 
     useEffect(() => {
         getAuth().then((auth) => {
             if(auth) {
-                getEvents()
+                // getEvents()
             } else {
                 navigate('/login')
             }
@@ -43,7 +43,6 @@ const SchedulePage = () => {
         })
         .then(res => res.json())
         .then(res_data => {
-
             console.log(res_data)
 
             let tempTimeEventsData = {
@@ -68,8 +67,8 @@ const SchedulePage = () => {
 
             for(let timeEvent of res_data['weekly_events']) {
                 let dateTimeEvent = {
-                    start: DateTime.fromISO(timeEvent.start),
-                    finish: DateTime.fromISO(timeEvent.finish),
+                    start: DateTime.fromISO(timeEvent.start, {zone:'UTC'}).toLocal(),
+                    finish: DateTime.fromISO(timeEvent.finish, {zone:'UTC'}).toLocal(),
                     color: timeEvent.color,
                     description: timeEvent.description
                 }
@@ -78,8 +77,8 @@ const SchedulePage = () => {
 
             for(let timeEvent of res_data['daily_events']) {
                 let dateTimeEvent = {
-                    start: DateTime.fromISO(timeEvent.start),
-                    finish: DateTime.fromISO(timeEvent.finish),
+                    start: DateTime.fromISO(timeEvent.start, {zone:'UTC'}).toLocal(),
+                    finish: DateTime.fromISO(timeEvent.finish, {zone:'UTC'}).toLocal(),
                     color: timeEvent.color,
                     description: timeEvent.description,
                 }
@@ -87,6 +86,7 @@ const SchedulePage = () => {
                     tempTimeEventsData[i].push(dateTimeEvent)
                 }
             }
+            console.log(tempTimeEventsData)
 
             setEventData(tempTimeEventsData)
         })
@@ -97,13 +97,14 @@ const SchedulePage = () => {
             <TopNavBar authorized={true}/>
             <div className='bg-gradient-to-t from-gray-900 to-indigo-800 p-2'>
                 <div className="flex">
-                    {
+                    {/* {
                     Array.from({length: secNum}, (v, index) => index).map((num, index) => (
                         <EventsVisualizer key={index} offset={offsetHours}
                         events={eventsData[DateTime.now().plus({days: num}).weekday]} 
                         day={Info.weekdays('short')[DateTime.now().plus({days: num}).weekday-1]} />
                     ))
-                    }
+                    } */}
+                    <EventsSettingSideBar />
                 </div>
 
             </div>
@@ -133,14 +134,69 @@ const EventsVisualizer = (props) => {
 
 
 const EventElement = (props) => {
-    // somehow transform date time data into height and x cords
     return (
         <div className="w-36 bg-red-700/80 text-center absolute rounded-xl left-12 "
         style={{
             height: (props.timeEvent.finish.hour-props.timeEvent.start.hour)*76 + (props.timeEvent.finish.minute-props.timeEvent.start.minute) , 
             top: (props.timeEvent.start.hour - props.offset)*76 + props.timeEvent.start.minute + 46
+            
         }}>
             {props.timeEvent.description}
+        </div>
+    )
+}
+
+
+const EventsSettingSideBar = () => {
+    return (
+        <div className="bg-gray-800 ml-auto w-64 md:w-72 p-2 rounded-xl divide-y divide-gray-600 text-white"
+        style={{height:950}}>
+            <div className="py-4 mx-1 flex flex-wrap gap-4">
+                No event selected
+            </div>
+
+            <div className="my-2 py-4 mx-2 flex flex-wrap gap-3">
+                <div className="text-xl">
+                    Create new daily event
+                </div>
+                <LargeInputField placeholder="new content here"/>
+                <div>
+                    <span className="text-gray-400">time period</span>
+                    <div className="flex" id="time-inputs">
+                        <TimeInputField className="mr-auto"/><span className="mx-auto inline-block pt-1 text-3xl"> - </span><TimeInputField className="ml-auto"/>
+                    </div>
+                </div>
+            </div>
+
+            <div className="py-4 my-2 mx-2 flex flex-wrap gap-3">
+                <div className="text-xl">
+                    Create new weekly event
+                </div>
+                <LargeInputField placeholder="new content here"/>
+                <div>
+                    <InputField name="day of the week"/>
+                </div>
+                <div>
+                    <span className="text-gray-400">time period</span>
+                    <div className="flex" id="time-inputs">
+                        <TimeInputField className="mr-auto"/><span className="mx-auto inline-block pt-1 text-3xl"> - </span><TimeInputField className="ml-auto"/>
+                    </div>
+                </div>
+            </div>
+
+            <div className="py-4 my-2 mx-2 flex flex-wrap gap-3">
+                <div className="text-xl">
+                    Create new onetime event
+                </div>
+                
+                <LargeInputField placeholder="new content here"/>
+                <div>
+                    <span className="text-gray-400">time period</span>
+                    <div className="flex" id="time-inputs">
+                        <TimeInputField className="mr-auto"/><span className="mx-auto inline-block pt-1 text-3xl"> - </span><TimeInputField className="ml-auto"/>
+                    </div>
+                </div>
+            </div>
         </div>
     )
 }
