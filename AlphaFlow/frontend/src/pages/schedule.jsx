@@ -3,7 +3,7 @@ import { useEffect, useState } from "react"
 import TopNavBar from "../components/navbar"
 import MyFooter from "../components/footer"
 import { getAuth }from "../util" 
-import { TimeInputField, LargeInputField, InputField} from "../components/inputfield"
+import { TimeInputField, LargeInputField, OptionsInputField} from "../components/inputfield"
 
 import { DateTime } from "luxon"
 
@@ -154,7 +154,7 @@ const EventsSettingSideBar = () => {
             <div className="py-4 mx-1 flex flex-wrap gap-4">
                 No event selected
             </div>
-
+            {/* new dayly event */}
             <div className="my-2 py-4 mx-2 flex flex-wrap gap-3">
                 <div className="text-xl">
                     Create new daily event
@@ -167,14 +167,14 @@ const EventsSettingSideBar = () => {
                     </div>
                 </div>
             </div>
-
+            {/* new weekly event */}
             <div className="py-4 my-2 mx-2 flex flex-wrap gap-3">
                 <div className="text-xl">
                     Create new weekly event
                 </div>
                 <LargeInputField placeholder="new content here"/>
                 <div>
-                    <InputField name="day of the week"/>
+                    <OptionsInputField options={['mon', 'tue', 'wed']}/>
                 </div>
                 <div>
                     <span className="text-gray-400">time period</span>
@@ -183,7 +183,7 @@ const EventsSettingSideBar = () => {
                     </div>
                 </div>
             </div>
-
+            {/* new onetime event */}
             <div className="py-4 my-2 mx-2 flex flex-wrap gap-3">
                 <div className="text-xl">
                     Create new onetime event

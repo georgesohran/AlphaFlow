@@ -38,8 +38,21 @@ const LargeInputField = (props) => {
     )
 }
 
+const OptionsInputField = (props) => {
+    return (
+        <div>
+            <select>
+                {props.options.map((opt, index) => {
+                    <option key={index} value={opt}>{opt}</option>
+                })}
+            </select>
+        </div>
+    )
+}
+
 export {
     InputField,
     TimeInputField,
-    LargeInputField
+    LargeInputField,
+    OptionsInputField
 }
