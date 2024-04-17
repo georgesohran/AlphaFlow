@@ -15,8 +15,18 @@ const InputField = (props) => {
 
 const TimeInputField = (props) => {
     return (
-        <div className="my-2">
+        <div className="my-1">
             <input value={props.value} onChange={(ev) => {props.changeValue(ev.target.value)}} placeholder="hh:mm"
+            className="rounded-md p-1 text-gray-200 bg-gray-700 w-24 
+            focus:outline-none focus:ring-1 focus:border-blue-300 focus:bg-gray-600
+            "/>
+        </div>
+    )
+}
+const DateInputField = (props) => {
+    return (
+        <div className="my-1">
+            <input value={props.value} onChange={(ev) => {props.changeValue(ev.target.value)}} placeholder="dd.mm.yyyy"
             className="rounded-md p-1 text-gray-200 bg-gray-700 w-24 
             focus:outline-none focus:ring-1 focus:border-blue-300 focus:bg-gray-600
             "/>
@@ -41,8 +51,9 @@ const LargeInputField = (props) => {
 const OptionsInputField = (props) => {
     return (
         <select defaultValue={['default']} 
-        className="bg-gray-700 p-1 rounded-md text-gray-100">
-            <option selected value='default'>{props.default}</option>
+        className="bg-gray-700 p-1 rounded-md text-gray-200 mt-1
+        focus:outline-none focus:ring-1 focus:border-blue-300 ">
+            {props.default && <option selected value='default'>{props.default}</option>}
 
             {props.options.map((opt, index) => (
                 <option value={opt}>{opt}</option>
@@ -52,9 +63,11 @@ const OptionsInputField = (props) => {
     )
 }
 
+
 export {
     InputField,
     TimeInputField,
     LargeInputField,
-    OptionsInputField
+    OptionsInputField,
+    DateInputField
 }

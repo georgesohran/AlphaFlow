@@ -3,7 +3,7 @@ import { useEffect, useState } from "react"
 import TopNavBar from "../components/navbar"
 import MyFooter from "../components/footer"
 import { getAuth }from "../util" 
-import { TimeInputField, LargeInputField, OptionsInputField} from "../components/inputfield"
+import { TimeInputField, LargeInputField, OptionsInputField, DateInputField} from "../components/inputfield"
 
 import { DateTime } from "luxon"
 
@@ -148,7 +148,9 @@ const EventElement = (props) => {
 
 
 const EventsSettingSideBar = () => {
-    const [createEvent, setCreateEvent] = useState('dailyEvent')
+    const modes = ['dailyEvent', 'weeklyEvent', 'onetimeEvent']
+    
+    const [modeIndex, setModeIndex] = useState(0)
 
     return (
         <div className="bg-gray-800 ml-auto w-72 md:w-92 p-2 rounded-xl divide-y divide-gray-600 text-white">
@@ -157,15 +159,16 @@ const EventsSettingSideBar = () => {
             </div>
             {/* new dayly event */}
             <div className="my-2 py-4 flex">
-                <button className="mr-1 rounded-md font-bold text-xl
-                hover:bg-gray-700 hover:font-black">
+                <button className="mr-1 rounded-md font-bold text-xl transition-all
+                hover:bg-gray-700 hover:font-black"
+                onClick={() => {modeIndex > 0 && setModeIndex(modeIndex-1)}}>
                     <span className="flex-col self-center">&lt;</span>
                 </button>
 
-                <div style={{display:createEvent=="dailyEvent"?"block":"none"}} 
+                <div style={{display:modes[modeIndex]=="dailyEvent"?"flex":"none"}} 
                 className="flex flex-wrap gap-3">
                     <div className="text-xl">
-                        Create new daily event
+                        Create new <span className="text-blue-500">daily</span> event
                     </div>
                     <div className="text-center">
                         <LargeInputField placeholder="new content here"/>
@@ -178,14 +181,17 @@ const EventsSettingSideBar = () => {
                     </div>
                 </div>
                 
-                <div style={{display:createEvent=="weeklyEvent"?"block":"none"}}
+                <div style={{display:modes[modeIndex]=="weeklyEvent"?"flex":"none"}}
                 className="flex flex-wrap gap-3">
                     <div className="text-xl">
-                        Create new weekly event
+                        Create new <span className="text-blue-500">weekly</span> event
                     </div>
                     <LargeInputField placeholder="new content here"/>
                     <div>
-                        <OptionsInputField options={Object.keys(weekDays)} default={'Select day'}/>
+                        <span className="text-gray-400"> day of the week</span>
+                        <div >
+                            <OptionsInputField options={Object.keys(weekDays)}/>
+                        </div>
                     </div>
                     <div>
                         <span className="text-gray-400">time period</span>
@@ -195,14 +201,15 @@ const EventsSettingSideBar = () => {
                     </div>
                 </div>
 
-                <div style={{display:createEvent=="onetimeEvent"?"block":"none"}}
+                <div style={{display:modes[modeIndex]=="onetimeEvent"?"flex":"none"}}
                 className="flex flex-wrap gap-3">
                     <div className="text-xl">
-                        Create new onetime event
+                        Create new <span className="text-blue-500">onetime</span> event
                     </div>
                     <LargeInputField placeholder="new content here"/>
                     <div>
-                        <OptionsInputField options={Object.keys(weekDays)} default={'Select day'}/>
+                        <span className="text-gray-400">date</span>
+                        <DateInputField />
                     </div>
                     <div>
                         <span className="text-gray-400">time period</span>
@@ -212,8 +219,9 @@ const EventsSettingSideBar = () => {
                     </div>
                 </div>
 
-                <button className="ml-1 rounded-md font-bold text-xl
-                hover:bg-gray-700 hover:font-black">
+                <button className="ml-1 rounded-md font-bold text-xl transition-all
+                hover:bg-gray-700 hover:font-black"
+                onClick={() => {modeIndex < modes.length-1 && setModeIndex(modeIndex+1)}}>
                     <span className="flex-col self-center">&gt;</span>
                 </button>
             </div>
