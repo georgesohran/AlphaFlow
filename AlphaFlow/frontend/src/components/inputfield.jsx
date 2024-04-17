@@ -29,7 +29,7 @@ const LargeInputField = (props) => {
         <div className="mx-auto">
             <textarea cols={30} rows={4} placeholder={props.placeholder}
             className="bg-gray-800 text-gray-100 rounded-md p-2
-            border-2 border-gray-500 w-11/12  
+            border-2 border-gray-500 w-full  
             hover:border-gray-400
             focus:outline-none focus:border-blue-400" 
             onChange={(ev) => {props.changeValue(ev.target.value)}}>{props.value}</textarea>
@@ -40,13 +40,15 @@ const LargeInputField = (props) => {
 
 const OptionsInputField = (props) => {
     return (
-        <div>
-            <select>
-                {props.options.map((opt, index) => {
-                    <option key={index} value={opt}>{opt}</option>
-                })}
-            </select>
-        </div>
+        <select defaultValue={['default']} 
+        className="bg-gray-700 p-1 rounded-md text-gray-100">
+            <option selected value='default'>{props.default}</option>
+
+            {props.options.map((opt, index) => (
+                <option value={opt}>{opt}</option>
+            ))}
+        
+        </select>
     )
 }
 

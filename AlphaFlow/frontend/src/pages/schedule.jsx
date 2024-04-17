@@ -148,55 +148,80 @@ const EventElement = (props) => {
 
 
 const EventsSettingSideBar = () => {
+    const [createEvent, setCreateEvent] = useState('dailyEvent')
+
     return (
-        <div className="bg-gray-800 ml-auto w-64 md:w-72 p-2 rounded-xl divide-y divide-gray-600 text-white"
-        style={{height:950}}>
+        <div className="bg-gray-800 ml-auto w-72 md:w-92 p-2 rounded-xl divide-y divide-gray-600 text-white">
             <div className="py-4 mx-1 flex flex-wrap gap-4">
                 No event selected
             </div>
             {/* new dayly event */}
-            <div className="my-2 py-4 mx-2 flex flex-wrap gap-3">
-                <div className="text-xl">
-                    Create new daily event
-                </div>
-                <LargeInputField placeholder="new content here"/>
-                <div>
-                    <span className="text-gray-400">time period</span>
-                    <div className="flex" id="time-inputs">
-                        <TimeInputField className="mr-auto"/><span className="mx-auto inline-block pt-1 text-3xl"> - </span><TimeInputField className="ml-auto"/>
+            <div className="my-2 py-4 flex">
+                <button className="mr-1 rounded-md font-bold text-xl
+                hover:bg-gray-700 hover:font-black">
+                    <span className="flex-col self-center">&lt;</span>
+                </button>
+
+                <div style={{display:createEvent=="dailyEvent"?"block":"none"}} 
+                className="flex flex-wrap gap-3">
+                    <div className="text-xl">
+                        Create new daily event
+                    </div>
+                    <div className="text-center">
+                        <LargeInputField placeholder="new content here"/>
+                    </div>
+                    <div>
+                        <span className="text-gray-400">time period</span>
+                        <div className="flex" id="time-inputs">
+                            <TimeInputField className="mr-auto"/><span className="mx-auto inline-block pt-1 text-3xl"> - </span><TimeInputField className="ml-auto"/>
+                        </div>
                     </div>
                 </div>
+                
+                <div style={{display:createEvent=="weeklyEvent"?"block":"none"}}
+                className="flex flex-wrap gap-3">
+                    <div className="text-xl">
+                        Create new weekly event
+                    </div>
+                    <LargeInputField placeholder="new content here"/>
+                    <div>
+                        <OptionsInputField options={Object.keys(weekDays)} default={'Select day'}/>
+                    </div>
+                    <div>
+                        <span className="text-gray-400">time period</span>
+                        <div className="flex" id="time-inputs">
+                            <TimeInputField className="mr-auto"/><span className="mx-auto inline-block pt-1 text-3xl"> - </span><TimeInputField className="ml-auto"/>
+                        </div>
+                    </div>
+                </div>
+
+                <div style={{display:createEvent=="onetimeEvent"?"block":"none"}}
+                className="flex flex-wrap gap-3">
+                    <div className="text-xl">
+                        Create new onetime event
+                    </div>
+                    <LargeInputField placeholder="new content here"/>
+                    <div>
+                        <OptionsInputField options={Object.keys(weekDays)} default={'Select day'}/>
+                    </div>
+                    <div>
+                        <span className="text-gray-400">time period</span>
+                        <div className="flex" id="time-inputs">
+                            <TimeInputField className="mr-auto"/><span className="mx-auto inline-block pt-1 text-3xl"> - </span><TimeInputField className="ml-auto"/>
+                        </div>
+                    </div>
+                </div>
+
+                <button className="ml-1 rounded-md font-bold text-xl
+                hover:bg-gray-700 hover:font-black">
+                    <span className="flex-col self-center">&gt;</span>
+                </button>
             </div>
             {/* new weekly event */}
             <div className="py-4 my-2 mx-2 flex flex-wrap gap-3">
-                <div className="text-xl">
-                    Create new weekly event
-                </div>
-                <LargeInputField placeholder="new content here"/>
-                <div>
-                    <OptionsInputField options={['mon', 'tue', 'wed']}/>
-                </div>
-                <div>
-                    <span className="text-gray-400">time period</span>
-                    <div className="flex" id="time-inputs">
-                        <TimeInputField className="mr-auto"/><span className="mx-auto inline-block pt-1 text-3xl"> - </span><TimeInputField className="ml-auto"/>
-                    </div>
-                </div>
+                something
             </div>
-            {/* new onetime event */}
-            <div className="py-4 my-2 mx-2 flex flex-wrap gap-3">
-                <div className="text-xl">
-                    Create new onetime event
-                </div>
-                
-                <LargeInputField placeholder="new content here"/>
-                <div>
-                    <span className="text-gray-400">time period</span>
-                    <div className="flex" id="time-inputs">
-                        <TimeInputField className="mr-auto"/><span className="mx-auto inline-block pt-1 text-3xl"> - </span><TimeInputField className="ml-auto"/>
-                    </div>
-                </div>
-            </div>
+    
         </div>
     )
 }
