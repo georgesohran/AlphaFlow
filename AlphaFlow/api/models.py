@@ -13,8 +13,6 @@ class TimeEvent(models.Model):
     class Meta:
         abstract = True
 
-
-
 class OneTimeEvent(TimeEvent):
     user = models.ForeignKey(User, on_delete=models.CASCADE, related_name='user_one_event')
     start = models.DateTimeField()
