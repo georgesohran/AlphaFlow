@@ -94,8 +94,8 @@ def daily_events(request):
         return Response({"detail":"not enough info"})
     
     new_event = DailyEvent.objects.create(start=start, finish=finish, description=description, user=request.user)
-
-    print(new_event)
+    new_event.save()
+    print(start, finish, description)
 
     return Response({"detail":"success"})
 
@@ -105,16 +105,34 @@ def weekly_events(request):
     if not request.user.is_authenticated:
         return Response({"detail":"not authorized"}, status=400)
     
-    events = WeeklyEvent.objects.filter(user = request.user)
-    serialized_events = WeeklyEventSerializer(events, many=True)
+    start = request.data.get('start')
+    finish = request.data.get('finish')
+    day = request.data.get('day')
+    description = request.data.get('description')
 
-    return Response(serialized_events.data)
+    if not start or not finish or not description or not day:
+        return Response({"detail":"not enough info"})
+    
+    new_event = WeeklyEvent.objects.create(start=start, finish=finish, description=description, user=request.user)
+    new_event.save()
+
+    return Response({"detail":"success"})
 
 @api_view(['POST'])
 @ensure_csrf_cookie
 def onetime_events(request):
     if not request.user.is_authenticated:
         return Response({"detail":"not authorized"}, status=400)
+    
+    start = request.data.get('start')
+    finish = request.data.get('finish')
+    description = request.data.get('description')
+
+    if not start or not finish or not description:
+        return Response({'detail':'not enough info'}) 
+
+    new_event = OneTimeEvent.objects.create(start=start, finish=finish, description=description)
+
     return Response({"detail":"success"})
 
 

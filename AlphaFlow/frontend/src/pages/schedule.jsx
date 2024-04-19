@@ -4,6 +4,7 @@ import TopNavBar from "../components/navbar"
 import MyFooter from "../components/footer"
 import { getAuth }from "../util" 
 import { TimeInputField, LargeInputField, OptionsInputField, DateInputField} from "../components/inputfield"
+import { ButtonSubmit1 } from "../components/buttons"
 
 import { DateTime, Info } from "luxon"
 
@@ -17,7 +18,13 @@ const SchedulePage = () => {
     const [eventsData, setEventData] = useState({})
     const [offsetHours, setOffsetHours] = useState(11)
     const [selectedEventIndex, setSelectedEventIndex] = useState(0)
-    const [newUTCTimeCreate, setNewUTCTimeCreate] = useState('')    
+    const [detail, setDetail] = useState('')
+    const [newTimeEvent, setNewTimeEvent] = useState({
+        start: '',
+        finish: '',
+        day:'',
+        description: '',
+    })    
 
     const secNum = (window.innerWidth - 300) / 210
     const navigate = useNavigate()
@@ -43,8 +50,6 @@ const SchedulePage = () => {
         })
         .then(res => res.json())
         .then(res_data => {
-            console.log(res_data)
-
             let tempTimeEventsData = {
                 1:[],
                 2:[],
@@ -86,17 +91,51 @@ const SchedulePage = () => {
                     tempTimeEventsData[i].push(dateTimeEvent)
                 }
             }
-            console.log(tempTimeEventsData)
-
             setEventData(tempTimeEventsData)
         })
     }
 
     const createOnetimeEvent = async() => {
-        
+        if(newTimeEvent.start)
+        fetch('api/onetime_events', {
+            method:'POST',
+            headers: {
+                'X-CSRFToken':cookies.get('csrftoken'),
+                'Content-Type':'application/json',
+            },
+            credentials:'same-origin',
+            body: JSON.stringify({
+                start: DateTime.fromISO(newTimeEvent.start).toUTC().toString(),
+                finish: DateTime.fromISO(newTimeEvent.start).toUTC().toString(),
+                description: newTimeEvent.description
+            })
+        })
+        .then(res => res.json())
+        .then(res_data => {
+            setDetail(res_data.detail)
+            return getEvents()
+        })
     }
-    const createWeaklyEvent = async() => {
-
+    const createWeeklyEvent = async() => {
+        fetch('api/weekly_events', {
+            method:'POST',
+            headers: {
+                'X-CSRFToken':cookies.get('csrftoken'),
+                'Content-Type':'application/json',
+            },
+            credentials:'same-origin',
+            body: JSON.stringify({
+                start: DateTime.fromISO(newTimeEvent.start).toUTC().toFormat('hh:mm:ss'),
+                finish: DateTime.fromISO(newTimeEvent.finish).toUTC().toFormat('hh:mm:ss'),
+                description: newTimeEvent.description,
+                day: newTimeEvent.day
+            })
+        })
+        .then(res => res.json())
+        .then(res_data => {
+            setDetail(res_data.detail)
+            return getEvents()
+        })
     }
     const createDailyEvent = async() => {
         fetch('/api/daily_events', {
@@ -107,19 +146,25 @@ const SchedulePage = () => {
             },
             credentials:"same-origin",
             body: JSON.stringify({
-                start:'12:30',
-                finish:'13:00',
-                description:'fetch creating event'
+                start: DateTime.fromISO(newTimeEvent.start).toUTC().toFormat('hh:mm:ss'),
+                finish: DateTime.fromISO(newTimeEvent.finish).toUTC().toFormat('hh:mm:ss'),
+                description: newTimeEvent.description
             })
         })
         .then(res => res.json())
         .then(res_data => {
-            console.log(res_data)
+            setDetail(res_data.detail)
+            return getEvents()
         })
     }
 
     return (
         <div className='bg-gray-900 min-h-screen'>
+            {/* {detail && 
+            <div className="absolute top-2 left-2 bg-gray-800 rounded-md text-slate-50 p-2">
+                <p>{detail}</p>
+            </div>} */}
+
             <TopNavBar authorized={true}/>
             <div className='bg-gradient-to-t from-gray-900 to-indigo-800 p-2'>
                 <div className="flex">
@@ -131,7 +176,8 @@ const SchedulePage = () => {
                     ))
                     }
 
-                    <EventsSettingSideBar />
+                    <EventsSettingSideBar newTimeEvent={newTimeEvent} setNewEvent={setNewTimeEvent}
+                    submitOnetimeEvent={createOnetimeEvent} submitWeeklyEvent={createWeeklyEvent} submitDailyEvent={createDailyEvent}/>
                 </div>
 
             </div>
@@ -149,7 +195,7 @@ const EventsVisualizer = (props) => {
             w-48 h-16 mx-auto text-white">{props.day}</p>
             <div className="w-52 bg-no-repeat 
             flex-wrap relative -top-6 z-0" 
-            style={{height:900}}>
+            style={{height:700}}>
                 {props.events && props.events.filter((timeEvent) => timeEvent.start.hour > props.offsetHours).map((timeEvent, index) => (
                     <EventElement timeEvent={timeEvent} key={index} offset={props.offsetHours}/>
                 ))}
@@ -158,21 +204,13 @@ const EventsVisualizer = (props) => {
                 {/* background marks */}
                 {Array.from({length: 11}, (v, index) => index).map((val, index) => (
                     <text className="absolute text-gray-500 text-sm"
-                    style={{left:4, top: 26+76*index}}>{DateTime.fromObject({hour:props.offsetHours}).plus({hour:index}).hour}:00</text>    
+                    style={{left:4, top: 26+60*index}}>{DateTime.fromObject({hour:props.offsetHours}).plus({hour:index}).hour}:00</text>    
                 ))}
-                <svg width="200" height="1000" viewBox="0 0 200 1000" fill="none" xmlns="http://www.w3.org/2000/svg">
-                <rect width="200" height="900" rx="30" fill="#111827"/>
-                <line y1="46" x2="200" y2="46" stroke="#1F2937" stroke-width="2"/>
-                <line y1="122" x2="200" y2="122" stroke="#1F2937" stroke-width="2"/>
-                <line y1="198" x2="200" y2="198" stroke="#1F2937" stroke-width="2"/>
-                <line y1="274" x2="200" y2="274" stroke="#1F2937" stroke-width="2"/>
-                <line y1="350" x2="200" y2="350" stroke="#1F2937" stroke-width="2"/>
-                <line y1="426" x2="200" y2="426" stroke="#1F2937" stroke-width="2"/>
-                <line y1="502" x2="200" y2="502" stroke="#1F2937" stroke-width="2"/>
-                <line y1="578" x2="200" y2="578" stroke="#1F2937" stroke-width="2"/>
-                <line y1="654" x2="200" y2="654" stroke="#1F2937" stroke-width="2"/>
-                <line y1="730" x2="200" y2="730" stroke="#1F2937" stroke-width="2"/>
-                <line y1="806" x2="200" y2="806" stroke="#1F2937" stroke-width="2"/>
+                <svg width="200" height="700" viewBox="0 0 200 700" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <rect width="200" height="700" rx="30" fill="#111827"/>
+                {Array.from({length: 11}, (v, index) => index).map((val, index) => 
+                    <line y1={60*index+46} x2="200" y2={60*index+46} stroke="#1F2937" stroke-width="2"/>    
+                )}
                 </svg>
             </div>
         </div>
@@ -183,16 +221,16 @@ const EventsVisualizer = (props) => {
 
 const EventElement = (props) => {
     return (
-        <div className="w-36 bg-red-700/80 text-center absolute rounded-xl left-12 "
+        <div className="w-36 bg-violet-600/80 text-center absolute rounded-xl left-12 "
         style={{
-            height: (props.timeEvent.finish.hour-props.timeEvent.start.hour)*76 + (props.timeEvent.finish.minute-props.timeEvent.start.minute) , 
-            top: (props.timeEvent.start.hour - props.offset)*76 + props.timeEvent.start.minute + 46
-            
+            height: (props.timeEvent.finish.hour*60+props.timeEvent.finish.minute - props.timeEvent.start.hour*60+props.timeEvent.start.minute), 
+            top: (props.timeEvent.start.hour - props.offset)*60 + props.timeEvent.start.minute + 46,
         }}>
             {props.timeEvent.description}
         </div>
     )
 }
+
 
 
 const EventsSettingSideBar = (props) => {
@@ -205,7 +243,7 @@ const EventsSettingSideBar = (props) => {
             <div className="py-4 mx-1 flex flex-wrap gap-4">
                 No event selected {/* edit it later */}
             </div>
-            {/* new dayly event */}
+            {/* new daily event */}
             <div className="my-2 py-4 flex">
                 <button className="mr-1 rounded-md font-bold text-xl transition-all
                 hover:bg-gray-700 hover:font-black"
@@ -219,13 +257,21 @@ const EventsSettingSideBar = (props) => {
                         Create new <span className="text-blue-500">daily</span> event
                     </div>
                     <div className="text-center">
-                        <LargeInputField placeholder="new content here"/>
+                        <LargeInputField placeholder="new content here" value={props.newTimeEvent.description}
+                        changeValue={(val) => {props.setNewEvent({...props.newTimeEvent, description: val})}}/>
                     </div>
                     <div>
                         <span className="text-gray-400">time period</span>
                         <div className="flex" id="time-inputs">
-                            <TimeInputField className="mr-auto"/><span className="mx-auto inline-block pt-1 text-3xl"> - </span><TimeInputField className="ml-auto"/>
+                            <TimeInputField className="mr-auto" value={props.newTimeEvent.start} 
+                            changeValue={(val) => {props.setNewEvent({...props.newTimeEvent, start: val})}} />
+                            <span className="mx-auto inline-block pt-1 text-3xl"> - </span>
+                            <TimeInputField className="ml-auto" value={props.newTimeEvent.finish} 
+                            changeValue={(val) => {props.setNewEvent({...props.newTimeEvent, finish: val})}}/>
                         </div>
+                    </div>
+                    <div>
+                        <ButtonSubmit1 text="create daily event" onClick={props.submitDailyEvent}/>
                     </div>
                 </div>
                 
@@ -234,18 +280,27 @@ const EventsSettingSideBar = (props) => {
                     <div className="text-xl">
                         Create new <span className="text-blue-500">weekly</span> event
                     </div>
-                    <LargeInputField placeholder="new content here"/>
+                    <LargeInputField placeholder="new content here" value={props.newTimeEvent.description}
+                    changeValue={(val) => {props.setNewEvent({...props.newTimeEvent, description: val})}}/>
                     <div>
-                        <span className="text-gray-400"> day of the week</span>
+                        <span className="text-gray-400">day of the week</span>
                         <div >
-                            <OptionsInputField options={Object.keys(weekDays)}/>
+                            <OptionsInputField options={Object.keys(weekDays)} 
+                            changeValue={(val) => {props.setNewEvent({...props.newTimeEvent, day:val})}}/>
                         </div>
                     </div>
                     <div>
                         <span className="text-gray-400">time period</span>
                         <div className="flex" id="time-inputs">
-                            <TimeInputField className="mr-auto"/><span className="mx-auto inline-block pt-1 text-3xl"> - </span><TimeInputField className="ml-auto"/>
+                            <TimeInputField className="mr-auto" value={props.newTimeEvent.start} 
+                            changeValue={(val) => {props.setNewEvent({...props.newTimeEvent, start: val})}} />
+                            <span className="mx-auto inline-block pt-1 text-3xl"> - </span>
+                            <TimeInputField className="ml-auto" value={props.newTimeEvent.finish} 
+                            changeValue={(val) => {props.setNewEvent({...props.newTimeEvent, finish: val})}}/>
                         </div>
+                    </div>
+                    <div>
+                        <ButtonSubmit1 text="create weekly event" onClick={props.submitWeeklyEvent}/>
                     </div>
                 </div>
 
@@ -264,6 +319,9 @@ const EventsSettingSideBar = (props) => {
                         <div className="flex" id="time-inputs">
                             <TimeInputField className="mr-auto"/><span className="mx-auto inline-block pt-1 text-3xl"> - </span><TimeInputField className="ml-auto"/>
                         </div>
+                    </div>
+                    <div>
+                        <ButtonSubmit1 text="create onetime event"/>
                     </div>
                 </div>
 

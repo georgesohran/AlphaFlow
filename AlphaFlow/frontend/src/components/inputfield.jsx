@@ -50,7 +50,7 @@ const LargeInputField = (props) => {
 
 const OptionsInputField = (props) => {
     return (
-        <select defaultValue={['default']} 
+        <select defaultValue={['default']} onChange={(ev) => {props.changeValue(ev.target.value)}}
         className="bg-gray-700 p-1 rounded-md text-gray-200 mt-1
         focus:outline-none focus:ring-1 focus:border-blue-300 ">
             {props.default && <option selected value='default'>{props.default}</option>}
