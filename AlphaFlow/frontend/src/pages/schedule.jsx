@@ -51,6 +51,7 @@ const SchedulePage = () => {
         })
         .then(res => res.json())
         .then(res_data => {
+            console.log(res_data)
             let tempTimeEventsData = {
                 1:[],
                 2:[],
@@ -92,6 +93,7 @@ const SchedulePage = () => {
                     tempTimeEventsData[i].push(dateTimeEvent)
                 }
             }
+            console.log(tempTimeEventsData)
             setEventData(tempTimeEventsData)
         })
     }
@@ -139,6 +141,7 @@ const SchedulePage = () => {
         })
     }
     const createDailyEvent = async() => {
+        console.log(newTimeEvent)
         fetch('/api/daily_events', {
             method:'POST',
             headers: {
@@ -173,7 +176,8 @@ const SchedulePage = () => {
                     Array.from({length: secNum}, (v, index) => index).map((num, index) => (
                         <EventsVisualizer key={index} offsetHours={offsetHours}
                         events={eventsData[DateTime.now().plus({days: num}).weekday]} 
-                        day={Info.weekdays('short')[DateTime.now().plus({days: num}).weekday-1]} />
+                        weekDay={Info.weekdays('short')[DateTime.now().plus({days: num}).weekday-1]} 
+                        monthDay={DateTime.now().plus({days:num}).day}/>
                     ))
                     }
 
@@ -192,12 +196,15 @@ const SchedulePage = () => {
 const EventsVisualizer = (props) => {
     return (
         <div className="relative">
-            <p className="text-xl text-center bg-gray-800 rounded-t-xl 
-            w-48 h-16 mx-auto text-white">{props.day}</p>
+            <div className="text-center bg-gray-800 rounded-t-xl 
+            w-48 h-20 mx-auto text-white">
+                <p className="text-xl">{props.weekDay}</p>
+                <p className="text-gray-400">{props.monthDay}</p>
+            </div>
             <div className="w-52 bg-no-repeat 
             flex-wrap relative -top-6 z-0" 
             style={{height:700}}>
-                {props.events && props.events.filter((timeEvent) => timeEvent.start.hour > props.offsetHours).map((timeEvent, index) => (
+                {props.events && props.events.filter((timeEvent) => timeEvent.start.hour*60+timeEvent.start.minute > props.offsetHours*60).map((timeEvent, index) => (
                     <EventElement timeEvent={timeEvent} key={index} offset={props.offsetHours}/>
                 ))}
 
@@ -224,7 +231,7 @@ const EventElement = (props) => {
     return (
         <div className="w-36 bg-violet-600/80 text-center absolute rounded-xl left-12 "
         style={{
-            height: (props.timeEvent.finish.hour*60+props.timeEvent.finish.minute - props.timeEvent.start.hour*60+props.timeEvent.start.minute), 
+            height: ((props.timeEvent.finish.hour*60+props.timeEvent.finish.minute) - (props.timeEvent.start.hour*60+props.timeEvent.start.minute)), 
             top: (props.timeEvent.start.hour - props.offset)*60 + props.timeEvent.start.minute + 46,
         }}>
             {props.timeEvent.description}
