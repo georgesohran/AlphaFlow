@@ -113,7 +113,7 @@ def weekly_events(request):
     if not start or not finish or not description or not day:
         return Response({"detail":"not enough info"})
     
-    new_event = WeeklyEvent.objects.create(start=start, finish=finish, description=description, user=request.user)
+    new_event = WeeklyEvent.objects.create(day=day, start=start, finish=finish, description=description, user=request.user)
     new_event.save()
 
     return Response({"detail":"success"})

@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useEffect } from "react";
 
 const InputField = (props) => {
     return (
@@ -50,7 +50,7 @@ const LargeInputField = (props) => {
 
 const OptionsInputField = (props) => {
     return (
-        <select defaultValue={['default']} onChange={(ev) => {props.changeValue(ev.target.value)}}
+        <select onChange={(ev) => {props.changeValue(ev.target.value)}}
         className="bg-gray-700 p-1 rounded-md text-gray-200 mt-1
         focus:outline-none focus:ring-1 focus:border-blue-300 ">
             {props.default && <option selected value='default'>{props.default}</option>}
@@ -68,6 +68,5 @@ export {
     InputField,
     TimeInputField,
     LargeInputField,
-    OptionsInputField,
     DateInputField
 }

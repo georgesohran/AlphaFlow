@@ -3,8 +3,9 @@ import { useEffect, useState } from "react"
 import TopNavBar from "../components/navbar"
 import MyFooter from "../components/footer"
 import { getAuth }from "../util" 
-import { TimeInputField, LargeInputField, OptionsInputField, DateInputField} from "../components/inputfield"
+import { TimeInputField, LargeInputField, DateInputField} from "../components/inputfield"
 import { ButtonSubmit1 } from "../components/buttons"
+import Select from "react-select"
 
 import { DateTime, Info } from "luxon"
 
@@ -235,8 +236,13 @@ const EventElement = (props) => {
 
 const EventsSettingSideBar = (props) => {
     const modes = ['dailyEvent', 'weeklyEvent', 'onetimeEvent']
-    
+    let options =  []
+    Object.keys(weekDays).forEach((key) => {
+        options.push({label:key, value:key})
+    })
+
     const [modeIndex, setModeIndex] = useState(0)
+
 
     return (
         <div className="bg-gray-800 ml-auto w-72 md:w-92 p-2 rounded-xl divide-y divide-gray-600 text-white">
@@ -285,8 +291,16 @@ const EventsSettingSideBar = (props) => {
                     <div>
                         <span className="text-gray-400">day of the week</span>
                         <div >
-                            <OptionsInputField options={Object.keys(weekDays)} 
-                            changeValue={(val) => {props.setNewEvent({...props.newTimeEvent, day:val})}}/>
+                            <Select defaultValue={Object.keys(weekDays)[0]} 
+                            onChange={(val) => {props.setNewEvent({...props.newTimeEvent, day: val.value})}} 
+                            options={Object.keys(weekDays).map((val, index) => {
+                                return {label:val, value:val}    
+                            })}
+                            unstyled
+                            classNames={{
+                                control: (state) => `bg-gray-700 p-1 rounded-md text-gray-100 mt-1 ${state.isFocused ? 'outline-none ring-1 border-blue-300':''}`,
+                                option: (state) => `bg-gray-700 ${state.isSelected?'bg-indigo-700':''}`
+                            }}/>
                         </div>
                     </div>
                     <div>
