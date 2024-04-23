@@ -1,2 +1,4 @@
 /api/__pycache__
 /Backend(AlphaFlow)/__pycache__
+/api/migrations
+db.sqlite3

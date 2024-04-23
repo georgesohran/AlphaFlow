@@ -15,12 +15,11 @@
     "luxon": "^3.4.4",
     "match-sorter": "^6.3.4",
     "react": "^18.2.0",
+    "react-color": "^2.19.3",
     "react-dom": "^18.2.0",
     "react-router-dom": "^6.22.3",
     "react-select": "^5.8.0",
-    "react-svg-text": "^0.1.2",
     "sort-by": "^1.2.0",
-    "text-to-svg": "^3.1.5",
     "universal-cookie": "^7.1.0"
   },
   "devDependencies": {
@@ -33,7 +32,6 @@
     "eslint-plugin-react": "^7.32.2",
     "eslint-plugin-react-hooks": "^4.6.0",
     "eslint-plugin-react-refresh": "^0.4.3",
-    "postcss": "^8.4.38",
     "tailwindcss": "^3.4.2",
     "vite": "^4.4.5"
   }
