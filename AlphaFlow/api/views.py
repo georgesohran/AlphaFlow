@@ -93,9 +93,7 @@ def daily_events(request):
     if not start or not finish or not description:
         return Response({"detail":"not enough info"})
     
-    new_event = DailyEvent.objects.create(start=start, finish=finish, description=description, user=request.user)
-    new_event.save()
-    print(start, finish, description)
+    DailyEvent.objects.create(start=start, finish=finish, description=description, user=request.user)
 
     return Response({"detail":"success"})
 
@@ -113,8 +111,7 @@ def weekly_events(request):
     if not start or not finish or not description or not day:
         return Response({"detail":"not enough info"})
     
-    new_event = WeeklyEvent.objects.create(day=day, start=start, finish=finish, description=description, user=request.user)
-    new_event.save()
+    WeeklyEvent.objects.create(day=day, start=start, finish=finish, description=description, user=request.user)
 
     return Response({"detail":"success"})
 
@@ -123,7 +120,7 @@ def weekly_events(request):
 def onetime_events(request):
     if not request.user.is_authenticated:
         return Response({"detail":"not authorized"}, status=400)
-    
+
     start = request.data.get('start')
     finish = request.data.get('finish')
     description = request.data.get('description')
@@ -131,7 +128,7 @@ def onetime_events(request):
     if not start or not finish or not description:
         return Response({'detail':'not enough info'}) 
 
-    new_event = OneTimeEvent.objects.create(start=start, finish=finish, description=description)
+    OneTimeEvent.objects.create(start=start, finish=finish, description=description, user=request.user)
 
     return Response({"detail":"success"})
 

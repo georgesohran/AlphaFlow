@@ -3,7 +3,7 @@ import { useEffect, useState } from "react"
 import TopNavBar from "../components/navbar"
 import MyFooter from "../components/footer"
 import { getAuth }from "../util" 
-import { TimeInputField, LargeInputField, DateInputField} from "../components/inputfield"
+import { TimeInputField, LargeInputField, DateInputField, InputField} from "../components/inputfield"
 import { ButtonSubmit1 } from "../components/buttons"
 import Select from "react-select"
 
@@ -21,6 +21,7 @@ const SchedulePage = () => {
     const [selectedEventIndex, setSelectedEventIndex] = useState(0)
     const [detail, setDetail] = useState('')
     const [newTimeEvent, setNewTimeEvent] = useState({
+        date:'',
         start: '',
         finish: '',
         day:'',
@@ -40,6 +41,17 @@ const SchedulePage = () => {
         })
     }, [])
 
+    const checkNewEventsContents = () => {
+        if(!(/^[0-5][0-9]\:[0-5][0-9]\:[0-5][0-9]$/.test(newTimeEvent.start) && /^[0-6][0-9]\:[0-6][0-9]\:[0-6][0-9]$/.test(newTimeEvent.start))) {
+            setDetail('invalid start-finish time')
+            return false
+        }
+        if(!(/^[0-3][0-9]\.[01][0-9]\.[0-9][0-9][0-9][0-9]$/.test(newTimeEvent.date))) {
+            setDetail('invalid date')
+            return false
+        }
+
+    }
 
     const getEvents = async() => {
         fetch('api/get_upcoming_events',{
@@ -99,7 +111,13 @@ const SchedulePage = () => {
     }
 
     const createOnetimeEvent = async() => {
-        if(newTimeEvent.start)
+        let [day, month, year] = newTimeEvent.date.split('.')
+
+        let start = DateTime.fromISO(newTimeEvent.start)
+            .set({day:parseInt(day), month:parseInt(month), year:parseInt(year)}).toUTC().toString()
+        let finish = DateTime.fromISO(newTimeEvent.finish)
+            .set({day:parseInt(day), month:parseInt(month), year:parseInt(year)}).toUTC().toString()
+        
         fetch('api/onetime_events', {
             method:'POST',
             headers: {
@@ -108,8 +126,8 @@ const SchedulePage = () => {
             },
             credentials:'same-origin',
             body: JSON.stringify({
-                start: DateTime.fromISO(newTimeEvent.start).toUTC().toString(),
-                finish: DateTime.fromISO(newTimeEvent.start).toUTC().toString(),
+                start: start,
+                finish: finish,
                 description: newTimeEvent.description
             })
         })
@@ -182,7 +200,8 @@ const SchedulePage = () => {
                     }
 
                     <EventsSettingSideBar newTimeEvent={newTimeEvent} setNewEvent={setNewTimeEvent}
-                    submitOnetimeEvent={createOnetimeEvent} submitWeeklyEvent={createWeeklyEvent} submitDailyEvent={createDailyEvent}/>
+                    submitOnetimeEvent={createOnetimeEvent} submitWeeklyEvent={createWeeklyEvent} submitDailyEvent={createDailyEvent}
+                    setOffsetHours={setOffsetHours} offsetHours={offsetHours}/>
                 </div>
 
             </div>
@@ -204,7 +223,7 @@ const EventsVisualizer = (props) => {
             <div className="w-52 bg-no-repeat 
             flex-wrap relative -top-6 z-0" 
             style={{height:700}}>
-                {props.events && props.events.filter((timeEvent) => timeEvent.start.hour*60+timeEvent.start.minute > props.offsetHours*60).map((timeEvent, index) => (
+                {props.events && props.events.filter((timeEvent) => timeEvent.start.hour*60+timeEvent.start.minute >= props.offsetHours*60).map((timeEvent, index) => (
                     <EventElement timeEvent={timeEvent} key={index} offset={props.offsetHours}/>
                 ))}
 
@@ -253,6 +272,14 @@ const EventsSettingSideBar = (props) => {
 
     return (
         <div className="bg-gray-800 ml-auto w-72 md:w-92 p-2 rounded-xl divide-y divide-gray-600 text-white">
+            <div className="py-4 mx-1 text-gray-400 flex gap-2">
+                <text>set offset hours</text>
+                <input type="number" value={props.offsetHours} min={0} max={14}
+                onChange={(ev) => {props.setOffsetHours(ev.target.value)}} 
+                className="rounded-md p-1 text-gray-200 bg-gray-700 
+                hover:bg-gray-600
+                focus:outline-none focus:ring focus:border-blue-300 focus:bg-gray-600"/>
+            </div>
             <div className="py-4 mx-1 flex flex-wrap gap-4">
                 No event selected {/* edit it later */}
             </div>
@@ -330,19 +357,25 @@ const EventsSettingSideBar = (props) => {
                     <div className="text-xl">
                         Create new <span className="text-blue-500">onetime</span> event
                     </div>
-                    <LargeInputField placeholder="new content here"/>
+                    <LargeInputField placeholder="new content here" value={props.newTimeEvent.description}
+                    changeValue={(val) => {props.setNewEvent({...props.newTimeEvent, description: val})}}/>
                     <div>
                         <span className="text-gray-400">date</span>
-                        <DateInputField />
+                        <DateInputField value={props.newTimeEvent.date} 
+                        changeValue={(val) => {props.setNewEvent({...props.newTimeEvent, date: val})}}/>
                     </div>
                     <div>
                         <span className="text-gray-400">time period</span>
                         <div className="flex" id="time-inputs">
-                            <TimeInputField className="mr-auto"/><span className="mx-auto inline-block pt-1 text-3xl"> - </span><TimeInputField className="ml-auto"/>
+                            <TimeInputField className="mr-auto" value={props.newTimeEvent.start} 
+                            changeValue={(val) => {props.setNewEvent({...props.newTimeEvent, start: val})}}/>
+                            <span className="mx-auto inline-block pt-1 text-3xl"> - </span>
+                            <TimeInputField className="ml-auto" value={props.newTimeEvent.finish} 
+                            changeValue={(val) => {props.setNewEvent({...props.newTimeEvent, finish: val})}}/>
                         </div>
                     </div>
                     <div>
-                        <ButtonSubmit1 text="create onetime event"/>
+                        <ButtonSubmit1 text="create onetime event" onClick={props.submitOnetimeEvent}/>
                     </div>
                 </div>
 
