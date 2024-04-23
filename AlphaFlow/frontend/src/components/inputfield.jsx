@@ -16,7 +16,7 @@ const InputField = (props) => {
 const TimeInputField = (props) => {
     return (
         <div className="my-1">
-            <input value={props.value} onChange={(ev) => {props.changeValue(ev.target.value)}} placeholder="hh:mm"
+            <input value={props.value} onChange={(ev) => {props.changeValue(ev.target.value)}} placeholder="HH:mm"
             className="rounded-md p-1 text-gray-200 bg-gray-700 w-24 
             focus:outline-none focus:ring-1 focus:border-blue-300 focus:bg-gray-600
             "/>

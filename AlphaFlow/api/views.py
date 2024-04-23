@@ -89,11 +89,14 @@ def daily_events(request):
     start = request.data.get('start')
     finish = request.data.get('finish')
     description = request.data.get('description')
+    color = request.data.get('color')
+    if not color:
+        color = '#f44336'
 
     if not start or not finish or not description:
         return Response({"detail":"not enough info"})
     
-    DailyEvent.objects.create(start=start, finish=finish, description=description, user=request.user)
+    DailyEvent.objects.create(start=start, finish=finish, color=color, description=description, user=request.user)
 
     return Response({"detail":"success"})
 
@@ -107,11 +110,14 @@ def weekly_events(request):
     finish = request.data.get('finish')
     day = request.data.get('day')
     description = request.data.get('description')
+    color = request.data.get('color')
+    if not color:
+        color = '#f44336'
 
     if not start or not finish or not description or not day:
         return Response({"detail":"not enough info"})
     
-    WeeklyEvent.objects.create(day=day, start=start, finish=finish, description=description, user=request.user)
+    WeeklyEvent.objects.create(day=day, start=start, finish=finish, description=description, color=color, user=request.user)
 
     return Response({"detail":"success"})
 
@@ -124,11 +130,14 @@ def onetime_events(request):
     start = request.data.get('start')
     finish = request.data.get('finish')
     description = request.data.get('description')
+    color = request.data.get('color')
+    if not color:
+        color = '#f44336'
 
     if not start or not finish or not description:
         return Response({'detail':'not enough info'}) 
 
-    OneTimeEvent.objects.create(start=start, finish=finish, description=description, user=request.user)
+    OneTimeEvent.objects.create(start=start, finish=finish, description=description, color=color, user=request.user)
 
     return Response({"detail":"success"})
 

@@ -8,6 +8,7 @@ import { ButtonSubmit1 } from "../components/buttons"
 import Select from "react-select"
 
 import { DateTime, Info } from "luxon"
+import { CirclePicker } from 'react-color'
 
 import Cookies from "universal-cookie"
 import { useNavigate } from "react-router-dom"
@@ -26,6 +27,7 @@ const SchedulePage = () => {
         finish: '',
         day:'',
         description: '',
+        color:''
     })    
 
     const secNum = (window.innerWidth - 300) / 210
@@ -63,16 +65,7 @@ const SchedulePage = () => {
         })
         .then(res => res.json())
         .then(res_data => {
-            console.log(res_data)
-            let tempTimeEventsData = {
-                1:[],
-                2:[],
-                3:[],
-                4:[],
-                5:[],
-                6:[],
-                7:[],
-            }
+            let tempTimeEventsData = {1:[], 2:[], 3:[], 4:[], 5:[], 6:[], 7:[]}
 
             for(let timeEvent of res_data['onetime_events']) {
                 let dateTimeEvent = {
@@ -105,7 +98,6 @@ const SchedulePage = () => {
                     tempTimeEventsData[i].push(dateTimeEvent)
                 }
             }
-            console.log(tempTimeEventsData)
             setEventData(tempTimeEventsData)
         })
     }
@@ -128,7 +120,8 @@ const SchedulePage = () => {
             body: JSON.stringify({
                 start: start,
                 finish: finish,
-                description: newTimeEvent.description
+                description: newTimeEvent.description,
+                color: newTimeEvent.color
             })
         })
         .then(res => res.json())
@@ -146,10 +139,11 @@ const SchedulePage = () => {
             },
             credentials:'same-origin',
             body: JSON.stringify({
-                start: DateTime.fromISO(newTimeEvent.start).toUTC().toFormat('hh:mm:ss'),
-                finish: DateTime.fromISO(newTimeEvent.finish).toUTC().toFormat('hh:mm:ss'),
+                start: DateTime.fromISO(newTimeEvent.start).toUTC().toFormat('HH:mm:ss'),
+                finish: DateTime.fromISO(newTimeEvent.finish).toUTC().toFormat('HH:mm:ss'),
                 description: newTimeEvent.description,
-                day: newTimeEvent.day
+                day: newTimeEvent.day,
+                color: newTimeEvent.color
             })
         })
         .then(res => res.json())
@@ -159,7 +153,6 @@ const SchedulePage = () => {
         })
     }
     const createDailyEvent = async() => {
-        console.log(newTimeEvent)
         fetch('/api/daily_events', {
             method:'POST',
             headers: {
@@ -168,9 +161,10 @@ const SchedulePage = () => {
             },
             credentials:"same-origin",
             body: JSON.stringify({
-                start: DateTime.fromISO(newTimeEvent.start).toUTC().toFormat('hh:mm:ss'),
-                finish: DateTime.fromISO(newTimeEvent.finish).toUTC().toFormat('hh:mm:ss'),
-                description: newTimeEvent.description
+                start: DateTime.fromISO(newTimeEvent.start).toUTC().toFormat('HH:mm:ss'),
+                finish: DateTime.fromISO(newTimeEvent.finish).toUTC().toFormat('HH:mm:ss'),
+                description: newTimeEvent.description,
+                color: newTimeEvent.color
             })
         })
         .then(res => res.json())
@@ -182,10 +176,12 @@ const SchedulePage = () => {
 
     return (
         <div className='bg-gray-900 min-h-screen'>
-            {/* {detail && 
-            <div className="absolute top-2 left-2 bg-gray-800 rounded-md text-slate-50 p-2">
-                <p>{detail}</p>
-            </div>} */}
+            {
+                detail && 
+                <div className="absolute top-2 left-2 bg-gray-800 rounded-md text-slate-50 p-2">
+                    <p>{detail}</p>
+                </div>
+            }
 
             <TopNavBar authorized={true}/>
             <div className='bg-gradient-to-t from-gray-900 to-indigo-800 p-2'>
@@ -248,10 +244,12 @@ const EventsVisualizer = (props) => {
 
 const EventElement = (props) => {
     return (
-        <div className="w-36 bg-violet-600/80 text-center absolute rounded-xl left-12 "
+        <div className="w-36 text-center absolute rounded-xl left-12 "
         style={{
             height: ((props.timeEvent.finish.hour*60+props.timeEvent.finish.minute) - (props.timeEvent.start.hour*60+props.timeEvent.start.minute)), 
             top: (props.timeEvent.start.hour - props.offset)*60 + props.timeEvent.start.minute + 46,
+            background: props.timeEvent.color,
+            opacity: 0.8
         }}>
             {props.timeEvent.description}
         </div>
@@ -311,6 +309,13 @@ const EventsSettingSideBar = (props) => {
                         </div>
                     </div>
                     <div>
+                        <span className="text-gray-400">select collor</span>
+                        <div className="bg-gray-700 rounded-lg my-1 p-2">
+                            <CirclePicker width="220"
+                            onChangeComplete={(val, ev) => {props.setNewEvent({...props.newTimeEvent, color:val.hex})}}/>
+                        </div>
+                    </div>
+                    <div>
                         <ButtonSubmit1 text="create daily event" onClick={props.submitDailyEvent}/>
                     </div>
                 </div>
@@ -348,6 +353,13 @@ const EventsSettingSideBar = (props) => {
                         </div>
                     </div>
                     <div>
+                        <span className="text-gray-400">select collor</span>
+                            <div className="bg-gray-700 rounded-lg p-2">
+                            <CirclePicker circleSize={28} width="220"
+                            onChangeComplete={(val, ev) => {props.setNewEvent({...props.newTimeEvent, color:val.hex})}}/>
+                            </div>
+                        </div>
+                    <div>
                         <ButtonSubmit1 text="create weekly event" onClick={props.submitWeeklyEvent}/>
                     </div>
                 </div>
@@ -372,6 +384,13 @@ const EventsSettingSideBar = (props) => {
                             <span className="mx-auto inline-block pt-1 text-3xl"> - </span>
                             <TimeInputField className="ml-auto" value={props.newTimeEvent.finish} 
                             changeValue={(val) => {props.setNewEvent({...props.newTimeEvent, finish: val})}}/>
+                        </div>
+                    </div>
+                    <div>
+                        <span className="text-gray-400">select collor</span>
+                        <div className="bg-gray-700 rounded-lg p-2">
+                        <CirclePicker width="220"
+                            onChangeComplete={(val, ev) => {props.setNewEvent({...props.newTimeEvent, color:val.hex})}}/>
                         </div>
                     </div>
                     <div>

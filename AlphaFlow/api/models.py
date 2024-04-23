@@ -8,7 +8,7 @@ class User(AbstractUser):
 
 class TimeEvent(models.Model):
     description = models.TextField(max_length=512)
-    color = models.CharField(max_length=7, default='#f01e2c')
+    color = models.CharField(max_length=7, default='#f44336')
 
     class Meta:
         abstract = True
