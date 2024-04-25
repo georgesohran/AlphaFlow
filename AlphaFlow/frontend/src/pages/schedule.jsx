@@ -19,7 +19,7 @@ const weekDays = { 'MON':1, 'TUE':2, 'WED':3, 'THU':4, 'FRI':5, 'SAT':6, 'SUN':7
 const SchedulePage = () => {
     const [eventsData, setEventData] = useState({})
     const [offsetHours, setOffsetHours] = useState(11)
-    const [selectedEventIndex, setSelectedEventIndex] = useState(0)
+    const [selectedEventIndex, setSelectedEventIndex] = useState([0,0])
     const [detail, setDetail] = useState('')
     const [newTimeEvent, setNewTimeEvent] = useState({
         date:'',
@@ -30,7 +30,7 @@ const SchedulePage = () => {
         color:''
     })    
 
-    const secNum = (window.innerWidth - 300) / 210
+    const secNum = Math.round((window.innerWidth - 336) / 214)
     const navigate = useNavigate()
 
     useEffect(() => {
@@ -43,20 +43,8 @@ const SchedulePage = () => {
         })
     }, [])
 
-    const checkNewEventsContents = () => {
-        if(!(/^[0-5][0-9]\:[0-5][0-9]\:[0-5][0-9]$/.test(newTimeEvent.start) && /^[0-6][0-9]\:[0-6][0-9]\:[0-6][0-9]$/.test(newTimeEvent.start))) {
-            setDetail('invalid start-finish time')
-            return false
-        }
-        if(!(/^[0-3][0-9]\.[01][0-9]\.[0-9][0-9][0-9][0-9]$/.test(newTimeEvent.date))) {
-            setDetail('invalid date')
-            return false
-        }
-
-    }
-
     const getEvents = async() => {
-        fetch('api/get_upcoming_events',{
+        fetch('/api/get_upcoming_events',{
             method:'GET',
             headers: {
                 'X-CSRFToken': cookies.get('csrftoken'),
@@ -184,20 +172,44 @@ const SchedulePage = () => {
             }
 
             <TopNavBar authorized={true}/>
-            <div className='bg-gradient-to-t from-gray-900 to-indigo-800 p-2'>
+            <div className='bg-gray-900 p-2'>
                 <div className="flex">
-                    {
-                    Array.from({length: secNum}, (v, index) => index).map((num, index) => (
-                        <EventsVisualizer key={index} offsetHours={offsetHours}
-                        events={eventsData[DateTime.now().plus({days: num}).weekday]} 
-                        weekDay={Info.weekdays('short')[DateTime.now().plus({days: num}).weekday-1]} 
-                        monthDay={DateTime.now().plus({days:num}).day}/>
-                    ))
-                    }
+                    <div className="relative">
+                        {/* bg marks */}
+                        <div className="z-0 absolute top-16" 
+                            style={{height:700}}>
+
+                                <svg width={secNum*204+40} height="700" viewBox={`0 0 ${secNum*204+40} 700`} fill="none" xmlns="http://www.w3.org/2000/svg" className="absolute">
+                                <rect width={secNum*204+40} height="700" fill="#1f2937" rx={8}/>
+                                <line y1={0} x1={8} x2={secNum*204+32} y2={0} stroke="#374151" stroke-width="4"/>
+                                {Array.from({length: 11}, (v, index) => index).map((val, index) => 
+                                    <line y1={60*index+46} x2={secNum*204+40} y2={60*index+46} stroke="#374151" stroke-width="2"/>    
+                                )}
+                                {Array.from({length: secNum}, (v, index) => index).map((val, index) => 
+                                    <line x1={204*index+47} x2={204*index+47} y2={700} stroke="#374151" stroke-width="2"></line>
+                                )}
+                                </svg>
+                                {Array.from({length: 11}, (v, index) => index).map((val, index) => (
+                                    <text className="absolute text-gray-500 text-sm"
+                                    style={{left:4, top: 26+60*index}}>{DateTime.fromObject({hour:offsetHours}).plus({hour:index}).hour}:00</text>    
+                                ))}
+                        </div>
+                        
+                        <div className=" ml-12 relative flex">
+                        {Array.from({length: secNum}, (v, index) => index).map((num, index) => (
+                            <EventsVisualizer key={index} offsetHours={offsetHours}
+                            events={eventsData[DateTime.now().plus({days: num}).weekday]} 
+                            weekDay={Info.weekdays('short')[DateTime.now().plus({days: num}).weekday-1]} 
+                            monthDay={DateTime.now().plus({days:num}).day}
+                            setSelectedEvent={setSelectedEventIndex}/>
+                        ))}
+                        </div>
+                    </div>
 
                     <EventsSettingSideBar newTimeEvent={newTimeEvent} setNewEvent={setNewTimeEvent}
                     submitOnetimeEvent={createOnetimeEvent} submitWeeklyEvent={createWeeklyEvent} submitDailyEvent={createDailyEvent}
-                    setOffsetHours={setOffsetHours} offsetHours={offsetHours}/>
+                    setOffsetHours={setOffsetHours} offsetHours={offsetHours}
+                    selectedEvent={selectedEventIndex}/>
                 </div>
 
             </div>
@@ -210,31 +222,17 @@ const SchedulePage = () => {
 
 const EventsVisualizer = (props) => {
     return (
-        <div className="relative">
+        <div>
             <div className="text-center bg-gray-800 rounded-t-xl 
-            w-48 h-20 mx-auto text-white">
+            w-48 mr-3 h-16 text-white outline outline-2 outline-gray-700">
                 <p className="text-xl">{props.weekDay}</p>
                 <p className="text-gray-400">{props.monthDay}</p>
             </div>
-            <div className="w-52 bg-no-repeat 
-            flex-wrap relative -top-6 z-0" 
-            style={{height:700}}>
+            <div className="relative float-left">
                 {props.events && props.events.filter((timeEvent) => timeEvent.start.hour*60+timeEvent.start.minute >= props.offsetHours*60).map((timeEvent, index) => (
-                    <EventElement timeEvent={timeEvent} key={index} offset={props.offsetHours}/>
+                    <EventElement timeEvent={timeEvent} key={index} offset={props.offsetHours} 
+                    setSelectedEvent={props.setSelectedEvent} index={index} day={props.day.toUpperCase()}/>
                 ))}
-
-
-                {/* background marks */}
-                {Array.from({length: 11}, (v, index) => index).map((val, index) => (
-                    <text className="absolute text-gray-500 text-sm"
-                    style={{left:4, top: 26+60*index}}>{DateTime.fromObject({hour:props.offsetHours}).plus({hour:index}).hour}:00</text>    
-                ))}
-                <svg width="200" height="700" viewBox="0 0 200 700" fill="none" xmlns="http://www.w3.org/2000/svg">
-                <rect width="200" height="700" rx="30" fill="#111827"/>
-                {Array.from({length: 11}, (v, index) => index).map((val, index) => 
-                    <line y1={60*index+46} x2="200" y2={60*index+46} stroke="#1F2937" stroke-width="2"/>    
-                )}
-                </svg>
             </div>
         </div>
     )
@@ -244,12 +242,13 @@ const EventsVisualizer = (props) => {
 
 const EventElement = (props) => {
     return (
-        <div className="w-36 text-center absolute rounded-xl left-12 "
+        <div className="w-40 text-center absolute rounded-xl left-5"
+        onClick={() => {props.setSelectedEvent([weekDays[props.day], props.index])}}
         style={{
             height: ((props.timeEvent.finish.hour*60+props.timeEvent.finish.minute) - (props.timeEvent.start.hour*60+props.timeEvent.start.minute)), 
             top: (props.timeEvent.start.hour - props.offset)*60 + props.timeEvent.start.minute + 46,
             background: props.timeEvent.color,
-            opacity: 0.8
+            opacity: 0.7
         }}>
             {props.timeEvent.description}
         </div>
@@ -269,7 +268,7 @@ const EventsSettingSideBar = (props) => {
 
 
     return (
-        <div className="bg-gray-800 ml-auto w-72 md:w-92 p-2 rounded-xl divide-y divide-gray-600 text-white">
+        <div className="bg-gray-800 ml-auto w-80 p-2 rounded-xl divide-y divide-gray-600 text-white">
             <div className="py-4 mx-1 text-gray-400 flex gap-2">
                 <text>set offset hours</text>
                 <input type="number" value={props.offsetHours} min={0} max={14}
@@ -279,7 +278,7 @@ const EventsSettingSideBar = (props) => {
                 focus:outline-none focus:ring focus:border-blue-300 focus:bg-gray-600"/>
             </div>
             <div className="py-4 mx-1 flex flex-wrap gap-4">
-                No event selected {/* edit it later */}
+                <div>{props.selectedEvent}</div>
             </div>
             {/* new daily event */}
             <div className="my-2 py-4 flex">
