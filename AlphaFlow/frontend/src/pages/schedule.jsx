@@ -12,23 +12,25 @@ import { CirclePicker } from 'react-color'
 
 import Cookies from "universal-cookie"
 import { useNavigate } from "react-router-dom"
-const cookies = new Cookies()  
+const cookies = new Cookies()
+
 const weekDays = { 'MON':1, 'TUE':2, 'WED':3, 'THU':4, 'FRI':5, 'SAT':6, 'SUN':7}
 
-
 const SchedulePage = () => {
-    const [eventsData, setEventData] = useState({})
+    const [eventsData, setEventData] = useState(null)
     const [offsetHours, setOffsetHours] = useState(11)
-    const [selectedEventIndex, setSelectedEventIndex] = useState([0,0])
+    const [selectedEventIndex, setSelectedEventIndex] = useState([1,1])
     const [detail, setDetail] = useState('')
     const [newTimeEvent, setNewTimeEvent] = useState({
+        type:'dailyEvent',
         date:'',
         start: '',
         finish: '',
         day:'',
         description: '',
         color:''
-    })    
+    })
+    const [editedEvent, setEditedEvent] = useState(null)
 
     const secNum = Math.round((window.innerWidth - 336) / 214)
     const navigate = useNavigate()
@@ -57,6 +59,7 @@ const SchedulePage = () => {
 
             for(let timeEvent of res_data['onetime_events']) {
                 let dateTimeEvent = {
+                    type: 'onetimeEvent',
                     start: DateTime.fromISO(timeEvent.start),
                     finish: DateTime.fromISO(timeEvent.finish),
                     color: timeEvent.color,
@@ -67,6 +70,7 @@ const SchedulePage = () => {
 
             for(let timeEvent of res_data['weekly_events']) {
                 let dateTimeEvent = {
+                    type:'weeklyEvent',
                     start: DateTime.fromISO(timeEvent.start, {zone:'UTC'}).toLocal(),
                     finish: DateTime.fromISO(timeEvent.finish, {zone:'UTC'}).toLocal(),
                     color: timeEvent.color,
@@ -77,6 +81,7 @@ const SchedulePage = () => {
 
             for(let timeEvent of res_data['daily_events']) {
                 let dateTimeEvent = {
+                    type:'dailyEvent',
                     start: DateTime.fromISO(timeEvent.start, {zone:'UTC'}).toLocal(),
                     finish: DateTime.fromISO(timeEvent.finish, {zone:'UTC'}).toLocal(),
                     color: timeEvent.color,
@@ -162,6 +167,22 @@ const SchedulePage = () => {
         })
     }
 
+    const editOneTimeEvent = async() => {
+        fetch()
+        .then()
+        .then()
+    }
+    const editWeeklyEvent = async() => {
+        fetch()
+        .then()
+        .then()
+    }
+    const editDailyEvent = async() => {
+        fetch()
+        .then()
+        .then()
+    }
+
     return (
         <div className='bg-gray-900 min-h-screen'>
             {
@@ -172,7 +193,7 @@ const SchedulePage = () => {
             }
 
             <TopNavBar authorized={true}/>
-            <div className='bg-gray-900 p-2'>
+            <div className='p-2'>
                 <div className="flex">
                     <div className="relative">
                         {/* bg marks */}
@@ -196,24 +217,25 @@ const SchedulePage = () => {
                         </div>
                         
                         <div className=" ml-12 relative flex">
-                        {Array.from({length: secNum}, (v, index) => index).map((num, index) => (
+                        {eventsData && Array.from({length: secNum}, (v, index) => index).map((num, index) => (
                             <EventsVisualizer key={index} offsetHours={offsetHours}
                             events={eventsData[DateTime.now().plus({days: num}).weekday]} 
                             weekDay={Info.weekdays('short')[DateTime.now().plus({days: num}).weekday-1]} 
                             monthDay={DateTime.now().plus({days:num}).day}
-                            setSelectedEvent={setSelectedEventIndex}/>
+                            setSelectedEvent={setEditedEvent}/>
                         ))}
                         </div>
                     </div>
 
-                    <EventsSettingSideBar newTimeEvent={newTimeEvent} setNewEvent={setNewTimeEvent}
-                    submitOnetimeEvent={createOnetimeEvent} submitWeeklyEvent={createWeeklyEvent} submitDailyEvent={createDailyEvent}
-                    setOffsetHours={setOffsetHours} offsetHours={offsetHours}
-                    selectedEvent={selectedEventIndex}/>
+                    <div className="bg-gray-800 ml-auto w-80 p-2 rounded-xl divide-y divide-gray-600 text-white">
+                        <EditEventsSideBar editedEvent={editedEvent} setEditedEvent={setEditedEvent}/>
+                        
+                        <CreateEventsSideBar newTimeEvent={newTimeEvent} setNewEvent={setNewTimeEvent}
+                        submitOnetimeEvent={createOnetimeEvent} submitWeeklyEvent={createWeeklyEvent} submitDailyEvent={createDailyEvent}/>
+                    </div>
                 </div>
-
             </div>
-            <MyFooter text='something'/>
+            <MyFooter text='AlphaFlow: Focus'/>
         </div>
         )
 }
@@ -229,9 +251,9 @@ const EventsVisualizer = (props) => {
                 <p className="text-gray-400">{props.monthDay}</p>
             </div>
             <div className="relative float-left">
-                {props.events && props.events.filter((timeEvent) => timeEvent.start.hour*60+timeEvent.start.minute >= props.offsetHours*60).map((timeEvent, index) => (
+                {props.events && props.events.map((timeEvent, index) => (
                     <EventElement timeEvent={timeEvent} key={index} offset={props.offsetHours} 
-                    setSelectedEvent={props.setSelectedEvent} index={index} day={props.day.toUpperCase()}/>
+                    setSelectedEvent={props.setSelectedEvent} index={index} day={props.weekDay.toUpperCase()}/>
                 ))}
             </div>
         </div>
@@ -241,9 +263,17 @@ const EventsVisualizer = (props) => {
 
 
 const EventElement = (props) => {
-    return (
+    if(props.timeEvent.start.hour > props.offset) return (
         <div className="w-40 text-center absolute rounded-xl left-5"
-        onClick={() => {props.setSelectedEvent([weekDays[props.day], props.index])}}
+        onClick={() => {props.setSelectedEvent({
+            type: props.timeEvent.type,
+            date: props.timeEvent.start.toFormat('dd.MM.yyyy'),
+            start: props.timeEvent.start.toFormat('HH.mm'),
+            finish: props.timeEvent.finish.toFormat('HH.mm'),
+            day: Info.weekdays('short')[props.timeEvent.start.weekday].toUpperCase(),
+            description: props.timeEvent.description,
+            color: props.timeEvent.color
+        })}}
         style={{
             height: ((props.timeEvent.finish.hour*60+props.timeEvent.finish.minute) - (props.timeEvent.start.hour*60+props.timeEvent.start.minute)), 
             top: (props.timeEvent.start.hour - props.offset)*60 + props.timeEvent.start.minute + 46,
@@ -257,160 +287,208 @@ const EventElement = (props) => {
 
 
 
-const EventsSettingSideBar = (props) => {
+const CreateEventsSideBar = (props) => {
     const modes = ['dailyEvent', 'weeklyEvent', 'onetimeEvent']
-    let options =  []
-    Object.keys(weekDays).forEach((key) => {
-        options.push({label:key, value:key})
-    })
-
     const [modeIndex, setModeIndex] = useState(0)
 
-
     return (
-        <div className="bg-gray-800 ml-auto w-80 p-2 rounded-xl divide-y divide-gray-600 text-white">
-            <div className="py-4 mx-1 text-gray-400 flex gap-2">
-                <text>set offset hours</text>
-                <input type="number" value={props.offsetHours} min={0} max={14}
-                onChange={(ev) => {props.setOffsetHours(ev.target.value)}} 
-                className="rounded-md p-1 text-gray-200 bg-gray-700 
-                hover:bg-gray-600
-                focus:outline-none focus:ring focus:border-blue-300 focus:bg-gray-600"/>
-            </div>
-            <div className="py-4 mx-1 flex flex-wrap gap-4">
-                <div>{props.selectedEvent}</div>
-            </div>
-            {/* new daily event */}
-            <div className="my-2 py-4 flex">
-                <button className="mr-1 rounded-md font-bold text-xl transition-all
-                hover:bg-gray-700 hover:font-black"
-                onClick={() => {modeIndex > 0 && setModeIndex(modeIndex-1)}}>
-                    <span className="flex-col self-center">&lt;</span>
-                </button>
+        <div className="my-2 py-4 flex">
+            <button className="mr-1 rounded-md font-bold text-xl transition-all
+            hover:bg-gray-700 hover:font-black"
+            onClick={() => {modeIndex > 0 && setModeIndex(modeIndex-1)}}>
+                <span className="flex-col self-center">&lt;</span>
+            </button>
 
-                <div style={{display:modes[modeIndex]=="dailyEvent"?"flex":"none"}} 
-                className="flex flex-wrap gap-3">
-                    <div className="text-xl">
-                        Create new <span className="text-blue-500">daily</span> event
-                    </div>
-                    <div className="text-center">
-                        <LargeInputField placeholder="new content here" value={props.newTimeEvent.description}
-                        changeValue={(val) => {props.setNewEvent({...props.newTimeEvent, description: val})}}/>
-                    </div>
-                    <div>
-                        <span className="text-gray-400">time period</span>
-                        <div className="flex" id="time-inputs">
-                            <TimeInputField className="mr-auto" value={props.newTimeEvent.start} 
-                            changeValue={(val) => {props.setNewEvent({...props.newTimeEvent, start: val})}} />
-                            <span className="mx-auto inline-block pt-1 text-3xl"> - </span>
-                            <TimeInputField className="ml-auto" value={props.newTimeEvent.finish} 
-                            changeValue={(val) => {props.setNewEvent({...props.newTimeEvent, finish: val})}}/>
-                        </div>
-                    </div>
-                    <div>
-                        <span className="text-gray-400">select collor</span>
-                        <div className="bg-gray-700 rounded-lg my-1 p-2">
-                            <CirclePicker width="220"
-                            onChangeComplete={(val, ev) => {props.setNewEvent({...props.newTimeEvent, color:val.hex})}}/>
-                        </div>
-                    </div>
-                    <div>
-                        <ButtonSubmit1 text="create daily event" onClick={props.submitDailyEvent}/>
-                    </div>
+            <div style={{display:modes[modeIndex]=="dailyEvent"?"flex":"none"}} 
+            className="flex flex-wrap gap-3">
+                <div className="text-xl">
+                    Create new <span className="text-blue-500">daily</span> event
                 </div>
-                
-                <div style={{display:modes[modeIndex]=="weeklyEvent"?"flex":"none"}}
-                className="flex flex-wrap gap-3">
-                    <div className="text-xl">
-                        Create new <span className="text-blue-500">weekly</span> event
-                    </div>
+                <div className="text-center">
                     <LargeInputField placeholder="new content here" value={props.newTimeEvent.description}
                     changeValue={(val) => {props.setNewEvent({...props.newTimeEvent, description: val})}}/>
-                    <div>
-                        <span className="text-gray-400">day of the week</span>
-                        <div >
-                            <Select defaultValue={Object.keys(weekDays)[0]} 
-                            onChange={(val) => {props.setNewEvent({...props.newTimeEvent, day: val.value})}} 
-                            options={Object.keys(weekDays).map((val, index) => {
-                                return {label:val, value:val}    
-                            })}
-                            unstyled
-                            classNames={{
-                                control: (state) => `bg-gray-700 p-1 rounded-md text-gray-100 mt-1 ${state.isFocused ? 'outline-none ring-1 border-blue-300':''}`,
-                                option: (state) => `bg-gray-700 ${state.isSelected?'bg-indigo-700':''}`
-                            }}/>
-                        </div>
-                    </div>
-                    <div>
-                        <span className="text-gray-400">time period</span>
-                        <div className="flex" id="time-inputs">
-                            <TimeInputField className="mr-auto" value={props.newTimeEvent.start} 
-                            changeValue={(val) => {props.setNewEvent({...props.newTimeEvent, start: val})}} />
-                            <span className="mx-auto inline-block pt-1 text-3xl"> - </span>
-                            <TimeInputField className="ml-auto" value={props.newTimeEvent.finish} 
-                            changeValue={(val) => {props.setNewEvent({...props.newTimeEvent, finish: val})}}/>
-                        </div>
-                    </div>
-                    <div>
-                        <span className="text-gray-400">select collor</span>
-                            <div className="bg-gray-700 rounded-lg p-2">
-                            <CirclePicker circleSize={28} width="220"
-                            onChangeComplete={(val, ev) => {props.setNewEvent({...props.newTimeEvent, color:val.hex})}}/>
-                            </div>
-                        </div>
-                    <div>
-                        <ButtonSubmit1 text="create weekly event" onClick={props.submitWeeklyEvent}/>
+                </div>
+                <div>
+                    <span className="text-gray-400">time period</span>
+                    <div className="flex" id="time-inputs">
+                        <TimeInputField className="mr-auto" value={props.newTimeEvent.start} 
+                        changeValue={(val) => {props.setNewEvent({...props.newTimeEvent, start: val})}} />
+                        <span className="mx-auto inline-block pt-1 text-3xl"> - </span>
+                        <TimeInputField className="ml-auto" value={props.newTimeEvent.finish} 
+                        changeValue={(val) => {props.setNewEvent({...props.newTimeEvent, finish: val})}}/>
                     </div>
                 </div>
-
-                <div style={{display:modes[modeIndex]=="onetimeEvent"?"flex":"none"}}
-                className="flex flex-wrap gap-3">
-                    <div className="text-xl">
-                        Create new <span className="text-blue-500">onetime</span> event
-                    </div>
-                    <LargeInputField placeholder="new content here" value={props.newTimeEvent.description}
-                    changeValue={(val) => {props.setNewEvent({...props.newTimeEvent, description: val})}}/>
-                    <div>
-                        <span className="text-gray-400">date</span>
-                        <DateInputField value={props.newTimeEvent.date} 
-                        changeValue={(val) => {props.setNewEvent({...props.newTimeEvent, date: val})}}/>
-                    </div>
-                    <div>
-                        <span className="text-gray-400">time period</span>
-                        <div className="flex" id="time-inputs">
-                            <TimeInputField className="mr-auto" value={props.newTimeEvent.start} 
-                            changeValue={(val) => {props.setNewEvent({...props.newTimeEvent, start: val})}}/>
-                            <span className="mx-auto inline-block pt-1 text-3xl"> - </span>
-                            <TimeInputField className="ml-auto" value={props.newTimeEvent.finish} 
-                            changeValue={(val) => {props.setNewEvent({...props.newTimeEvent, finish: val})}}/>
-                        </div>
-                    </div>
-                    <div>
-                        <span className="text-gray-400">select collor</span>
-                        <div className="bg-gray-700 rounded-lg p-2">
+                <div>
+                    <span className="text-gray-400">select collor</span>
+                    <div className="bg-gray-700 rounded-lg my-1 p-2">
                         <CirclePicker width="220"
-                            onChangeComplete={(val, ev) => {props.setNewEvent({...props.newTimeEvent, color:val.hex})}}/>
-                        </div>
-                    </div>
-                    <div>
-                        <ButtonSubmit1 text="create onetime event" onClick={props.submitOnetimeEvent}/>
+                        onChangeComplete={(val, ev) => {props.setNewEvent({...props.newTimeEvent, color:val.hex})}}/>
                     </div>
                 </div>
+                <div>
+                    <ButtonSubmit1 text="create daily event" onClick={props.submitDailyEvent}/>
+                </div>
+            </div>
+            
+            <div style={{display:modes[modeIndex]=="weeklyEvent"?"flex":"none"}}
+            className="flex flex-wrap gap-3">
+                <div className="text-xl">
+                    Create new <span className="text-blue-500">weekly</span> event
+                </div>
+                <LargeInputField placeholder="new content here" value={props.newTimeEvent.description}
+                changeValue={(val) => {props.setNewEvent({...props.newTimeEvent, description: val})}}/>
+                <div>
+                    <span className="text-gray-400">day of the week</span>
+                    <div >
+                        <Select defaultValue={Object.keys(weekDays)[0]} 
+                        onChange={(val) => {props.setNewEvent({...props.newTimeEvent, day: val.value})}} 
+                        options={Object.keys(weekDays).map((val, index) => {
+                            return {label:val, value:val}    
+                        })}
+                        unstyled
+                        classNames={{
+                            control: (state) => `bg-gray-700 p-1 rounded-md text-gray-100 mt-1 ${state.isFocused ? 'outline-none ring-1 border-blue-300':''}`,
+                            option: (state) => `bg-gray-700 ${state.isSelected?'bg-indigo-700':''}`
+                        }}/>
+                    </div>
+                </div>
+                <div>
+                    <span className="text-gray-400">time period</span>
+                    <div className="flex" id="time-inputs">
+                        <TimeInputField className="mr-auto" value={props.newTimeEvent.start} 
+                        changeValue={(val) => {props.setNewEvent({...props.newTimeEvent, start: val})}} />
+                        <span className="mx-auto inline-block pt-1 text-3xl"> - </span>
+                        <TimeInputField className="ml-auto" value={props.newTimeEvent.finish} 
+                        changeValue={(val) => {props.setNewEvent({...props.newTimeEvent, finish: val})}}/>
+                    </div>
+                </div>
+                <div className="flex">
+                    <span className="text-gray-400">select collor </span>
+                    <div className="bg-gray-700 rounded-lg p-2">
+                    <CirclePicker circleSize={28} width="220"
+                    onChangeComplete={(val, ev) => {props.setNewEvent({...props.newTimeEvent, color:val.hex})}}/>
+                    </div>
+                </div>
+                <div>
+                    <ButtonSubmit1 text="create weekly event" onClick={props.submitWeeklyEvent}/>
+                </div>
+            </div>
 
-                <button className="ml-1 rounded-md font-bold text-xl transition-all
-                hover:bg-gray-700 hover:font-black"
-                onClick={() => {modeIndex < modes.length-1 && setModeIndex(modeIndex+1)}}>
-                    <span className="flex-col self-center">&gt;</span>
-                </button>
+            <div style={{display:modes[modeIndex]=="onetimeEvent"?"flex":"none"}}
+            className="flex flex-wrap gap-3">
+                <div className="text-xl">
+                    Create new <span className="text-blue-500">onetime</span> event
+                </div>
+                <LargeInputField placeholder="new content here" value={props.newTimeEvent.description}
+                changeValue={(val) => {props.setNewEvent({...props.newTimeEvent, description: val})}}/>
+                <div>
+                    <span className="text-gray-400">date</span>
+                    <DateInputField value={props.newTimeEvent.date} 
+                    changeValue={(val) => {props.setNewEvent({...props.newTimeEvent, date: val})}}/>
+                </div>
+                <div>
+                    <span className="text-gray-400">time period</span>
+                    <div className="flex" id="time-inputs">
+                        <TimeInputField className="mr-auto" value={props.newTimeEvent.start} 
+                        changeValue={(val) => {props.setNewEvent({...props.newTimeEvent, start: val})}}/>
+                        <span className="mx-auto inline-block pt-1 text-3xl"> - </span>
+                        <TimeInputField className="ml-auto" value={props.newTimeEvent.finish} 
+                        changeValue={(val) => {props.setNewEvent({...props.newTimeEvent, finish: val})}}/>
+                    </div>
+                </div>
+                <div>
+                    <span className="text-gray-400">select collor</span>
+                    <div className="bg-gray-700 rounded-lg p-2">
+                    <CirclePicker width="220"
+                        onChangeComplete={(val, ev) => {props.setNewEvent({...props.newTimeEvent, color:val.hex})}}/>
+                    </div>
+                </div>
+                <div>
+                    <ButtonSubmit1 text="create onetime event" onClick={props.submitOnetimeEvent}/>
+                </div>
             </div>
-            {/* new weekly event */}
-            <div className="py-4 my-2 mx-2 flex flex-wrap gap-3">
-                something
-            </div>
-    
+
+            <button className="ml-1 rounded-md font-bold text-xl transition-all
+            hover:bg-gray-700 hover:font-black"
+            onClick={() => {modeIndex < modes.length-1 && setModeIndex(modeIndex+1)}}>
+                <span className="flex-col self-center">&gt;</span>
+            </button>
         </div>
     )
 }
 
+
+
+const EditEventsSideBar = (props) => {
+    if(props.editedEvent) return (
+        <div className="my-2 py-4 mx-1 bg-gray-800 rounded-lg">
+            <div className="text-xl text-center">
+                <span className="text-blue-500">Edit</span> event
+            </div>
+            <div className="text-center">
+                <LargeInputField placeholder="new content here" value={props.editedEvent.description}
+                changeValue={(val) => {props.setEditedEvent({...props.editedEvent, description: val})}}/>
+            </div>
+            {props.editedEvent.type=='onetimeEvent' && (
+                <div>
+                    <span className="text-gray-400">date</span>
+                    <DateInputField value={props.editedEvent.date} 
+                    changeValue={(val) => {props.setEditedEvent({...props.editedEvent, date: val})}}/>
+                </div>
+            )}
+            {props.editedEvent.type=='weeklyEvent' && (
+                <div>
+                    <span className="text-gray-400">day of the week</span>
+                    <div >
+                        <Select defaultValue={Object.keys(weekDays)[0]} 
+                        onChange={(val) => {props.setNewEvent({...props.editedEvent, day: val.value})}} 
+                        options={Object.keys(weekDays).map((val, index) => {
+                            return {label:val, value:val}    
+                        })}
+                        unstyled
+                        classNames={{
+                            control: (state) => `bg-gray-700 p-1 rounded-md text-gray-100 mt-1 ${state.isFocused ? 'outline-none ring-1 border-blue-300':''}`,
+                            option: (state) => `bg-gray-700 ${state.isSelected?'bg-indigo-700':''}`
+                        }}/>
+                    </div>
+                </div>
+            )}
+            <div>
+                <span className="text-gray-400">time period</span>
+                <div className="flex" id="time-inputs">
+                    <TimeInputField className="mr-auto" value={props.editedEvent.start} 
+                    changeValue={(val) => {props.setNewEvent({...props.editedEvent, start: val})}} />
+                    <span className="mx-auto inline-block pt-1 text-3xl"> - </span>
+                    <TimeInputField className="ml-auto" value={props.editedEvent.finish} 
+                    changeValue={(val) => {props.setNewEvent({...props.editedEvent, finish: val})}}/>
+                </div>
+            </div>
+            <div>
+                <span className="text-gray-400">
+                    select collor 
+                    <span className="w-16 h-4 rounded-md" style={{background: props.editedEvent.color}}></span>
+                </span>
+                
+                <div className="bg-gray-700 rounded-lg my-1 p-2">
+                    <CirclePicker width="220"
+                    onChangeComplete={(val, ev) => {props.setNewEvent({...props.editedEvent, color:val.hex})}}/>
+                </div>
+            </div>
+            <div>
+                <ButtonSubmit1 text="edit event"/>
+            </div>
+        </div>
+    )
+}
+
+
+
+const ChangeApearenceSideBar = (props) => {
+    return (
+        <div>
+
+        </div>
+    )
+}
 
 export default SchedulePage
