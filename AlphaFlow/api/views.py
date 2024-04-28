@@ -80,7 +80,7 @@ def api_register(request):
 
 
 
-@api_view(['POST'])
+@api_view(['POST', 'PUT', 'DELETE'])
 @ensure_csrf_cookie
 def daily_events(request):
     if not request.user.is_authenticated:
@@ -96,11 +96,20 @@ def daily_events(request):
     if not start or not finish or not description:
         return Response({"detail":"not enough info"})
     
-    DailyEvent.objects.create(start=start, finish=finish, color=color, description=description, user=request.user)
+    if request.method == 'POST':
+        DailyEvent.objects.create(start=start, finish=finish, color=color, description=description, user=request.user)
+    elif request.method == 'PUT':
+        id = request.data.get('id')
+        event = DailyEvent.objects.get(id=id)
+        event.start = start
+        event.finish = finish
+        event.description = description
+        event.color = color
+        event.save()
 
     return Response({"detail":"success"})
 
-@api_view(['POST'])
+@api_view(['POST', 'PUT', 'DELETE'])
 @ensure_csrf_cookie
 def weekly_events(request):
     if not request.user.is_authenticated:
@@ -117,11 +126,21 @@ def weekly_events(request):
     if not start or not finish or not description or not day:
         return Response({"detail":"not enough info"})
     
-    WeeklyEvent.objects.create(day=day, start=start, finish=finish, description=description, color=color, user=request.user)
+    if request.method == 'POST':
+        WeeklyEvent.objects.create(day=day, start=start, finish=finish, description=description, color=color, user=request.user)
+    elif request.method == 'PUT':
+        id = request.data.get('id')
+        event = WeeklyEvent.objects.get(id=id)
+        event.start = start
+        event.finish = finish
+        event.description = description
+        event.color = color
+        event.day = day
+        event.save()
 
     return Response({"detail":"success"})
 
-@api_view(['POST'])
+@api_view(['POST', 'PUT', 'DELETE'])
 @ensure_csrf_cookie
 def onetime_events(request):
     if not request.user.is_authenticated:
@@ -137,7 +156,16 @@ def onetime_events(request):
     if not start or not finish or not description:
         return Response({'detail':'not enough info'}) 
 
-    OneTimeEvent.objects.create(start=start, finish=finish, description=description, color=color, user=request.user)
+    if request.method == 'POST':
+        OneTimeEvent.objects.create(start=start, finish=finish, description=description, color=color, user=request.user)
+    elif request.method == 'PUT':
+        id = request.data.get('id')
+        event = DailyEvent.objects.get(id=id)
+        event.start = start
+        event.finish = finish
+        event.description = description
+        event.color = color
+        event.save()
 
     return Response({"detail":"success"})
 

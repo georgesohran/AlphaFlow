@@ -59,6 +59,7 @@ const SchedulePage = () => {
 
             for(let timeEvent of res_data['onetime_events']) {
                 let dateTimeEvent = {
+                    id: timeEvent.id,
                     type: 'onetimeEvent',
                     start: DateTime.fromISO(timeEvent.start),
                     finish: DateTime.fromISO(timeEvent.finish),
@@ -70,6 +71,7 @@ const SchedulePage = () => {
 
             for(let timeEvent of res_data['weekly_events']) {
                 let dateTimeEvent = {
+                    id: timeEvent.id,
                     type:'weeklyEvent',
                     start: DateTime.fromISO(timeEvent.start, {zone:'UTC'}).toLocal(),
                     finish: DateTime.fromISO(timeEvent.finish, {zone:'UTC'}).toLocal(),
@@ -81,6 +83,7 @@ const SchedulePage = () => {
 
             for(let timeEvent of res_data['daily_events']) {
                 let dateTimeEvent = {
+                    id: timeEvent.id,
                     type:'dailyEvent',
                     start: DateTime.fromISO(timeEvent.start, {zone:'UTC'}).toLocal(),
                     finish: DateTime.fromISO(timeEvent.finish, {zone:'UTC'}).toLocal(),
@@ -168,19 +171,75 @@ const SchedulePage = () => {
     }
 
     const editOneTimeEvent = async() => {
-        fetch()
-        .then()
-        .then()
+        let [day, month, year] = newTimeEvent.date.split('.')
+
+        let start = DateTime.fromISO(editedEvent.start)
+            .set({day:parseInt(day), month:parseInt(month), year:parseInt(year)}).toUTC().toString()
+        let finish = DateTime.fromISO(editedEvent.finish)
+            .set({day:parseInt(day), month:parseInt(month), year:parseInt(year)}).toUTC().toString()
+
+        fetch('api/onetime_events', {
+            method:'PUT',
+            headers: {
+                'X-CSRFToken': cookies.get('csrftoken'),
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({
+                start: start,
+                finish: finish,
+                description: editedEvent.description,
+                color: editedEvent.color,
+                id: editedEvent.id
+            })
+        })
+        .then(res => res.json())
+        .then(res_data => {
+            setDetail(res_data.detail)
+            return getEvents()
+        })
     }
     const editWeeklyEvent = async() => {
-        fetch()
-        .then()
-        .then()
+        fetch('api/weekly_events', {
+            method:'PUT',
+            headers: {
+                'X-CSRFToken': cookies.get('csrftoken'),
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({
+                start: DateTime.fromISO(editedEvent.start).toUTC().toFormat('HH:mm:ss'),
+                finish: DateTime.fromISO(editedEvent.finish).toUTC().toFormat('HH:mm:ss'),
+                description: editedEvent.description,
+                day: editedEvent.day,
+                color: editedEvent.color,
+                id: editedEvent.id
+            })
+        })
+        .then(res => res.json())
+        .then(res_data => {
+            setDetail(res_data.detail)
+            return getEvents()
+        })
     }
     const editDailyEvent = async() => {
-        fetch()
-        .then()
-        .then()
+        fetch('api/daily_events', {
+            method: 'PUT',
+            headers: {
+                'X-CSRFToken': cookies.get('csrftoken'),
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({
+                start: DateTime.fromISO(editedEvent.start).toUTC().toFormat('HH:mm:ss'),
+                finish: DateTime.fromISO(editedEvent.finish).toUTC().toFormat('HH:mm:ss'),
+                description: editedEvent.description,
+                color: editedEvent.color,
+                id: editedEvent.id
+            })
+        })
+        .then(res => res.json())
+        .then(res_data => {
+            setDetail(res_data.detail)
+            return getEvents()
+        })
     }
 
     return (
@@ -228,7 +287,8 @@ const SchedulePage = () => {
                     </div>
 
                     <div className="bg-gray-800 ml-auto w-80 p-2 rounded-xl divide-y divide-gray-600 text-white">
-                        <EditEventsSideBar editedEvent={editedEvent} setEditedEvent={setEditedEvent}/>
+                        <EditEventsSideBar editedEvent={editedEvent} setEditedEvent={setEditedEvent}
+                        editOneTimeEvent={editOneTimeEvent} editWeeklyEvent={editWeeklyEvent} editDailyEvent={editDailyEvent}/>
                         
                         <CreateEventsSideBar newTimeEvent={newTimeEvent} setNewEvent={setNewTimeEvent}
                         submitOnetimeEvent={createOnetimeEvent} submitWeeklyEvent={createWeeklyEvent} submitDailyEvent={createDailyEvent}/>
@@ -253,7 +313,7 @@ const EventsVisualizer = (props) => {
             <div className="relative float-left">
                 {props.events && props.events.map((timeEvent, index) => (
                     <EventElement timeEvent={timeEvent} key={index} offset={props.offsetHours} 
-                    setSelectedEvent={props.setSelectedEvent} index={index} day={props.weekDay.toUpperCase()}/>
+                    setSelectedEvent={props.setSelectedEvent} index={index} day={props.weekDay && props.weekDay.toUpperCase()}/>
                 ))}
             </div>
         </div>
@@ -266,11 +326,12 @@ const EventElement = (props) => {
     if(props.timeEvent.start.hour > props.offset) return (
         <div className="w-40 text-center absolute rounded-xl left-5"
         onClick={() => {props.setSelectedEvent({
+            id: props.timeEvent.id,
             type: props.timeEvent.type,
             date: props.timeEvent.start.toFormat('dd.MM.yyyy'),
-            start: props.timeEvent.start.toFormat('HH.mm'),
-            finish: props.timeEvent.finish.toFormat('HH.mm'),
-            day: Info.weekdays('short')[props.timeEvent.start.weekday].toUpperCase(),
+            start: props.timeEvent.start.toFormat('HH:mm'),
+            finish: props.timeEvent.finish.toFormat('HH:mm'),
+            day: Info.weekdays('short')[props.timeEvent.start.weekday-1].toUpperCase(),
             description: props.timeEvent.description,
             color: props.timeEvent.color
         })}}
@@ -420,9 +481,9 @@ const CreateEventsSideBar = (props) => {
 
 
 const EditEventsSideBar = (props) => {
-    if(props.editedEvent) return (
-        <div className="my-2 py-4 mx-1 bg-gray-800 rounded-lg">
-            <div className="text-xl text-center">
+    if(props.editedEvent) { return (
+        <div className="my-2 py-4 mx-1 bg-gray-800 flex flex-wrap gap-3">
+            <div className="text-xl text-center mx-auto">
                 <span className="text-blue-500">Edit</span> event
             </div>
             <div className="text-center">
@@ -441,7 +502,7 @@ const EditEventsSideBar = (props) => {
                     <span className="text-gray-400">day of the week</span>
                     <div >
                         <Select defaultValue={Object.keys(weekDays)[0]} 
-                        onChange={(val) => {props.setNewEvent({...props.editedEvent, day: val.value})}} 
+                        onChange={(val) => {props.setEditedEvent({...props.editedEvent, day: val.value})}} 
                         options={Object.keys(weekDays).map((val, index) => {
                             return {label:val, value:val}    
                         })}
@@ -457,28 +518,33 @@ const EditEventsSideBar = (props) => {
                 <span className="text-gray-400">time period</span>
                 <div className="flex" id="time-inputs">
                     <TimeInputField className="mr-auto" value={props.editedEvent.start} 
-                    changeValue={(val) => {props.setNewEvent({...props.editedEvent, start: val})}} />
+                    changeValue={(val) => {props.setEditedEvent({...props.editedEvent, start: val})}} />
                     <span className="mx-auto inline-block pt-1 text-3xl"> - </span>
                     <TimeInputField className="ml-auto" value={props.editedEvent.finish} 
-                    changeValue={(val) => {props.setNewEvent({...props.editedEvent, finish: val})}}/>
+                    changeValue={(val) => {props.setEditedEvent({...props.editedEvent, finish: val})}}/>
                 </div>
             </div>
             <div>
-                <span className="text-gray-400">
-                    select collor 
-                    <span className="w-16 h-4 rounded-md" style={{background: props.editedEvent.color}}></span>
+                <span className="text-gray-400 flex flex-wrap gap-2">
+                    <div className="h-4 flex-col"> select collor </div>
+                    <div className="w-16 h-4 rounded-md flex-col" style={{background: props.editedEvent.color}}></div>
                 </span>
                 
                 <div className="bg-gray-700 rounded-lg my-1 p-2">
                     <CirclePicker width="220"
-                    onChangeComplete={(val, ev) => {props.setNewEvent({...props.editedEvent, color:val.hex})}}/>
+                    onChangeComplete={(val, ev) => {props.setEditedEvent({...props.editedEvent, color:val.hex})}}/>
                 </div>
             </div>
-            <div>
-                <ButtonSubmit1 text="edit event"/>
+            <div className="flex">
+                <ButtonSubmit1 text='edit event' onClick={() => {
+                    props.editedEvent.type == 'dailyEvent' && props.editDailyEvent()
+                    props.editedEvent.type == 'weeklyEvent' && props.editWeeklyEvent()
+                    props.editedEvent.type == 'onetimeEvent' && props.editOneTimeEvent()
+                }}/>    
+                <ButtonSubmit1 text='close' onClick={() => {props.setEditedEvent(null)}}/>
             </div>
         </div>
-    )
+    )}
 }
 
 

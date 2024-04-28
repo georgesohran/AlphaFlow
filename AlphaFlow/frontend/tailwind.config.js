@@ -7,9 +7,7 @@ export default {
   ],
   theme: {
     extend: {
-      backgroundImage: {
-        'time-marks':"url('/src/images/time_marks.svg')"
-      }
+      
     },
   },
   plugins: [],
