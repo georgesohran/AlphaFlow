@@ -86,19 +86,32 @@ def daily_events(request):
     if not request.user.is_authenticated:
         return Response({"detail":"not authorized"}, status=400)
     
-    start = request.data.get('start')
-    finish = request.data.get('finish')
-    description = request.data.get('description')
-    color = request.data.get('color')
-    if not color:
-        color = '#f44336'
-
-    if not start or not finish or not description:
-        return Response({"detail":"not enough info"})
-    
     if request.method == 'POST':
+        start = request.data.get('start')
+        finish = request.data.get('finish')
+        description = request.data.get('description')
+        color = request.data.get('color')
+        
+        if not color:
+            color = '#f44336'
+
+        if not start or not finish or not description:
+            return Response({"detail":"not enough info"})
+        
         DailyEvent.objects.create(start=start, finish=finish, color=color, description=description, user=request.user)
+    
     elif request.method == 'PUT':
+        start = request.data.get('start')
+        finish = request.data.get('finish')
+        description = request.data.get('description')
+        color = request.data.get('color')
+        
+        if not color:
+            color = '#f44336'
+
+        if not start or not finish or not description:
+            return Response({"detail":"not enough info"})
+
         id = request.data.get('id')
         event = DailyEvent.objects.get(id=id)
         event.start = start
@@ -106,6 +119,13 @@ def daily_events(request):
         event.description = description
         event.color = color
         event.save()
+
+    elif request.method=='DELETE':
+        id = request.data.get('id')
+        if not id: 
+            return Response({"detail":"not enough info"})
+        event = DailyEvent.objects.get(id=id)
+        event.delete()
 
     return Response({"detail":"success"})
 
@@ -115,28 +135,46 @@ def weekly_events(request):
     if not request.user.is_authenticated:
         return Response({"detail":"not authorized"}, status=400)
     
-    start = request.data.get('start')
-    finish = request.data.get('finish')
-    day = request.data.get('day')
-    description = request.data.get('description')
-    color = request.data.get('color')
-    if not color:
-        color = '#f44336'
-
-    if not start or not finish or not description or not day:
-        return Response({"detail":"not enough info"})
-    
     if request.method == 'POST':
-        WeeklyEvent.objects.create(day=day, start=start, finish=finish, description=description, color=color, user=request.user)
+        start = request.data.get('start')
+        finish = request.data.get('finish')
+        description = request.data.get('description')
+        color = request.data.get('color')
+        
+        if not color:
+            color = '#f44336'
+
+        if not start or not finish or not description:
+            return Response({"detail":"not enough info"})
+        
+        WeeklyEvent.objects.create(start=start, finish=finish, color=color, description=description, user=request.user)
+    
     elif request.method == 'PUT':
+        start = request.data.get('start')
+        finish = request.data.get('finish')
+        description = request.data.get('description')
+        color = request.data.get('color')
+        
+        if not color:
+            color = '#f44336'
+
+        if not start or not finish or not description:
+            return Response({"detail":"not enough info"})
+
         id = request.data.get('id')
         event = WeeklyEvent.objects.get(id=id)
         event.start = start
         event.finish = finish
         event.description = description
         event.color = color
-        event.day = day
         event.save()
+
+    elif request.method=='DELETE':
+        id = request.data.get('id')
+        if not id: 
+            return Response({"detail":"not enough info"})
+        event = WeeklyEvent.objects.get(id=id)
+        event.delete()
 
     return Response({"detail":"success"})
 
@@ -145,27 +183,47 @@ def weekly_events(request):
 def onetime_events(request):
     if not request.user.is_authenticated:
         return Response({"detail":"not authorized"}, status=400)
-
-    start = request.data.get('start')
-    finish = request.data.get('finish')
-    description = request.data.get('description')
-    color = request.data.get('color')
-    if not color:
-        color = '#f44336'
-
-    if not start or not finish or not description:
-        return Response({'detail':'not enough info'}) 
-
+    
     if request.method == 'POST':
-        OneTimeEvent.objects.create(start=start, finish=finish, description=description, color=color, user=request.user)
+        start = request.data.get('start')
+        finish = request.data.get('finish')
+        description = request.data.get('description')
+        color = request.data.get('color')
+        
+        if not color:
+            color = '#f44336'
+
+        if not start or not finish or not description:
+            return Response({"detail":"not enough info"})
+        
+        OneTimeEvent.objects.create(start=start, finish=finish, color=color, description=description, user=request.user)
+    
     elif request.method == 'PUT':
+        start = request.data.get('start')
+        finish = request.data.get('finish')
+        description = request.data.get('description')
+        color = request.data.get('color')
+        
+        if not color:
+            color = '#f44336'
+
+        if not start or not finish or not description:
+            return Response({"detail":"not enough info"})
+
         id = request.data.get('id')
-        event = DailyEvent.objects.get(id=id)
+        event = OneTimeEvent.objects.get(id=id)
         event.start = start
         event.finish = finish
         event.description = description
         event.color = color
         event.save()
+
+    elif request.method=='DELETE':
+        id = request.data.get('id')
+        if not id: 
+            return Response({"detail":"not enough info"})
+        event = OneTimeEvent.objects.get(id=id)
+        event.delete()
 
     return Response({"detail":"success"})
 

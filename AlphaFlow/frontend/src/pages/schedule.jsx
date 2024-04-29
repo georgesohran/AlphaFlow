@@ -4,7 +4,7 @@ import TopNavBar from "../components/navbar"
 import MyFooter from "../components/footer"
 import { getAuth }from "../util" 
 import { TimeInputField, LargeInputField, DateInputField, InputField} from "../components/inputfield"
-import { ButtonSubmit1 } from "../components/buttons"
+import { ButtonSubmit1, ButtonSubmit2 } from "../components/buttons"
 import Select from "react-select"
 
 import { DateTime, Info } from "luxon"
@@ -170,7 +170,7 @@ const SchedulePage = () => {
         })
     }
 
-    const editOneTimeEvent = async() => {
+    const editOnetimeEvent = async() => {
         let [day, month, year] = newTimeEvent.date.split('.')
 
         let start = DateTime.fromISO(editedEvent.start)
@@ -184,6 +184,7 @@ const SchedulePage = () => {
                 'X-CSRFToken': cookies.get('csrftoken'),
                 'Content-Type': 'application/json',
             },
+            credentials:"same-origin",
             body: JSON.stringify({
                 start: start,
                 finish: finish,
@@ -205,6 +206,7 @@ const SchedulePage = () => {
                 'X-CSRFToken': cookies.get('csrftoken'),
                 'Content-Type': 'application/json',
             },
+            credentials:"same-origin",
             body: JSON.stringify({
                 start: DateTime.fromISO(editedEvent.start).toUTC().toFormat('HH:mm:ss'),
                 finish: DateTime.fromISO(editedEvent.finish).toUTC().toFormat('HH:mm:ss'),
@@ -227,6 +229,7 @@ const SchedulePage = () => {
                 'X-CSRFToken': cookies.get('csrftoken'),
                 'Content-Type': 'application/json',
             },
+            credentials:"same-origin",
             body: JSON.stringify({
                 start: DateTime.fromISO(editedEvent.start).toUTC().toFormat('HH:mm:ss'),
                 finish: DateTime.fromISO(editedEvent.finish).toUTC().toFormat('HH:mm:ss'),
@@ -238,6 +241,55 @@ const SchedulePage = () => {
         .then(res => res.json())
         .then(res_data => {
             setDetail(res_data.detail)
+            return getEvents()
+        })
+    }
+
+    const deleteOnetimeEvent = async() => {
+        fetch('api/onetime_events', {
+            method: 'DELETE',
+            headers: {
+                'X-CSRFToken': cookies.get('csrftoken'),
+                'Content-Type': 'application/json',
+            },
+            credentials:"same-origin",
+            body: JSON.stringify({id: editedEvent.id})
+        })
+        .then(res => res.json()) 
+        .then(res_data => {
+            console.log(res_data)
+            return getEvents()
+        })
+    }
+    const deleteWeeklyEvent = async() => {
+        fetch('api/weekly_events', {
+            method: 'DELETE',
+            headers: {
+                'X-CSRFToken': cookies.get('csrftoken'),
+                'Content-Type': 'application/json',
+            },
+            credentials:"same-origin",
+            body: JSON.stringify({id: editedEvent.id})
+        })
+        .then(res => res.json())
+        .then(res_data => {
+            console.log(res_data)
+            return getEvents()
+        })
+    }
+    const deleteDailyEvent = async() => {
+        fetch('api/daily_events', {
+            method: 'DELETE',
+            headers: {
+                'X-CSRFToken': cookies.get('csrftoken'),
+                'Content-Type': 'application/json',
+            },
+            credentials:"same-origin",
+            body: JSON.stringify({id: editedEvent.id})
+        })
+        .then(res => res.json())
+        .then(res_data => {
+            console.log(res_data)
             return getEvents()
         })
     }
@@ -288,8 +340,9 @@ const SchedulePage = () => {
 
                     <div className="bg-gray-800 ml-auto w-80 p-2 rounded-xl divide-y divide-gray-600 text-white">
                         <EditEventsSideBar editedEvent={editedEvent} setEditedEvent={setEditedEvent}
-                        editOneTimeEvent={editOneTimeEvent} editWeeklyEvent={editWeeklyEvent} editDailyEvent={editDailyEvent}/>
-                        
+                        editOnetimeEvent={editOnetimeEvent} editWeeklyEvent={editWeeklyEvent} editDailyEvent={editDailyEvent}
+                        deleteOnetimeEvent={deleteOnetimeEvent} deleteWeeklyEvent={deleteWeeklyEvent} deleteDailyEvent={deleteDailyEvent}/>                        
+
                         <CreateEventsSideBar newTimeEvent={newTimeEvent} setNewEvent={setNewTimeEvent}
                         submitOnetimeEvent={createOnetimeEvent} submitWeeklyEvent={createWeeklyEvent} submitDailyEvent={createDailyEvent}/>
                     </div>
@@ -323,7 +376,7 @@ const EventsVisualizer = (props) => {
 
 
 const EventElement = (props) => {
-    if(props.timeEvent.start.hour > props.offset) return (
+    if(props.timeEvent.start.hour >= props.offset) return (
         <div className="w-40 text-center absolute rounded-xl left-5"
         onClick={() => {props.setSelectedEvent({
             id: props.timeEvent.id,
@@ -360,45 +413,22 @@ const CreateEventsSideBar = (props) => {
                 <span className="flex-col self-center">&lt;</span>
             </button>
 
-            <div style={{display:modes[modeIndex]=="dailyEvent"?"flex":"none"}} 
-            className="flex flex-wrap gap-3">
-                <div className="text-xl">
-                    Create new <span className="text-blue-500">daily</span> event
-                </div>
-                <div className="text-center">
-                    <LargeInputField placeholder="new content here" value={props.newTimeEvent.description}
-                    changeValue={(val) => {props.setNewEvent({...props.newTimeEvent, description: val})}}/>
-                </div>
-                <div>
-                    <span className="text-gray-400">time period</span>
-                    <div className="flex" id="time-inputs">
-                        <TimeInputField className="mr-auto" value={props.newTimeEvent.start} 
-                        changeValue={(val) => {props.setNewEvent({...props.newTimeEvent, start: val})}} />
-                        <span className="mx-auto inline-block pt-1 text-3xl"> - </span>
-                        <TimeInputField className="ml-auto" value={props.newTimeEvent.finish} 
-                        changeValue={(val) => {props.setNewEvent({...props.newTimeEvent, finish: val})}}/>
-                    </div>
-                </div>
-                <div>
-                    <span className="text-gray-400">select collor</span>
-                    <div className="bg-gray-700 rounded-lg my-1 p-2">
-                        <CirclePicker width="220"
-                        onChangeComplete={(val, ev) => {props.setNewEvent({...props.newTimeEvent, color:val.hex})}}/>
-                    </div>
-                </div>
-                <div>
-                    <ButtonSubmit1 text="create daily event" onClick={props.submitDailyEvent}/>
-                </div>
-            </div>
-            
-            <div style={{display:modes[modeIndex]=="weeklyEvent"?"flex":"none"}}
-            className="flex flex-wrap gap-3">
-                <div className="text-xl">
-                    Create new <span className="text-blue-500">weekly</span> event
+            <div className="flex flex-wrap gap-3">
+                <div className="text-lg">
+                    Create new <span className="text-blue-500">
+                        {modes[modeIndex]=='onetimeEvent' && 'onetime'}
+                        {modes[modeIndex]=='weeklyEvent' && 'weekly'}
+                        {modes[modeIndex]=='dailyEvent' && 'daily'}
+                    </span> event
                 </div>
                 <LargeInputField placeholder="new content here" value={props.newTimeEvent.description}
                 changeValue={(val) => {props.setNewEvent({...props.newTimeEvent, description: val})}}/>
-                <div>
+                <div style={{display: modes[modeIndex]=='onetimeEvent'? 'block' : 'none'}}>
+                    <span className="text-gray-400">date</span>
+                    <DateInputField value={props.newTimeEvent.date} 
+                    changeValue={(val) => {props.setNewEvent({...props.newTimeEvent, date: val})}}/>
+                </div>
+                <div style={{display: modes[modeIndex]=='weeklyEvent'? 'block' : 'none'}}>
                     <span className="text-gray-400">day of the week</span>
                     <div >
                         <Select defaultValue={Object.keys(weekDays)[0]} 
@@ -417,40 +447,6 @@ const CreateEventsSideBar = (props) => {
                     <span className="text-gray-400">time period</span>
                     <div className="flex" id="time-inputs">
                         <TimeInputField className="mr-auto" value={props.newTimeEvent.start} 
-                        changeValue={(val) => {props.setNewEvent({...props.newTimeEvent, start: val})}} />
-                        <span className="mx-auto inline-block pt-1 text-3xl"> - </span>
-                        <TimeInputField className="ml-auto" value={props.newTimeEvent.finish} 
-                        changeValue={(val) => {props.setNewEvent({...props.newTimeEvent, finish: val})}}/>
-                    </div>
-                </div>
-                <div className="flex">
-                    <span className="text-gray-400">select collor </span>
-                    <div className="bg-gray-700 rounded-lg p-2">
-                    <CirclePicker circleSize={28} width="220"
-                    onChangeComplete={(val, ev) => {props.setNewEvent({...props.newTimeEvent, color:val.hex})}}/>
-                    </div>
-                </div>
-                <div>
-                    <ButtonSubmit1 text="create weekly event" onClick={props.submitWeeklyEvent}/>
-                </div>
-            </div>
-
-            <div style={{display:modes[modeIndex]=="onetimeEvent"?"flex":"none"}}
-            className="flex flex-wrap gap-3">
-                <div className="text-xl">
-                    Create new <span className="text-blue-500">onetime</span> event
-                </div>
-                <LargeInputField placeholder="new content here" value={props.newTimeEvent.description}
-                changeValue={(val) => {props.setNewEvent({...props.newTimeEvent, description: val})}}/>
-                <div>
-                    <span className="text-gray-400">date</span>
-                    <DateInputField value={props.newTimeEvent.date} 
-                    changeValue={(val) => {props.setNewEvent({...props.newTimeEvent, date: val})}}/>
-                </div>
-                <div>
-                    <span className="text-gray-400">time period</span>
-                    <div className="flex" id="time-inputs">
-                        <TimeInputField className="mr-auto" value={props.newTimeEvent.start} 
                         changeValue={(val) => {props.setNewEvent({...props.newTimeEvent, start: val})}}/>
                         <span className="mx-auto inline-block pt-1 text-3xl"> - </span>
                         <TimeInputField className="ml-auto" value={props.newTimeEvent.finish} 
@@ -458,14 +454,21 @@ const CreateEventsSideBar = (props) => {
                     </div>
                 </div>
                 <div>
-                    <span className="text-gray-400">select collor</span>
+                    <div className="text-gray-400 flex flex-wrap gap-2 mb-2">
+                        <div className="flex-col"> select collor </div>
+                        <div className="w-16 h-4 mt-1 rounded-md flex-col" style={{background: props.newTimeEvent.color}}></div>
+                    </div>
                     <div className="bg-gray-700 rounded-lg p-2">
                     <CirclePicker width="220"
                         onChangeComplete={(val, ev) => {props.setNewEvent({...props.newTimeEvent, color:val.hex})}}/>
                     </div>
                 </div>
-                <div>
-                    <ButtonSubmit1 text="create onetime event" onClick={props.submitOnetimeEvent}/>
+                <div className="w-full">
+                    <ButtonSubmit2 text="create new event" onClick={() => {
+                        modes[modeIndex] == 'dailyEvent' && props.submitDailyEvent()
+                        modes[modeIndex] == 'weeklyEvent' && props.submitWeeklyEvent()
+                        modes[modeIndex] == 'onetimeEvent' && props.submitOnetimeEvent()
+                    }}/>
                 </div>
             </div>
 
@@ -525,23 +528,27 @@ const EditEventsSideBar = (props) => {
                 </div>
             </div>
             <div>
-                <span className="text-gray-400 flex flex-wrap gap-2">
-                    <div className="h-4 flex-col"> select collor </div>
-                    <div className="w-16 h-4 rounded-md flex-col" style={{background: props.editedEvent.color}}></div>
-                </span>
-                
+                <div className="text-gray-400 flex flex-wrap gap-2 mb-2">
+                    <div className="flex-col"> select collor </div>
+                    <div className="w-16 h-4 mt-1 rounded-md flex-col" style={{background: props.editedEvent.color}}></div>
+                </div>
                 <div className="bg-gray-700 rounded-lg my-1 p-2">
                     <CirclePicker width="220"
                     onChangeComplete={(val, ev) => {props.setEditedEvent({...props.editedEvent, color:val.hex})}}/>
                 </div>
             </div>
-            <div className="flex">
-                <ButtonSubmit1 text='edit event' onClick={() => {
+            <div>
+                <ButtonSubmit2 text='edit event' onClick={() => {
                     props.editedEvent.type == 'dailyEvent' && props.editDailyEvent()
                     props.editedEvent.type == 'weeklyEvent' && props.editWeeklyEvent()
-                    props.editedEvent.type == 'onetimeEvent' && props.editOneTimeEvent()
+                    props.editedEvent.type == 'onetimeEvent' && props.editOnetimeEvent()
                 }}/>    
-                <ButtonSubmit1 text='close' onClick={() => {props.setEditedEvent(null)}}/>
+                <ButtonSubmit2 text='close' onClick={() => {props.setEditedEvent(null)}}/>
+                <ButtonSubmit2 text='delete event' onClick={() => {
+                    props.editedEvent.type == 'dailyEvent' && props.deleteDailyEvent()
+                    props.editedEvent.type == 'weeklyEvent' && props.deleteWeeklyEvent()
+                    props.editedEvent.type == 'onetimeEvent' && props.deleteOnetimeEvent()
+                }}/>
             </div>
         </div>
     )}

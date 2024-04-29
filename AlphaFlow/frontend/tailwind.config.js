@@ -7,9 +7,14 @@ export default {
   ],
   theme: {
     extend: {
-      
+      keyframes: {
+        movedown: {
+          '0%':'',
+          '100%':''
+        }
+      }
     },
   },
-  plugins: [],
+  
 }
 
