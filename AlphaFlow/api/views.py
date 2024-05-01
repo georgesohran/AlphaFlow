@@ -138,6 +138,7 @@ def weekly_events(request):
     if request.method == 'POST':
         start = request.data.get('start')
         finish = request.data.get('finish')
+        day = request.data.get('day')
         description = request.data.get('description')
         color = request.data.get('color')
         
@@ -147,14 +148,15 @@ def weekly_events(request):
         if not start or not finish or not description:
             return Response({"detail":"not enough info"})
         
-        WeeklyEvent.objects.create(start=start, finish=finish, color=color, description=description, user=request.user)
+        WeeklyEvent.objects.create(start=start, finish=finish, day=day, color=color, description=description, user=request.user)
     
     elif request.method == 'PUT':
         start = request.data.get('start')
         finish = request.data.get('finish')
+        day = request.data.get('day')
         description = request.data.get('description')
         color = request.data.get('color')
-        
+
         if not color:
             color = '#f44336'
 
@@ -165,6 +167,7 @@ def weekly_events(request):
         event = WeeklyEvent.objects.get(id=id)
         event.start = start
         event.finish = finish
+        event.day = day
         event.description = description
         event.color = color
         event.save()
