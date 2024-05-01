@@ -5,7 +5,9 @@ import MyFooter from "../components/footer"
 import { getAuth }from "../util" 
 import { TimeInputField, LargeInputField, DateInputField, InputField} from "../components/inputfield"
 import { ButtonSubmit1, ButtonSubmit2 } from "../components/buttons"
+
 import Select from "react-select"
+import {CSSTransition} from "react-transition-group"
 
 import { DateTime, Info } from "luxon"
 import { CirclePicker } from 'react-color'
@@ -18,7 +20,6 @@ const weekDays = { 'MON':1, 'TUE':2, 'WED':3, 'THU':4, 'FRI':5, 'SAT':6, 'SUN':7
 
 const SchedulePage = () => {
     const [eventsData, setEventData] = useState(null)
-    const [offsetHours, setOffsetHours] = useState(11)
     const [selectedEventIndex, setSelectedEventIndex] = useState([1,1])
     const [detail, setDetail] = useState('')
     const [newTimeEvent, setNewTimeEvent] = useState({
@@ -32,7 +33,7 @@ const SchedulePage = () => {
     })
     const [editedEvent, setEditedEvent] = useState(null)
 
-    const secNum = Math.round((window.innerWidth - 336) / 214)
+    const secNum = Math.round((window.innerWidth - 456) / 172)
     const navigate = useNavigate()
 
     useEffect(() => {
@@ -304,50 +305,62 @@ const SchedulePage = () => {
             }
 
             <TopNavBar authorized={true}/>
-            <div className='p-2'>
-                <div className="flex">
-                    <div className="relative">
-                        {/* bg marks */}
-                        <div className="z-0 absolute top-16" 
-                            style={{height:700}}>
+            <div className="p-2 flex flex-row"
+            style={{height:800}}>
+                <div className="">
+                    <div className=" ml-16 relative flex flex-row">
+                        {Array.from({length:secNum}, (v, index) => index).map((num , index) => 
+                            <div className="text-center bg-gray-800 rounded-t-xl 
+                            w-40 mr-3 h-16 text-white outline outline-2 outline-gray-700">
+                                <p className="text-xl">{Info.weekdays('short')[DateTime.now().plus({days: num}).weekday-1]}</p>
+                                <p className="text-gray-400">{DateTime.now().plus({days:num}).day}</p>
+                            </div>
+                        )}
+                    </div>
+                    <div className="z-0 relative overflow-y-scroll border-2 border-gray-700 bg-gray-800 rounded-xl" 
+                    style={{height: window.innerHeight, width:secNum*172+70, direction:'rtl'}}>
+                        <div className="z-0 relative" style={{direction:'ltr', height:1440}}>
+                            <svg width={secNum*172+70} height="1440" viewBox={`0 0 ${secNum*172+70} 1440`} fill="none" xmlns="http://www.w3.org/2000/svg" className="absolute z-0">
+                            <rect width={secNum*172+70} height="1440" fill="#1f2937" rx={8}/>
+                            {Array.from({length: 24}, (v, index) => index).map((val, index) => 
+                                <line y1={60*index} x2={secNum*172+70} y2={60*index} stroke="#374151" stroke-width="2"/>    
+                            )}
+                            {Array.from({length: secNum}, (v, index) => index).map((val, index) => 
+                                <line x1={172*index+44} x2={172*index+44} y2={1440} stroke="#374151" stroke-width="2" />
+                            )}
 
-                                <svg width={secNum*204+40} height="700" viewBox={`0 0 ${secNum*204+40} 700`} fill="none" xmlns="http://www.w3.org/2000/svg" className="absolute">
-                                <rect width={secNum*204+40} height="700" fill="#1f2937" rx={8}/>
-                                <line y1={0} x1={8} x2={secNum*204+32} y2={0} stroke="#374151" stroke-width="4"/>
-                                {Array.from({length: 11}, (v, index) => index).map((val, index) => 
-                                    <line y1={60*index+46} x2={secNum*204+40} y2={60*index+46} stroke="#374151" stroke-width="2"/>    
-                                )}
-                                {Array.from({length: secNum}, (v, index) => index).map((val, index) => 
-                                    <line x1={204*index+47} x2={204*index+47} y2={700} stroke="#374151" stroke-width="2"></line>
-                                )}
-                                </svg>
-                                {Array.from({length: 11}, (v, index) => index).map((val, index) => (
-                                    <text className="absolute text-gray-500 text-sm"
-                                    style={{left:4, top: 26+60*index}}>{DateTime.fromObject({hour:offsetHours}).plus({hour:index}).hour}:00</text>    
+                            <line y1={(DateTime.now().hour)*60 + DateTime.now().minute} x2={230} 
+                            y2={(DateTime.now().hour)*60 + DateTime.now().minute} stroke="#aa3333" stroke-width="4"/>
+                            
+                            </svg>
+                            {Array.from({length: 24}, (v, index) => index).map((val, index) => (
+                                <text className="absolute text-gray-500 text-sm"
+                                style={{left:4, top: 60*(index)}}>{DateTime.fromObject({hour:index}).hour}:00</text>    
+                            ))}
+                            <div className="absolute left-6">
+                                {eventsData && Array.from({length: secNum}, (v, index) => index).map((num, index) => (
+                                    <EventsVisualizer key={index}
+                                    events={eventsData[DateTime.now().plus({days: num}).weekday]} 
+                                    setSelectedEvent={setEditedEvent}/>
                                 ))}
-                        </div>
-                        
-                        <div className=" ml-12 relative flex">
-                        {eventsData && Array.from({length: secNum}, (v, index) => index).map((num, index) => (
-                            <EventsVisualizer key={index} offsetHours={offsetHours}
-                            events={eventsData[DateTime.now().plus({days: num}).weekday]} 
-                            weekDay={Info.weekdays('short')[DateTime.now().plus({days: num}).weekday-1]} 
-                            monthDay={DateTime.now().plus({days:num}).day}
-                            setSelectedEvent={setEditedEvent}/>
-                        ))}
+                            </div>
                         </div>
                     </div>
+                </div>
 
-                    <div className="bg-gray-800 ml-auto w-80 p-2 rounded-xl divide-y divide-gray-600 text-white">
+                <div className="ml-auto w-96">
+                    <div className="bg-gray-800 p-2 rounded-xl divide-y divide-gray-600 text-white">
                         <EditEventsSideBar editedEvent={editedEvent} setEditedEvent={setEditedEvent}
                         editOnetimeEvent={editOnetimeEvent} editWeeklyEvent={editWeeklyEvent} editDailyEvent={editDailyEvent}
                         deleteOnetimeEvent={deleteOnetimeEvent} deleteWeeklyEvent={deleteWeeklyEvent} deleteDailyEvent={deleteDailyEvent}/>                        
 
-                        <CreateEventsSideBar newTimeEvent={newTimeEvent} setNewEvent={setNewTimeEvent}
+                        <CreateEventsSideBar newTimeEvent={newTimeEvent} setNewEvent={setNewTimeEvent} editedEvent={editedEvent}
                         submitOnetimeEvent={createOnetimeEvent} submitWeeklyEvent={createWeeklyEvent} submitDailyEvent={createDailyEvent}/>
                     </div>
                 </div>
+                
             </div>
+            
             <MyFooter text='AlphaFlow: Focus'/>
         </div>
         )
@@ -357,18 +370,11 @@ const SchedulePage = () => {
 
 const EventsVisualizer = (props) => {
     return (
-        <div>
-            <div className="text-center bg-gray-800 rounded-t-xl 
-            w-48 mr-3 h-16 text-white outline outline-2 outline-gray-700">
-                <p className="text-xl">{props.weekDay}</p>
-                <p className="text-gray-400">{props.monthDay}</p>
-            </div>
-            <div className="relative float-left">
-                {props.events && props.events.map((timeEvent, index) => (
-                    <EventElement timeEvent={timeEvent} key={index} offset={props.offsetHours} 
-                    setSelectedEvent={props.setSelectedEvent} index={index} day={props.weekDay && props.weekDay.toUpperCase()}/>
-                ))}
-            </div>
+        <div className="relative float-left" style={{height:1440, width:172}}>
+            {props.events && props.events.map((timeEvent, index) => (
+                <EventElement timeEvent={timeEvent} key={index}
+                setSelectedEvent={props.setSelectedEvent} index={index} />
+            ))}
         </div>
     )
 }
@@ -376,7 +382,7 @@ const EventsVisualizer = (props) => {
 
 
 const EventElement = (props) => {
-    if(props.timeEvent.start.hour >= props.offset) return (
+    return (
         <div className="w-40 text-center absolute rounded-xl left-5"
         onClick={() => {props.setSelectedEvent({
             id: props.timeEvent.id,
@@ -390,7 +396,7 @@ const EventElement = (props) => {
         })}}
         style={{
             height: ((props.timeEvent.finish.hour*60+props.timeEvent.finish.minute) - (props.timeEvent.start.hour*60+props.timeEvent.start.minute)), 
-            top: (props.timeEvent.start.hour - props.offset)*60 + props.timeEvent.start.minute + 46,
+            top: props.timeEvent.start.hour*60 + props.timeEvent.start.minute,
             background: props.timeEvent.color,
             opacity: 0.7
         }}>
@@ -404,8 +410,7 @@ const EventElement = (props) => {
 const CreateEventsSideBar = (props) => {
     const modes = ['dailyEvent', 'weeklyEvent', 'onetimeEvent']
     const [modeIndex, setModeIndex] = useState(0)
-
-    return (
+    if(!props.editedEvent) return (
         <div className="my-2 py-4 flex">
             <button className="mr-1 rounded-md font-bold text-xl transition-all
             hover:bg-gray-700 hover:font-black"
@@ -485,9 +490,14 @@ const CreateEventsSideBar = (props) => {
 
 const EditEventsSideBar = (props) => {
     if(props.editedEvent) { return (
-        <div className="my-2 py-4 mx-1 bg-gray-800 flex flex-wrap gap-3">
-            <div className="text-xl text-center mx-auto">
+        <div className="my-2 py-4 mx-1 bg-gray-800 flex flex-wrap gap-3 relative">
+            <button className="absolute top-3 right-3 font-black bg-gray-800 hover:bg-gray-700 rounded-full "
+            onClick={() => {props.setEditedEvent(null)}}>     
+                ✖ 
+            </button>
+            <div className="text-xl mx-auto">
                 <span className="text-blue-500">Edit</span> event
+                
             </div>
             <div className="text-center">
                 <LargeInputField placeholder="new content here" value={props.editedEvent.description}
@@ -554,14 +564,5 @@ const EditEventsSideBar = (props) => {
     )}
 }
 
-
-
-const ChangeApearenceSideBar = (props) => {
-    return (
-        <div>
-
-        </div>
-    )
-}
 
 export default SchedulePage
