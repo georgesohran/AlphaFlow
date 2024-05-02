@@ -236,10 +236,10 @@ const Dashboard = () => {
 
     return (
         <div className='bg-gray-900 min-h-screen'>
-
             <div className='bg-gradient-to-t from-gray-900 to-indigo-800'>
                 <TopNavBar authorized={true}/>
-                <div className='mx-auto justify-center md:mb-40 md:flex mb-32'>
+                <div className='mx-auto justify-center mb-16
+                md:mb-40 md:flex '>
                     <NotesContainer items={notes}  
                         addItem={addNote} editItem={editNote} deleteItem={deleteNote}
                         newContent={newNoteContent} changeNewContent={setNewNoteContent}
@@ -415,6 +415,9 @@ const UpcomingEventsContainer = (props) => {
         <div className="divide-y divide-solid divide-gray-600">
             <div className="mt-2 text-gray-300 ">
                 <Link to='/schedule' className="hover:text-gray-600 hover:underline">modify and view events</Link>
+            </div>
+            <div>
+                
             </div>
         </div>
     </div>
