@@ -305,10 +305,9 @@ const SchedulePage = () => {
             }
 
             <TopNavBar authorized={true}/>
-            <div className="p-2 flex flex-row"
-            style={{height:800}}>
+            <div className="p-2 flex flex-row">
                 <div className="">
-                    <div className=" ml-16 relative flex flex-row">
+                    <div className=" ml-14 relative flex flex-row">
                         {Array.from({length:secNum}, (v, index) => index).map((num , index) => 
                             <div className="text-center bg-gray-800 rounded-t-xl 
                             w-40 mr-3 h-16 text-white outline outline-2 outline-gray-700">
@@ -318,19 +317,19 @@ const SchedulePage = () => {
                         )}
                     </div>
                     <div className="z-0 relative overflow-y-scroll border-2 border-gray-700 bg-gray-800 rounded-xl" 
-                    style={{height: window.innerHeight, width:secNum*172+70, direction:'rtl'}}>
-                        <div className="z-0 relative" style={{direction:'ltr', height:1440}}>
-                            <svg width={secNum*172+70} height="1440" viewBox={`0 0 ${secNum*172+70} 1440`} fill="none" xmlns="http://www.w3.org/2000/svg" className="absolute z-0">
-                            <rect width={secNum*172+70} height="1440" fill="#1f2937" rx={8}/>
+                    style={{height: window.innerHeight, width:secNum*172+75}}>
+                        <div className="z-0 relative" style={{height:1440}}>
+                            <svg width={secNum*172+75} height="1440" viewBox={`0 0 ${secNum*172+75} 1440`} fill="none" xmlns="http://www.w3.org/2000/svg" className="absolute z-0">
+                            <rect width={secNum*172+75} height="1440" fill="#1f2937" rx={8}/>
                             {Array.from({length: 24}, (v, index) => index).map((val, index) => 
-                                <line y1={60*index} x2={secNum*172+70} y2={60*index} stroke="#374151" stroke-width="2"/>    
+                                <line y1={60*index} x2={secNum*172+75} y2={60*index} stroke="#374151" stroke-width="2"/>    
                             )}
                             {Array.from({length: secNum}, (v, index) => index).map((val, index) => 
-                                <line x1={172*index+44} x2={172*index+44} y2={1440} stroke="#374151" stroke-width="2" />
+                                <line x1={172*index+53} x2={172*index+53} y2={1440} stroke="#374151" stroke-width="2" />
                             )}
 
                             <line y1={(DateTime.now().hour)*60 + DateTime.now().minute} x2={230} 
-                            y2={(DateTime.now().hour)*60 + DateTime.now().minute} stroke="#aa3333" stroke-width="4"/>
+                            y2={(DateTime.now().hour)*60 + DateTime.now().minute} stroke="#bb3333" stroke-width="4"/>
                             
                             </svg>
                             {Array.from({length: 24}, (v, index) => index).map((val, index) => (
@@ -383,7 +382,7 @@ const EventsVisualizer = (props) => {
 
 const EventElement = (props) => {
     return (
-        <div className="w-40 text-center absolute rounded-xl left-5"
+        <div className="w-40 text-center absolute rounded-xl left-9"
         onClick={() => {props.setSelectedEvent({
             id: props.timeEvent.id,
             type: props.timeEvent.type,
@@ -411,15 +410,15 @@ const CreateEventsSideBar = (props) => {
     const modes = ['dailyEvent', 'weeklyEvent', 'onetimeEvent']
     const [modeIndex, setModeIndex] = useState(0)
     if(!props.editedEvent) return (
-        <div className="my-2 py-4 flex">
+        <div className="my-2 py-4 flex flex-row">
             <button className="mr-1 rounded-md font-bold text-xl transition-all
             hover:bg-gray-700 hover:font-black"
             onClick={() => {modeIndex > 0 && setModeIndex(modeIndex-1)}}>
                 <span className="flex-col self-center">&lt;</span>
             </button>
 
-            <div className="flex flex-wrap gap-3">
-                <div className="text-lg">
+            <div className="flex flex-col gap-3">
+                <div className="text-xl text-center">
                     Create new <span className="text-blue-500">
                         {modes[modeIndex]=='onetimeEvent' && 'onetime'}
                         {modes[modeIndex]=='weeklyEvent' && 'weekly'}
@@ -449,13 +448,22 @@ const CreateEventsSideBar = (props) => {
                     </div>
                 </div>
                 <div>
-                    <span className="text-gray-400">time period</span>
-                    <div className="flex" id="time-inputs">
-                        <TimeInputField className="mr-auto" value={props.newTimeEvent.start} 
-                        changeValue={(val) => {props.setNewEvent({...props.newTimeEvent, start: val})}}/>
-                        <span className="mx-auto inline-block pt-1 text-3xl"> - </span>
-                        <TimeInputField className="ml-auto" value={props.newTimeEvent.finish} 
-                        changeValue={(val) => {props.setNewEvent({...props.newTimeEvent, finish: val})}}/>
+                    <div className="flex flex-row">
+                        <div className="inline">
+                            <div className="text-gray-400">time period</div>
+                            <div>
+                                <span className="inline-block"><TimeInputField value={props.newTimeEvent.start} 
+                                changeValue={(val) => {props.setNewEvent({...props.newTimeEvent, start: val})}}/></span>
+                                <span className="mx-auto font-extrabold"> — </span>
+                                <span className="inline-block"><TimeInputField value={props.newTimeEvent.finish} 
+                                changeValue={(val) => {props.setNewEvent({...props.newTimeEvent, finish: val})}}/></span>
+                            </div>
+                        </div>
+                        <div className="ml-auto" style={{display: modes[modeIndex]=='onetimeEvent'? 'inline' : 'none'}}>
+                            <div className="text-gray-400">date</div>
+                            <DateInputField value={props.newTimeEvent.date} 
+                            changeValue={(val) => {props.setNewEvent({...props.newTimeEvent, date: val})}}/>
+                        </div>
                     </div>
                 </div>
                 <div>
@@ -490,12 +498,12 @@ const CreateEventsSideBar = (props) => {
 
 const EditEventsSideBar = (props) => {
     if(props.editedEvent) { return (
-        <div className="my-2 py-4 mx-1 bg-gray-800 flex flex-wrap gap-3 relative">
+        <div className="my-2 py-4 mx-1 bg-gray-800 flex flex-col gap-3 relative">
             <button className="absolute top-3 right-3 font-black bg-gray-800 hover:bg-gray-700 rounded-full "
             onClick={() => {props.setEditedEvent(null)}}>     
                 ✖ 
             </button>
-            <div className="text-xl mx-auto">
+            <div className="text-xl mx-auto mt-2 text-center">
                 <span className="text-blue-500">Edit</span> event
                 
             </div>

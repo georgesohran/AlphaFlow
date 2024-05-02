@@ -33,6 +33,7 @@ const Dashboard = () => {
             if(auth) {
                 getNotes()
                 getGoals()
+                getUpcomingEvents()
             } else {
                 navigate('/login')
             }
@@ -214,7 +215,7 @@ const Dashboard = () => {
         })
     }
 
-    const get_upcoming_events = async() => {
+    const getUpcomingEvents = async() => {
         fetch('/api/get_upcoming_events', {
             method:'GET',
             headers: {
