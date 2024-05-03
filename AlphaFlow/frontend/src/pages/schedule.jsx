@@ -7,7 +7,6 @@ import { TimeInputField, LargeInputField, DateInputField, InputField} from "../c
 import { ButtonSubmit1, ButtonSubmit2 } from "../components/buttons"
 
 import Select from "react-select"
-import {CSSTransition} from "react-transition-group"
 
 import { DateTime, Info } from "luxon"
 import { CirclePicker } from 'react-color'
@@ -95,7 +94,7 @@ const SchedulePage = () => {
                     tempTimeEventsData[i].push(dateTimeEvent)
                 }
             }
-            setEventData(tempTimeEventsData)
+            return setEventData(tempTimeEventsData)
         })
     }
 
@@ -321,23 +320,30 @@ const SchedulePage = () => {
                             <span className="flex-col self-center">&gt;</span>
                         </button>
                     </div>
-                    <div className="z-0 relative overflow-y-scroll border-2 border-gray-700 bg-gray-800 rounded-xl" 
-                    style={{height: window.innerHeight, width:secNum*172+75}}>
+                    <div className="relative overflow-y-scroll border-2 border-gray-700 bg-gray-800 rounded-xl" 
+                    style={{height:window.innerHeight-130, width:secNum*172+75}}>
                         <div className="z-0 relative" style={{height:1440}}>
-                            <svg width={secNum*172+75} height="1440" viewBox={`0 0 ${secNum*172+75} 1440`} fill="none" xmlns="http://www.w3.org/2000/svg" className="absolute z-0">
-                            <rect width={secNum*172+75} height="1440" fill="#1f2937" rx={8}/>
+                            <svg width={secNum*172+50} height="1440" viewBox={`0 0 ${secNum*172+50} 1440`} fill="none" xmlns="http://www.w3.org/2000/svg" className="absolute z-0">
+                            <rect width={secNum*172+50} height="1440" fill="#1f2937" rx={8}/>
                             {Array.from({length: 24}, (v, index) => index).map((val, index) => 
-                                <line y1={60*index} x2={secNum*172+75} y2={60*index} stroke="#374151" stroke-width="2"/>    
+                                <line y1={60*index} x2={secNum*172+65} y2={60*index} stroke="#374151" stroke-width="2"/>    
                             )}
-                            {Array.from({length: secNum}, (v, index) => index).map((val, index) => 
-                                <line x1={172*index+55} x2={172*index+55} y2={1440} stroke-width="2" 
-                                stroke={DateTime.now().hasSame(DateTime.now().plus({days: index+offsetDays}), 'day') &&
+                            {Array.from({length: secNum}, (v, index) => index).map((val, index) => {
+                                if(DateTime.now().hasSame(DateTime.now().plus({days: index+offsetDays}), 'day') &&
                                 DateTime.now().hasSame(DateTime.now().plus({days: index+offsetDays}), 'month') &&
-                                DateTime.now().hasSame(DateTime.now().plus({days: index+offsetDays}), 'year')? '#ef4444':'#374151'}/>
-                            )}
+                                DateTime.now().hasSame(DateTime.now().plus({days: index+offsetDays}), 'year')) {
+                                    return (
+                                        <><line x1={172*index+55} x2={172*index+55} y2={1440} stroke-width="2" stroke="#ef4444"/>
+                                        <line x1={(0-offsetDays)*172+55} y1={(DateTime.now().hour)*60 + DateTime.now().minute} 
+                                        x2={((0-offsetDays)+1)*172+55} y2={(DateTime.now().hour)*60 + DateTime.now().minute} 
+                                        stroke-width="4" stroke="#ef4444"/></>)
+                                } else {
+                                    return (<line x1={172*index+55} x2={172*index+55} y2={1440} stroke-width="2" stroke="#374151"/>)
+                                }
+                            })}
 
-                            <line y1={(DateTime.now().hour)*60 + DateTime.now().minute} x2={230} 
-                            y2={(DateTime.now().hour)*60 + DateTime.now().minute} stroke="#bb3333" stroke-width="4"/>
+                            <line y1={(DateTime.now().hour)*60 + DateTime.now().minute} x2={55} 
+                            y2={(DateTime.now().hour)*60 + DateTime.now().minute} stroke="#ef4444" stroke-width="4"/>
                             
                             </svg>
                             {Array.from({length: 24}, (v, index) => index).map((val, index) => (
@@ -346,10 +352,13 @@ const SchedulePage = () => {
                             ))}
                             <div className="absolute left-6">
                                 {eventsData && Array.from({length: secNum}, (v, index) => index).map((num, index) => (
-                                    <EventsVisualizer key={index}
-                                    events={eventsData[DateTime.now().plus({days: num+offsetDays}).weekday]}
-                                    relToday={DateTime.now().plus({days: num+offsetDays}).weekday} 
-                                    setSelectedEvent={setEditedEvent}/>
+                                    <div className="relative float-left" key={index} style={{height:1440, width:172}}>
+                                        {eventsData && eventsData[DateTime.now().plus({days: num+offsetDays}).weekday].map((timeEvent, index) => (
+                                            <EventElement key={index}
+                                            timeEvent={timeEvent} relToday={DateTime.now().plus({days: num+offsetDays})}  
+                                            setSelectedEvent={setEditedEvent} index={index} />
+                                        ))}
+                                    </div>
                                 ))}
                             </div>
                         </div>
@@ -376,25 +385,12 @@ const SchedulePage = () => {
 
 
 
-const EventsVisualizer = (props) => {
-    return (
-        <div className="relative float-left" style={{height:1440, width:172}}>
-            {props.events && props.events.map((timeEvent, index) => (
-                <EventElement timeEvent={timeEvent} relToday={props.relToday} key={index} 
-                setSelectedEvent={props.setSelectedEvent} index={index} />
-            ))}
-        </div>
-    )
-}
-
-
 
 const EventElement = (props) => {   
     const checkEvent = () => {
         if(props.timeEvent.type=='onetimeEvent') {
-            if(props.timeEvent.start.hasSame(props.relToday, 'year') &&
-            props.timeEvent.start.hasSame(props.relToday, 'month') &&
-            props.timeEvent.start.hasSame(props.relToday, 'day')) {
+            if(props.timeEvent.start.day == props.relToday.day &&
+            props.timeEvent.start.month == props.relToday.month) {
                 return true
             } else {
                 return false
@@ -405,7 +401,7 @@ const EventElement = (props) => {
     }
 
     if(checkEvent()) return (
-        <div className="w-40 text-center absolute rounded-xl left-9"
+        <div className="w-40 text-center absolute rounded-xl left-9 overflow-hidden"
         onClick={() => {props.setSelectedEvent({
             id: props.timeEvent.id,
             type: props.timeEvent.type,
@@ -448,12 +444,9 @@ const CreateEventsSideBar = (props) => {
                         {modes[modeIndex]=='dailyEvent' && 'daily'}
                     </span> event
                 </div>
-                <LargeInputField placeholder="new content here" value={props.newTimeEvent.description}
-                changeValue={(val) => {props.setNewEvent({...props.newTimeEvent, description: val})}}/>
-                <div style={{display: modes[modeIndex]=='onetimeEvent'? 'block' : 'none'}}>
-                    <span className="text-gray-400">date</span>
-                    <DateInputField value={props.newTimeEvent.date} 
-                    changeValue={(val) => {props.setNewEvent({...props.newTimeEvent, date: val})}}/>
+                <div>
+                    <LargeInputField placeholder="new content here" value={props.newTimeEvent.description}
+                    changeValue={(val) => {props.setNewEvent({...props.newTimeEvent, description: val})}}/>
                 </div>
                 <div style={{display: modes[modeIndex]=='weeklyEvent'? 'block' : 'none'}}>
                     <span className="text-gray-400">day of the week</span>
@@ -561,11 +554,16 @@ const EditEventsSideBar = (props) => {
             <div>
                 <span className="text-gray-400">time period</span>
                 <div className="flex" id="time-inputs">
-                    <TimeInputField className="mr-auto" value={props.editedEvent.start} 
-                    changeValue={(val) => {props.setEditedEvent({...props.editedEvent, start: val})}} />
-                    <span className="mx-auto inline-block pt-1 text-3xl"> - </span>
-                    <TimeInputField className="ml-auto" value={props.editedEvent.finish} 
-                    changeValue={(val) => {props.setEditedEvent({...props.editedEvent, finish: val})}}/>
+                    <div className="inline">
+                        <div className="text-gray-400">time period</div>
+                        <div>
+                            <span className="inline-block"><TimeInputField value={props.editedEvent.start} 
+                            changeValue={(val) => {props.setEditedEvent({...props.newTimeEvent, start: val})}}/></span>
+                            <span className="mx-auto font-extrabold"> — </span>
+                            <span className="inline-block"><TimeInputField value={props.editedEvent.finish} 
+                            changeValue={(val) => {props.setEditedEvent({...props.editedEvent, finish: val})}}/></span>
+                        </div>
+                    </div>
                 </div>
             </div>
             <div>
