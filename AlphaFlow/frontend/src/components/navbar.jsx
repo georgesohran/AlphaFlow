@@ -34,7 +34,9 @@ const TopNavBar = (props) => {
                 flex flex-wrap justify-between mx-auto p-4">
                 
                     <div className="flex items-center space-x-3">
-                        Icon here
+                        <div>Icon here</div>
+                        <TopNavBarLinkButton link="/dashboard" name="Dashboard"/>
+                        <TopNavBarLinkButton link="/schedule" name="Schedule"/>
                     </div>
                     <div className="flex items-center space-x-3">
                         <TopNavBarButton click={logout} name="Logout"/>

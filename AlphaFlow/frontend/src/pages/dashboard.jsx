@@ -10,10 +10,12 @@ import { useEffect } from "react";
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { Link } from "react-router-dom";
+import { DateTime, Info, Interval } from "luxon";
 
-import { DateTime } from "luxon";
+
 import Cookies from "universal-cookie";
 const cookies = new Cookies();
+const weekDays = { 'MON':1, 'TUE':2, 'WED':3, 'THU':4, 'FRI':5, 'SAT':6, 'SUN':7}
 
 
 const Dashboard = () => {
@@ -228,18 +230,49 @@ const Dashboard = () => {
             if('detail' in res_data) {
                 console.log(res_data.detail)
             } else {
-                setUpcomingEvents(res_data)
-                console.log(res_data)
+                let tempEventData = {1:[], 2:[], 3:[], 4:[], 5:[], 6:[], 7:[]}
+                
+                for(let timeEvent of res_data['onetime_events']) {
+                    let dateTimeEvent = {
+                        start: DateTime.fromISO(timeEvent.start),
+                        finish: DateTime.fromISO(timeEvent.finish),
+                        color: timeEvent.color,
+                        description: timeEvent.description
+                    }
+                    tempEventData[dateTimeEvent.start.weekday].push(dateTimeEvent)
+                }
+    
+                for(let timeEvent of res_data['weekly_events']) {
+                    let dateTimeEvent = {
+                        start: DateTime.fromISO(timeEvent.start, {zone:'UTC'}).toLocal(),
+                        finish: DateTime.fromISO(timeEvent.finish, {zone:'UTC'}).toLocal(),
+                        color: timeEvent.color,
+                        description: timeEvent.description
+                    }
+                    tempEventData[weekDays[timeEvent.day]].push(dateTimeEvent)
+                }
+    
+                for(let timeEvent of res_data['daily_events']) {
+                    let dateTimeEvent = {
+                        start: DateTime.fromISO(timeEvent.start, {zone:'UTC'}).toLocal(),
+                        finish: DateTime.fromISO(timeEvent.finish, {zone:'UTC'}).toLocal(),
+                        color: timeEvent.color,
+                        description: timeEvent.description,
+                    }
+                    for(let i = 1; i < 8; i++) {
+                        tempEventData[i].push(dateTimeEvent)
+                    }
+                }
+                setUpcomingEvents(tempEventData)
             }
         })
     }
 
     return (
         <div className='bg-gray-900 min-h-screen'>
-            <div className='bg-gradient-to-t from-gray-900 to-indigo-800'>
+            <div className=''>
                 <TopNavBar authorized={true}/>
-                <div className='mx-auto justify-center mb-16
-                md:mb-40 md:flex '>
+                <div className='mx-auto justify-center mb-10 md:flex'>
                     <NotesContainer items={notes}  
                         addItem={addNote} editItem={editNote} deleteItem={deleteNote}
                         newContent={newNoteContent} changeNewContent={setNewNoteContent}
@@ -265,8 +298,8 @@ const Dashboard = () => {
 
 const NotesContainer = (props) => {    
     return (
-        <div className="text-white text-center bg-gray-800 rounded-md  
-        my-2 m-2 h-auto p-4 mx-8 md:w-1/3 md:mx-4 md:my-28 ">
+        <div className="text-white text-center bg-gray-800 rounded-md border-2 border-gray-600
+        my-2 m-2 h-auto p-4 mx-8 md:w-2/5 md:mx-4 md:mt-28">
             <p className="text-4xl p-2 bg-gray-700 rounded-md">Notes</p>
             <div className="divide-y divide-solid divide-gray-600">
                 <div className="mt-2 text-gray-300 ">
@@ -336,8 +369,8 @@ const NotesContainer = (props) => {
 
 const GoalsContainer = (props) => {    
     return (
-        <div className="text-white text-center bg-gray-800 rounded-md  
-        my-2 m-2 h-auto p-4 mx-8 md:w-1/3 md:mx-4 md:my-28 ">
+        <div className="text-white text-center bg-gray-800 rounded-md border-2 border-gray-600
+        my-2 m-2 h-auto p-4 mx-8 md:w-2/5 md:mx-4 md:mt-28">
             <p className="text-4xl p-2 bg-gray-700 rounded-md">Goals</p>
             <div className="divide-y divide-solid divide-gray-600">
                 <div className="mt-2 text-gray-300 ">
@@ -409,17 +442,42 @@ const GoalsContainer = (props) => {
 
 const UpcomingEventsContainer = (props) => {
     return (
-    <div className="text-white text-center bg-gray-800 rounded-md  
-    my-2 m-2 h-auto p-4 mx-8 md:w-2/3 md:mx-4 md:my-28 ">
+    <div className="text-white text-center bg-gray-800 rounded-md border-2 border-gray-600
+    my-2 m-2 h-auto p-4 mx-8 md:w-5/6 md:mx-4 md:mb-28 ">
         <p className="text-2xl">Upcoming Events</p>
         <div className="divide-y divide-solid divide-gray-600">
-            <div className="mt-2 text-gray-300 ">
-                <Link to='/schedule' className="hover:text-gray-600 hover:underline">modify and view events</Link>
+            <div className="mx-2 text-gray-300 ">
+                <Link to='/schedule' className="hover:text-gray-600 hover:underline">modify and edit events</Link>
             </div>
-            <div>
-                
+            <div className="flex flex-wrap justify-around">
+                {props.events && Array.from({length:7}).map((val, index) => 
+                    <EventsVisualizer events={props.events[DateTime.now().plus({day:index}).weekday]}
+                    relNow={DateTime.now().plus({day:index})}/>
+                )}
             </div>
         </div>
+    </div>
+    )
+}
+
+const EventsVisualizer = (props) => {
+    return (
+    <div className={`size-64 text-left ${props.relNow.weekday==DateTime.now().weekday? 'border-red-500':'border-gray-600'} 
+    border-2 p-2 rounded-md m-2`}>
+        <div className="text-xl">{Info.weekdays('long')[props.relNow.weekday-1]}</div>
+        <div className="overflow-y-scroll h-52">
+            {props.events &&  props.events.map((timeEvent, index) => (
+                <div className={`border-l-4 pr-2 border-t-2 border-b-2 border-b-gray-600 border-t-gray-600 border-r-2 border-r-gray-600 rounded-md mt-1
+                ${Interval.fromDateTimes(timeEvent.start, timeEvent.finish).contains(props.relNow)?'bg-gray-gray-700':''}`}
+                style={{borderLeftColor: timeEvent.color}}>
+                    <div className="text-gray-400 overflow-hidden">{timeEvent.description}</div>
+                    <div className="text-gray-600">
+                        {timeEvent.start.toFormat('HH:mm')} - {timeEvent.finish.toFormat('HH:mm')}
+                    </div>
+                </div>
+            ))}
+        </div>
+        
     </div>
     )
 }

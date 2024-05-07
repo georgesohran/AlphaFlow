@@ -22,10 +22,10 @@ const SchedulePage = () => {
     const [detail, setDetail] = useState('')
     const [newTimeEvent, setNewTimeEvent] = useState({
         type:'dailyEvent',
-        date:'',
-        start: '',
-        finish: '',
-        day:'',
+        date: DateTime.now().toFormat('dd.MM.yyyy'),
+        start: '12:00',
+        finish: '13:00',
+        day:'MON',
         description: '',
         color:''
     })
@@ -463,24 +463,24 @@ const CreateEventsSideBar = (props) => {
                         }}/>
                     </div>
                 </div>
+                <div className="ml-auto" style={{display: modes[modeIndex]=='onetimeEvent'? 'block' : 'none'}}>
+                        <div className="text-gray-400">date</div>
+                        <DateInputField value={props.newTimeEvent.date} 
+                        changeValue={(val) => {props.setNewEvent({...props.newTimeEvent, date: val})}}/>
+                    </div>
                 <div>
-                    <div className="flex flex-row">
-                        <div className="inline">
-                            <div className="text-gray-400">time period</div>
-                            <div>
-                                <span className="inline-block"><TimeInputField value={props.newTimeEvent.start} 
-                                changeValue={(val) => {props.setNewEvent({...props.newTimeEvent, start: val})}}/></span>
-                                <span className="mx-auto font-extrabold"> — </span>
-                                <span className="inline-block"><TimeInputField value={props.newTimeEvent.finish} 
-                                changeValue={(val) => {props.setNewEvent({...props.newTimeEvent, finish: val})}}/></span>
-                            </div>
-                        </div>
-                        <div className="ml-auto" style={{display: modes[modeIndex]=='onetimeEvent'? 'inline' : 'none'}}>
-                            <div className="text-gray-400">date</div>
-                            <DateInputField value={props.newTimeEvent.date} 
-                            changeValue={(val) => {props.setNewEvent({...props.newTimeEvent, date: val})}}/>
+                <div className="flex flex-row">
+                    <div className="inline">
+                        <div className="text-gray-400">time period</div>
+                        <div>
+                            <span className="inline-block"><TimeInputField value={props.newTimeEvent.start} 
+                            changeValue={(val) => {props.setNewEvent({...props.newTimeEvent, start: val})}}/></span>
+                            <span className="mx-auto font-extrabold"> — </span>
+                            <span className="inline-block"><TimeInputField value={props.newTimeEvent.finish} 
+                            changeValue={(val) => {props.setNewEvent({...props.newTimeEvent, finish: val})}}/></span>
                         </div>
                     </div>
+                </div>
                 </div>
                 <div>
                     <div className="text-gray-400 flex flex-wrap gap-2 mb-2">
@@ -552,10 +552,9 @@ const EditEventsSideBar = (props) => {
                 </div>
             )}
             <div>
-                <span className="text-gray-400">time period</span>
-                <div className="flex" id="time-inputs">
+                <div className="text-gray-400">time period</div>
+                <div className="flex">
                     <div className="inline">
-                        <div className="text-gray-400">time period</div>
                         <div>
                             <span className="inline-block"><TimeInputField value={props.editedEvent.start} 
                             changeValue={(val) => {props.setEditedEvent({...props.newTimeEvent, start: val})}}/></span>
