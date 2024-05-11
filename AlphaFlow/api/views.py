@@ -300,30 +300,80 @@ def notes(request):
 
 @api_view(['GET', 'POST', 'PUT', 'DELETE'])
 @ensure_csrf_cookie
+def tasks(request):
+    if not request.user.is_authenticated:
+        return Response({'detail':'not authorized'}, status=400)
+
+    goal_id = request.data.get('goal_id')
+
+    if request.method == 'POST':
+        ...
+    if request.method == 'PUT':
+        ...
+    if request.method == 'DELETE':
+        ...
+
+    return Response({'detail': 'work in progress'})
+
+
+
+@api_view(['GET', 'POST', 'PUT', 'DELETE'])
+@ensure_csrf_cookie
 def goals(request):
     if not request.user.is_authenticated:
         return Response({"detail":"not authorized"}, status=400)
 
     if request.method == 'POST':
-        contents = request.data.get('contents')
+        contents = request.data.get('text')
+        deadline = request.data.get('deadline')
+        
+        if not deadline or not contents:
+            return Response({'detail': 'not enough info'})
+        
+        dl = deadline.split('.')
+        deadline = dl[2]+'-'+dl[1]+'-' +dl[0]
 
-        if not contents:
-            return Response({'detail':'no contents found'}, status=400)
+        attached_notes_ids = request.data.get('notes')
 
-        goal = Goal.objects.create(user=request.user, contents=contents)
+        attached_notes = []
+        if attached_notes_ids:
+            for id in attached_notes_ids:
+                try:
+                    attached_notes.append(Note.objects.get(id=id))
+                except IntegrityError:
+                    pass
+
+            if not contents or not deadline:
+                return Response({'detail':'not enough info'}, status=400)
+
+
+        goal = Goal.objects.create(user=request.user, contents=contents, deadline=deadline)
+        goal.notes.add(*attached_notes)
+
         goal.save()
     
     if request.method == 'PUT':
         contents = request.data.get('contents')
+        deadline = request.data.get('deadline')
         id = request.data.get('id')
 
-        if not contents:
-            return Response({"detail":"no contents found"}, status=400)
+        attached_notes_ids = request.data.get('notes')
+
+        attached_notes = []
+        for id in attached_notes_ids:
+            try:
+                attached_notes.append(Note.objects.get(id=id))
+            except IntegrityError:
+                pass
+
+        if not contents or not deadline:
+            return Response({"detail":"not enough info"}, status=400)
         if not id:
             return Response({"detail":"no id found"}, status=400)
         
         goal = Goal.objects.get(id=id)
         goal.contents = contents
+        goal.deadline = deadline
         goal.save()
 
     if request.method == 'DELETE':
@@ -337,3 +387,4 @@ def goals(request):
     goals = Goal.objects.filter(user=request.user)
     serialized_goals = GoalSerializer(goals, many=True)
     return Response(serialized_goals.data)
+    
