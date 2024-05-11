@@ -41,19 +41,30 @@ class DailyEvent(TimeEvent):
 
 
 
-class Note(models.Model):
-    user = models.ForeignKey(User, on_delete=models.CASCADE, related_name='user_note')
-    contents = models.TextField()
-
-
-
 class Goal(models.Model):
     user = models.ForeignKey(User, on_delete=models.CASCADE, related_name='user_goal')
-    notes = models.ForeignKey(Note, on_delete=models.CASCADE, related_name='notes', blank=True, null=True)
-    events = models.ForeignKey(DailyEvent, on_delete=models.CASCADE, related_name='events', blank=True, null=True)
     contents = models.TextField()
     deadline = models.DateField()
     reached = models.BooleanField(default=False)
-    
 
 
+
+class Note(models.Model):
+    user = models.ForeignKey(User, on_delete=models.CASCADE, related_name='user_note')
+    contents = models.TextField()
+    goal = models.ForeignKey(Goal, on_delete=models.CASCADE, related_name='task_goal', blank=True, null=True)
+
+
+
+class Task(models.Model):
+    TASK_STAGES = (
+        ('Delayed','Delayed'),
+        ('TODO', 'TODO'),
+        ('In Progress','In Progress'),
+        ('done','done')
+    )
+    user = models.ForeignKey(User, on_delete=models.CASCADE, related_name='user_task')
+    contents = models.TextField()
+    stage = models.CharField(max_length=11, choices=TASK_STAGES, default='TODO')
+    dadline = models.DateField()
+    goal = models.ForeignKey(Goal, on_delete=models.CASCADE, related_name='task_goal', blank=True, null=True)
