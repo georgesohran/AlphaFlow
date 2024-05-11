@@ -3,8 +3,7 @@ import LoginPage from "./pages/login";
 import RegisterPage from "./pages/register";
 import Dashboard from "./pages/dashboard";
 import SchedulePage from "./pages/schedule";
-
-import DevPage from "./pages/devpage"
+import GoalsPage from "./pages/goals";
 
 import { Route, createBrowserRouter, createRoutesFromElements, RouterProvider } from 'react-router-dom';
 import { useEffect } from "react";
@@ -20,7 +19,7 @@ const router = createBrowserRouter(
       <Route path="register" element={<RegisterPage/>}/> <Route path="static/register" element={<RegisterPage />} />
       <Route path="dashboard" element={<Dashboard/>}/> <Route path="static/dashboard" element={<Dashboard/>}/>
       <Route path="schedule" element={<SchedulePage/>}/> <Route path="static/schedule" element={<SchedulePage/>}/>
-      <Route path="static/dev" element={<DevPage />} />
+      <Route path="goals" element={<GoalsPage/>}/> <Route path="static/goals" element={<GoalsPage/>}/>
     </Route>
   )
 )
