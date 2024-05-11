@@ -22,6 +22,7 @@ const formatTwoDigits = (num) => {
         return num.toString()
     }
 }
+
 export {
     getAuth,
     getDaysInMonth,
