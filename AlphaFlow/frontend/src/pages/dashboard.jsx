@@ -4,6 +4,7 @@ import {ButtonSubmit1} from "../components/buttons"
 import { LargeInputField } from "../components/inputfield";
 
 import { getAuth } from "../util";
+import { DateInputField } from "../components/inputfield";
 
 import React, { useRef } from "react";
 import { useEffect } from "react";
@@ -12,6 +13,7 @@ import { useNavigate } from "react-router-dom";
 import { Link } from "react-router-dom";
 import { DateTime, Info, Interval } from "luxon";
 
+import { PopUp1 } from "../components/popup_container";
 
 import Cookies from "universal-cookie";
 const cookies = new Cookies();
@@ -22,7 +24,11 @@ const Dashboard = () => {
     const [notes, setNotes] = useState([])
     const [goals, setGoals] = useState([])
     const [newNoteContent, setNewNoteContent] = useState('')
-    const [newGoalContent, setNewGoalContent] = useState({})
+    const [newGoalContent, setNewGoalContent] = useState({
+        text: '',
+        deadline: `01.01.${DateTime.now().year + 1}`,
+        reached: false,
+    })
     const [upcomingEvents, setUpcomingEvents] = useState({})
 
     const [mode, setMode] = useState('default')
@@ -102,29 +108,6 @@ const Dashboard = () => {
             }
         })
     }
-    const addGoal = async() => {
-        fetch('api/goals', {
-            method:'POST',
-            headers:{
-                'Content-Type': 'application/json',
-                'X-CSRFToken': cookies.get('csrftoken')
-            },
-            credentials:'same-origin',
-            body:JSON.stringify({
-                contents:newGoalContent
-            })
-        })
-        .then(res => res.json())
-        .then(res_data => {
-            if('detail' in res_data) {
-                console.log(res_data.detail)
-            } else {
-                setGoals(res_data)
-                setMode('default')
-            }
-        })
-    }
-
 
     const editNote = async(index) => {
         fetch('api/notes', {
@@ -149,30 +132,6 @@ const Dashboard = () => {
             setMode('default')
         })
     }
-    const editGoal = async(index) => {
-        fetch('api/goals', {
-            method:'PUT',
-            headers: {
-                'Content-Type':'application/json',
-                'X-CSRFToken':cookies.get('csrftoken')
-            },
-            credentials:'same-origin',
-            body: JSON.stringify({
-                contents:newGoalContent,
-                id:goals[index].id
-            })
-        })
-        .then(res => res.json())
-        .then((res_data) => {
-            if('detail' in res_data) {
-                console.log(res_data)
-            } else {
-                setGoals(res_data)
-            }
-            setMode('default')
-        })
-    }
-
 
     const deleteNote = async(index) => {
         fetch('api/notes', {
@@ -195,28 +154,8 @@ const Dashboard = () => {
             }
         })
     }
-    const deleteGoal = async(index) => {
-        fetch('/api/goals', {
-            method:'DELETE',
-            headers:{
-                'Content-Type':'application/json',
-                'X-CSRFToken': cookies.get('csrftoken')
-            },
-            credentials:'same-origin',
-            body:JSON.stringify({
-                id:goals[index].id
-            })
-        })
-        .then(res => res.json())
-        .then(res_data => {
-            if('detail' in res_data) {
-                console.log(res_data.detail)
-            } else {
-                setGoals(res_data)
-            }
-        })
-    }
 
+    
     const getUpcomingEvents = async() => {
         fetch('/api/get_upcoming_events', {
             method:'GET',
@@ -270,14 +209,40 @@ const Dashboard = () => {
 
     return (
         <div className='bg-gray-900 min-h-screen'>
-            <div className=''>
-                <TopNavBar authorized={true}/>
+            <div>
+                <TopNavBar authorized={true}/>                
+
+                {mode=='addNote' && 
+                <PopUp1>
+                    <div className="my-2">
+                        <LargeInputField value={newNoteContent} changeValue={setNewNoteContent}
+                        placeholder="new note here"/>
+                    </div>
+                    <span>
+                        <ButtonSubmit1 onClick={addNote} text="Add Note"/>
+                        <ButtonSubmit1 onClick={() => {setMode('default')}} text="Close"/>
+                    </span>
+                </PopUp1>}
+
+                {mode.includes('editNote') && 
+                <PopUp1>
+                    <div className="my-2">
+                        <LargeInputField value={newNoteContent} changeValue={setNewNoteContent}
+                        placeholder="new note here"/>
+                    </div>
+                    <span>
+                        <ButtonSubmit1 onClick={() => {editNote(parseInt(mode.split('-')[1]))}} text="Edit Note"/>
+                        <ButtonSubmit1 onClick={() => {setMode('default')}} text="Close"/>
+                    </span>
+                </PopUp1>}
+
+                
                 <div className='mx-auto justify-center mb-10 md:flex'>
                     <NotesContainer items={notes}  
                         addItem={addNote} editItem={editNote} deleteItem={deleteNote}
                         newContent={newNoteContent} changeNewContent={setNewNoteContent}
                         mode={mode} setMode={setMode}/>
-                    <GoalsContainer items={goals}  
+                    <GoalsContainer items={goals} events={upcomingEvents} notes={notes} 
                         addItem={addGoal} editItem={editGoal} deleteItem={deleteGoal}
                         newContent={newGoalContent} changeNewContent={setNewGoalContent}
                         mode={mode} setMode={setMode}/>
@@ -308,35 +273,9 @@ const NotesContainer = (props) => {
                 <div>
                 {!props.items.length?
                     ('No notes created'):
-                    (props.items.map((item, index) => (<>
-                        <div className="grid grid-cols-2" style={props.mode==`editNote-${index}`?{display:'none'}:{display:'grid'}}
-                        onMouseEnter={() => {document.getElementById(`edit-note-sec-${index}`).style.display='block'}}
-                        onMouseLeave={() => {document.getElementById(`edit-note-sec-${index}`).style.display='none'}}>
-                            <div className="col-span-1 text-left">
-                            - {item.contents}
-                            </div>
-                            <div className="col-span-1 text-right">
-                                <div id={`edit-note-sec-${index}`} style={{display:'none'}}>
-                                    <button className="mx-1 text-gray-500 hover:text-green-500"
-                                    onClick={() => {props.setMode(`editNote-${index}`)}}>
-                                        edit
-                                    </button>
-                                    <button className="mx-1 text-gray-500 hover:text-red-500"
-                                    onClick={() => {props.deleteItem(index)}}>
-                                        delete
-                                    </button>
-                                </div>
-                            </div>
-                        </div>
-                        <div style={props.mode==`editNote-${index}`?{display:'block'}:{display:'none'}}>
-                            <LargeInputField value={props.newContent} changeValue={props.changeNewContent}/>
-
-                            <div className="mx-auto w-auto flex-wrap">
-                                <ButtonSubmit1 text='Edit Note' onClick={() => {props.editItem(index)}}/>
-                                <ButtonSubmit1 text='Cancel' onClick={() => {props.setMode('default')}}/>
-                            </div>
-                        </div>
-                        </>)
+                    (props.items.map((item, index) => (
+                        <NoteBlock item={item} index={index} changeNewContent={props.changeNewContent} setMode={props.setMode}/>
+                        )
                     ))
                 }
                 </div>
@@ -344,68 +283,63 @@ const NotesContainer = (props) => {
             {/* add new section */}
             <div className="z-10">
                 <div>
-                    {props.mode == 'default'? 
-                    (<ButtonSubmit1 text='Add new note' onClick={() => {props.setMode('addNote')}}/>):
+                    {props.mode != 'addNote'? 
+                    (<ButtonSubmit1 text='Add new note' 
+                    onClick={() => {
+                        props.setMode('addNote');
+                        props.changeNewContent('')
+                        }}/>):
                     (<></>)}
                 </div>
-                <div style={props.mode=='addNote'? {display:'block'} : {display:'none'}}
-                className="w-auto items-center">
-                    <textarea cols={30} rows={4} placeholder="Your new note here" 
-                    className="bg-gray-800 text-gray-100 rounded-md p-2
-                    border-2 border-gray-400
-                    focus:outline-none focus:ring focus:border-blue-400" 
-                    onChange={(ev) => {props.changeNewContent(ev.target.value)}}>{props.newContent}</textarea>
+            </div>
+        </div>
+    )
+}
+const NoteBlock = (props) => {
 
-                    <div className="mx-auto w-auto flex-wrap">
-                        <ButtonSubmit1 text='Add Note' onClick={props.addItem}/>
-                        <ButtonSubmit1 text='Cancel' onClick={() => {props.setMode('default')}}/>
-                    </div>
+    return (
+        <div className="grid grid-cols-2 py-2 px-1 rounded-md my-1 bg-gray-700" style={props.mode==`editNote-${props.index}`?{display:'none'}:{display:'grid'}}
+        onMouseEnter={() => {document.getElementById(`edit-note-sec-${props.index}`).style.display='block'}}
+        onMouseLeave={() => {document.getElementById(`edit-note-sec-${props.index}`).style.display='none'}}>
+            <div className="col-span-1 text-left">
+            {props.item.contents}
+            </div>
+            <div className="col-span-1 text-right">
+                <div id={`edit-note-sec-${props.index}`} style={{display:'none'}}>
+                    <button className="mx-1 text-gray-400 hover:text-green-500"
+                    onClick={() => {
+                        props.changeNewContent(item.contents)
+                        props.setMode(`editNote-${props.index}`)
+                    }}>
+                        edit
+                    </button>
+                    <button className="mx-1 text-gray-400 hover:text-red-500"
+                    onClick={() => {props.deleteItem(props.index)}}>
+                        delete
+                    </button>
                 </div>
             </div>
         </div>
     )
 }
 
-
-const GoalsContainer = (props) => {    
+const GoalsContainer = (props) => {
+    const navigate = useNavigate()
     return (
         <div className="text-white text-center bg-gray-800 rounded-md border-2 border-gray-600
         my-2 m-2 h-auto p-4 mx-8 md:w-2/5 md:mx-4 md:mt-28">
             <p className="text-4xl p-2 bg-gray-700 rounded-md">Goals</p>
             <div className="divide-y divide-solid divide-gray-600">
-                <div className="mt-2 text-gray-300 ">
+                <div className="mt-2 text-gray-200 ">
                     <p className="text-lg">All Goals</p>
                 </div>
                 <div>
-                {!props.items.length?
+                {props.items.length==0?
                     ('No goals set'):
                     (props.items.map((item, index) => (<>
-                        <div className="grid grid-cols-2" style={props.mode==`editGoal-${index}`?{display:'none'}:{display:'grid'}}
-                        onMouseEnter={() => {document.getElementById(`edit-goal-sec-${index}`).style.display='block'}}
-                        onMouseLeave={() => {document.getElementById(`edit-goal-sec-${index}`).style.display='none'}}>
-                            <div className="col-span-1 text-left">
-                            - {item.contents}
-                            </div>
-                            <div className="col-span-1 text-right">
-                                <div id={`edit-goal-sec-${index}`} style={{display:'none'}}>
-                                    <button className="mx-1 text-gray-500 hover:text-green-500"
-                                    onClick={() => {props.setMode(`editGoal-${index}`)}}>
-                                        edit
-                                    </button>
-                                    <button className="mx-1 text-gray-500 hover:text-red-500"
-                                    onClick={() => {props.deleteItem(index)}}>
-                                        delete
-                                    </button>
-                                </div>
-                            </div>
-                        </div>
-                        <div style={props.mode==`editGoal-${index}`?{display:'block'}:{display:'none'}}>
-                            {props.changeNewContent(item.contents)}
-                            <LargeInputField value={props.newContent} changeValue={props.changeNewContent}/>
-
-                            <div className="mx-auto w-auto flex-wrap">
-                                <ButtonSubmit1 text='edit' onClick={() => {props.editItem(index)}}/>
-                                <ButtonSubmit1 text='Cancel' onClick={() => {props.setMode('default')}}/>
+                        <div className="grid grid-cols-2 my-2 p-2 bg-gray-700 rounded-md">
+                            <div className="col-span-1 text-left h-6">
+                                {item.contents}
                             </div>
                         </div>
                         </>)
@@ -414,27 +348,7 @@ const GoalsContainer = (props) => {
                 </div>  
             </div>
             {/* add new section */}
-            <div className="">
-                <div>
-                    {props.mode != 'addGoal'? 
-                    (<ButtonSubmit1 text='Set new goal' onClick={() => {props.setMode('addGoal')}}/>):
-                    (<div className="w-auto items-center">
-                        <textarea cols={30} rows={4} placeholder="Your new goal here" 
-                        className="bg-gray-800 text-gray-100 rounded-md p-2
-                        border-2 border-gray-400
-                        focus:outline-none focus:ring focus:border-blue-400" 
-                        onChange={(ev) => {props.changeNewContent(ev.target.value)}}>{props.newContent}</textarea>
-                        
-                        <p className="text-red-600">Warning! you can't change goals contents later</p>
-                        
-                        <div className="mx-auto w-auto flex-wrap">
-                            <ButtonSubmit1 text='Add goal' onClick={props.addItem}/>
-                            <ButtonSubmit1 text='Cancel' onClick={() => {props.setMode('default')}}/>
-                        </div>
-                    </div>
-                    )}
-                </div>
-            </div>
+            <ButtonSubmit1 onClick={() => {navigate('/goals')}}>Add or Edit Goals</ButtonSubmit1>
         </div>
     )
 }
@@ -461,12 +375,13 @@ const UpcomingEventsContainer = (props) => {
 }
 
 const EventsVisualizer = (props) => {
+    const navigate = useNavigate()
     return (
     <div className={`size-64 text-left ${props.relNow.weekday==DateTime.now().weekday? 'border-red-500':'border-gray-600'} 
     border-2 p-2 rounded-md m-2`}>
         <div className="text-xl">{Info.weekdays('long')[props.relNow.weekday-1]}</div>
-        <div className="overflow-y-scroll h-52">
-            {props.events &&  props.events.map((timeEvent, index) => (
+        <div className=" h-42">
+            {props.events &&  props.events.slice(0,3).map((timeEvent, index) => (
                 <div className={`border-l-4 pr-2 border-t-2 border-b-2 border-b-gray-600 border-t-gray-600 border-r-2 border-r-gray-600 rounded-md mt-1
                 ${Interval.fromDateTimes(timeEvent.start, timeEvent.finish).contains(props.relNow)?'bg-gray-gray-700':''}`}
                 style={{borderLeftColor: timeEvent.color}}>
@@ -476,6 +391,11 @@ const EventsVisualizer = (props) => {
                     </div>
                 </div>
             ))}
+            {props.events && props.events.length > 3 && 
+            <button onClick={() => {navigate('/schedule')}} 
+            className="text-gray-500 hover:bg-gray-600 hover:text-gray-300 rounded-md p-1 transition-all mt-1">
+                {props.events.length - 3} more    
+            </button>}
         </div>
         
     </div>
