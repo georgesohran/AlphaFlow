@@ -61,7 +61,7 @@ class Task(models.Model):
         ('Delayed','Delayed'),
         ('TODO', 'TODO'),
         ('In Progress','In Progress'),
-        ('done','done')
+        ('Done','Done')
     )
     user = models.ForeignKey(User, on_delete=models.CASCADE, related_name='user_task')
     contents = models.TextField()
