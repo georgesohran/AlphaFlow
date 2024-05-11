@@ -79,16 +79,16 @@ const DateInputField = (props) => {
                     {Array.from({length:getDaysInMonth(parseInt(props.value.split('.')[1]))}).map((val, index) => (
                         <button className="rounded hover:bg-gray-600"
                         onClick={() => {
-                            props.changeValue(`${formatTwoDigits(index)}.${props.value.split('.')[1]}.${props.value.split('.')[2]}`)
+                            props.changeValue(`${formatTwoDigits(index+1)}.${props.value.split('.')[1]}.${props.value.split('.')[2]}`)
                             setOpened(false)
-                        }}>{index}</button>
+                        }}>{index+1}</button>
                     ))}
                 </div>
                 <div className="flex flex-col overflow-y-scroll w-20">
                     {Array.from({length:12}).map((val, index) => (
                         <button className="rounded hover:bg-gray-600"
                         onClick={() => {
-                            props.changeValue(`${props.value.split('.')[0]}.${formatTwoDigits(index)}.${props.value.split('.')[2]}`)
+                            props.changeValue(`${props.value.split('.')[0]}.${formatTwoDigits(index+1)}.${props.value.split('.')[2]}`)
                             setOpened(false)
                         }}>{Info.months('short')[index]}</button>
                     ))}
@@ -108,7 +108,6 @@ const LargeInputField = (props) => {
             focus:outline-none focus:border-blue-400" 
             onChange={(ev) => {props.changeValue(ev.target.value)}}>{props.value}</textarea>
         </div>
-    
     )
 }
 
