@@ -19,14 +19,6 @@ class OneTimeEventSerializer(serializers.ModelSerializer):
 
 
 
-class GoalSerializer(serializers.ModelSerializer):
-    id = serializers.IntegerField(read_only=True)
-    contents = serializers.CharField(max_length=216)
-    class Meta():
-        model = Goal
-        fields = ('contents', 'id', 'deadline')
-
-
 class NoteSerializer(serializers.Serializer):
     id = serializers.IntegerField(read_only=True)
     contents = serializers.CharField(required=False, max_length=1000, allow_null=True)
@@ -34,11 +26,22 @@ class NoteSerializer(serializers.Serializer):
         model = Note
         fields = ('contents', 'id')
 
-class TaskSerializer(serializers.Serializer):
+class TaskSerializer(serializers.ModelSerializer):
     id = serializers.IntegerField(read_only=True)
     contents = serializers.CharField(required=False, max_length=1000, allow_null=True)
     deadline = serializers.DateField()
     stage = serializers.CharField(required=False, max_length=11)
     class Meta():
         model = Task
-        fields = ('id','contents', 'deadline', 'stage')
+        fields = ['id','contents', 'deadline', 'stage']
+
+
+class GoalSerializer(serializers.ModelSerializer):
+    task_goal = TaskSerializer(many=True, read_only=True)
+    id = serializers.IntegerField(read_only=True)
+    contents = serializers.CharField(max_length=216)
+    class Meta():
+        model = Goal
+        fields = ['contents', 'id', 'task_goal']
+
+

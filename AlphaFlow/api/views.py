@@ -423,4 +423,4 @@ def goals(request):
     goals = Goal.objects.filter(user=request.user)
     serialized_goals = GoalSerializer(goals, many=True)
     return Response(serialized_goals.data)
-    
+
