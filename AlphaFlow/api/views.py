@@ -305,15 +305,51 @@ def tasks(request):
         return Response({'detail':'not authorized'}, status=400)
 
     goal_id = request.data.get('goal_id')
+    if not goal_id:
+        return Response({'detail':'no goal id found'})
 
     if request.method == 'POST':
-        ...
-    if request.method == 'PUT':
-        ...
-    if request.method == 'DELETE':
-        ...
+        contents = request.data.get('contents')
+        deadline = request.data.get('deadline')
+        stage = request.data.get('stage')
 
-    return Response({'detail': 'work in progress'})
+        if not contents or not deadline:
+            return Response({'detail': 'not enough info'})
+        
+        if stage:
+            Task.objects.create(contetnts=contents, deadline=deadline, goal_id=goal_id, stage=stage)
+        else:
+            Task.objects.create(contetnts=contents, deadline=deadline, goal_id=goal_id)
+
+    if request.method == 'PUT':
+        contents = request.data.get('contents')
+        deadline = request.data.get('deadline')
+        stage = request.data.get('stage')
+        
+        task_id = request.data.get('id')
+
+        if not contents or not deadline:
+            return Response({'detail': 'not enough info'})
+        
+        task = Task.objects.get(id=task_id)
+        task[0].contents=contents
+        task[0].deadline=deadline,
+        task[0].stage=stage
+        task[0].save()
+
+    if request.method == 'DELETE':
+        task_id = request.data.get('id')
+
+        if not contents or not deadline:
+            return Response({'detail': 'not enough info'})
+        
+        task = Task.objects.get(id=task_id)
+        task.delete()
+
+    tasks = Task.objects.filter(user=request.user, goal=goal_id)
+    serialized_tasks = TaskSerializer(tasks, many=True)
+
+    return Response(serialized_tasks.data)
 
 
 
