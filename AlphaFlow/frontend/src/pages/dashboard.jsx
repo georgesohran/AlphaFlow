@@ -274,7 +274,8 @@ const NotesContainer = (props) => {
                 {!props.items.length?
                     ('No notes created'):
                     (props.items.map((item, index) => (
-                        <NoteBlock item={item} index={index} changeNewContent={props.changeNewContent} setMode={props.setMode}/>
+                        <NoteBlock item={item} index={index} changeNewContent={props.changeNewContent} setMode={props.setMode}
+                        deleteItem={props.deleteItem}/>
                         )
                     ))
                 }
@@ -308,7 +309,7 @@ const NoteBlock = (props) => {
                 <div id={`edit-note-sec-${props.index}`} style={{display:'none'}}>
                     <button className="mx-1 text-gray-400 hover:text-green-500"
                     onClick={() => {
-                        props.changeNewContent(item.contents)
+                        props.changeNewContent(props.item.contents)
                         props.setMode(`editNote-${props.index}`)
                     }}>
                         edit
