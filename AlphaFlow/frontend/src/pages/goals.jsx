@@ -4,7 +4,7 @@ import TopNavBar from "../components/navbar"
 import { getAuth } from "../util"
 import { useNavigate } from "react-router-dom"
 
-import { FaPlus } from "react-icons/fa6";
+import { FaMinus, FaPlus } from "react-icons/fa";
 
 
 const GoalsPage = () => {
@@ -75,15 +75,17 @@ const GoalContainer = (props) => {
     return (
         <div className="bg-gray-800 rounded-md  
         mx-2 my-2 p-2 xl:w-3/4 xl:mx-auto">
-            <div className="flex flex-row">
+            <div className="flex flex-row justify-between">
                 <div className="text-2xl"> {props.goal.contents} </div>
-                <button onClick={setOpened(true)}> <FaPlus/> </button>
+                <button className="p-2 text-2xl mr-2 rounded-full text-gray-500
+                hover:bg-gray-700 hover:text-gray-300 transition-all"
+                onClick={() => {setOpened(!opened)}}> {opened? <FaMinus /> :<FaPlus/>}  </button>
             </div>
-            <div>
-                <TasksSection />
-                <TasksSection />
-                <TasksSection />
-                <TasksSection />
+            <div className={`${opened?'max-h-96':'max-h-0'} overflow-hidden transition-[max-height] ease-in-out duration-500`}>
+                <TasksSection tasks={props.goal.tasks}/>
+                <TasksSection tasks={props.goal.tasks}/>
+                <TasksSection tasks={props.goal.tasks}/>
+                <TasksSection tasks={props.goal.tasks}/>
             </div>
         </div>
     )
@@ -93,7 +95,7 @@ const TasksSection = (props) => {
     return (
         <div>
             <div> Task Section</div>
-            <TaskBlock/>
+            {props.tasks && props.tasks.map((task, index) => <TaskBlock task={task}/>)}
         </div>
     )
 }
@@ -101,7 +103,6 @@ const TasksSection = (props) => {
 const TaskBlock = (props) => {
     return (
         <div>
-
             <div>
                 {props.task.contents}
             </div>
