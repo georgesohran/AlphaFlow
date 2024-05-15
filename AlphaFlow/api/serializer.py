@@ -37,11 +37,11 @@ class TaskSerializer(serializers.ModelSerializer):
 
 
 class GoalSerializer(serializers.ModelSerializer):
-    task_goal = TaskSerializer(many=True, read_only=True)
+    goal_tasks = TaskSerializer(many=True, read_only=True)
     id = serializers.IntegerField(read_only=True)
     contents = serializers.CharField(max_length=216)
     class Meta():
         model = Goal
-        fields = ['contents', 'id', 'task_goal']
+        fields = ['contents', 'id', 'goal_tasks']
 
 
