@@ -14,5 +14,5 @@ urlpatterns = [
 
     path('notes', view=views.notes, name='notes'),
     path('goals', view=views.goals, name='goals'),
-    path('tasks',  view=views.tasks, name='tasks')
+    path('tasks', view=views.tasks, name='tasks')
 ]

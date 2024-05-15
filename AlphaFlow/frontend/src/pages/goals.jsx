@@ -65,18 +65,8 @@ const GoalsPage = () => {
     const addTask = async() => {
 
     }
-    const editTask = async(id) => {
-        console.log(id)
-        fetch('api/tasks', {
-            method:'PUT',
-            headers: {
-                
-                'X-CSRFToken': cookies.get('csrftoken'),
-            },
-            credentials:'same-origin'
-        })
-        .then()
-        .then()
+    const editTask = async() => {
+        console.log(newEditedTask)
     }
 
     return (
@@ -130,7 +120,9 @@ const TasksSection = (props) => {
         }}  
         onDrop={(ev) => {
             ev.preventDefault()
-            props.editTask(ev.dataTransfer.getData("text/plain"))
+            console.log(props.name)
+            props.setNewEditedTask({...JSON.parse(ev.dataTransfer.getData("text/plain")), stage: props.name})
+            props.editTask()
         }}>
             <div className="flex flex-row justify-between"> 
                 <div className="text-gray-100 text-xl">{props.name}</div>
@@ -149,7 +141,7 @@ const TaskBlock = (props) => {
     return (
         <div className="text-left p-1 border-2 border-gray-900 rounded-md my-1"
         draggable onDragStart={(ev) => {
-            ev.dataTransfer.setData("text/plain", props.task.id)
+            ev.dataTransfer.setData("text/plain", JSON.stringify(props.task))
             ev.dataTransfer.dropEffect = 'move'
         }}>
             <div className="text-base text-gray-300">
