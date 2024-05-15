@@ -51,7 +51,7 @@ class Goal(models.Model):
 
 class Note(models.Model):
     user = models.ForeignKey(User, on_delete=models.CASCADE, related_name='user_note')
-    goal = models.ForeignKey(Goal, on_delete=models.CASCADE, related_name='note_goal', blank=True, null=True)
+    goal = models.ForeignKey(Goal, on_delete=models.CASCADE, related_name='goal_notes', blank=True, null=True)
     contents = models.TextField()
 
 
@@ -64,7 +64,7 @@ class Task(models.Model):
         ('Done','Done')
     )
     user = models.ForeignKey(User, on_delete=models.CASCADE, related_name='user_task')
-    goal = models.ForeignKey(Goal, on_delete=models.CASCADE, related_name='task_goal')
+    goal = models.ForeignKey(Goal, on_delete=models.CASCADE, related_name='goal_tasks')
     contents = models.TextField()
     stage = models.CharField(max_length=11, choices=TASK_STAGES, default='TODO')
     deadline = models.DateField()
