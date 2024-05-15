@@ -37,6 +37,7 @@ const TopNavBar = (props) => {
                         <div>Icon here</div>
                         <TopNavBarLinkButton link="/dashboard" name="Dashboard"/>
                         <TopNavBarLinkButton link="/schedule" name="Schedule"/>
+                        <TopNavBarLinkButton link="/goals" name="Goals"/>
                     </div>
                     <div className="flex items-center space-x-3">
                         <TopNavBarButton click={logout} name="Logout"/>
