@@ -243,7 +243,6 @@ const Dashboard = () => {
                         newContent={newNoteContent} changeNewContent={setNewNoteContent}
                         mode={mode} setMode={setMode}/>
                     <GoalsContainer items={goals} events={upcomingEvents} notes={notes} 
-                        addItem={addGoal} editItem={editGoal} deleteItem={deleteGoal}
                         newContent={newGoalContent} changeNewContent={setNewGoalContent}
                         mode={mode} setMode={setMode}/>
                 </div>
@@ -348,8 +347,7 @@ const GoalsContainer = (props) => {
                 }
                 </div>  
             </div>
-            {/* add new section */}
-            <ButtonSubmit1 onClick={() => {navigate('/goals')}}>Add or Edit Goals</ButtonSubmit1>
+            <ButtonSubmit1 text="Add or Edit Goals" onClick={() => {navigate('/goals')}} />
         </div>
     )
 }
