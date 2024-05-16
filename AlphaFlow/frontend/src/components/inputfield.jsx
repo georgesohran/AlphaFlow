@@ -63,7 +63,7 @@ const DateInputField = (props) => {
     return (
         <div className="my-1 relative flex gap-1">
             <input value={props.value} onChange={(ev) => {props.changeValue(ev.target.value)}} placeholder="dd.mm.yyyy"
-            className="rounded-md p-1 text-gray-200 bg-gray-700 w-24 
+            className="rounded-md p-1 text-gray-200 bg-gray-700 w-24
             focus:outline-none focus:ring-1 focus:border-blue-300 focus:bg-gray-600
             "/>
             <button className="size-9 p-1 bg-gray-700 rounded-md"
