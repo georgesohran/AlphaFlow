@@ -5,8 +5,9 @@ import { DateInputField, InputField, LargeInputField } from "../components/input
 import { getAuth } from "../util"
 import { useNavigate } from "react-router-dom"
 
-import { FaMinus, FaPlus } from "react-icons/fa";
+import { FaEdit, FaMinus, FaPlus } from "react-icons/fa";
 import { RxCross2 } from "react-icons/rx";
+import { SliderPicker } from 'react-color'
 
 import { ButtonSubmit1, ButtonSubmit2 } from "../components/buttons"
 
@@ -14,6 +15,7 @@ const GoalsPage = () => {
     const [goals, setGoals] = useState([
         {
             "contents": "another goal",
+            "color": "#ffffff",
             "id": 2,
             "goal_tasks": [
                 {
@@ -39,9 +41,8 @@ const GoalsPage = () => {
         deadline: "01.01.2001",
         stage: ""
     })
-    const [newEditedGoal, setnewEditedGoal] = useState({
-        contents:'',
-        color: ''
+    const [newEditedGoal, setNewEditedGoal] = useState({
+        contents:''
     })
     const [mode, setMode] = useState('default')
 
@@ -57,6 +58,12 @@ const GoalsPage = () => {
     //         }
     //     })
     // }, [])
+
+    useEffect(() => {
+        if(mode == 'addGoal') {
+            setNewEditedGoal({contents:''})
+        }
+    }, [mode])
 
     const getGoals = async() => {
         fetch('api/goals', {
@@ -76,6 +83,7 @@ const GoalsPage = () => {
 
     }
     const editGoal = async() => {
+        console.log(newEditedGoal.id)
 
     }
     const deleteGoal = async(id) => {
@@ -97,30 +105,38 @@ const GoalsPage = () => {
         <TopNavBar />
         <div className="text-white mt-8 mb-36">
             {goals && goals.map((goal, index) => 
-            <GoalContainer key={index} goal={goal} 
+            <GoalContainer key={index} goal={goal}
+            addGoal={addGoal} editGoal={editGoal}
+            newEditedGoal={newEditedGoal} setNewEditedGoal={setNewEditedGoal}
             editTask={editTask} deleteTask={deleteTask} 
             newEditedTask={newEditedTask} setNewEditedTask={setNewEditedTask}/>
             )}
 
             <div className="relative rounded-md border-2 border-gray-700 border-dashed
             mx-2 my-2 p-2 xl:w-3/4 xl:mx-auto">
-                <button className="absolute top-1 right-3 p-2 text-2xl rounded-full text-gray-500
-                hover:bg-gray-700 hover:text-gray-300 transition-all"
-                onClick={() => {mode!='addGoal'? setMode('addGoal'): setMode('default')}}> {mode!='addGoal'? <FaPlus/>: <FaMinus/>} </button>
-                <div>
-                    {mode == 'addGoal'?
-                    <div className="mr-12">
-                        <LargeInputField placeholder="new goal here" value={newEditedGoal.contents}
-                        changeValue={(val) => {setnewEditedGoal({...newEditedGoal, contents:val})}}/>
-                        <div className="flex flex-row">
-                            <ButtonSubmit1 text="Cancel" onClick={() => {setMode('default')}}/>
-                            <div>
-                                <ButtonSubmit2 text="Add Goal" onClick={editGoal} />
+                <div className="grid grid-cols-2 ">
+                {mode=='addGoal'?
+                    <div className="col-span-1 mt-1">
+                        <input className="ml-2 rounded-md p-1 text-gray-200 bg-gray-700 
+                        hover:bg-gray-600 text-2xl w-full
+                        focus:outline-none focus:ring focus:border-blue-300 focus:bg-gray-600"
+                        value={newEditedGoal.contents}
+                        onChange={(ev) => {setNewEditedGoal({contents:ev.target.value})}}/>
+                        <div className="-ml-2 grid grid-cols-2 ">
+                            <ButtonSubmit1 text="Edit Goal" onClick={() => {setMode('default'); editGoal()}}/>
+                            <div className="mt-3">
+                                <ButtonSubmit2 text="Cancel" onClick={() => {setMode('default')}} />
                             </div>
                         </div>
                     </div>:
-                    <div className="text-2xl"> New Goal </div>}
+                    <div className="text-2xl col-span-1"> Add New Goal </div>}
                     
+                    
+                    <div className="text-right">
+                        <button className="p-2 text-2xl mr-2 rounded-full text-gray-500
+                        hover:bg-gray-700 hover:text-gray-300 transition-all"
+                        onClick={() => {mode=='default'?setMode('addGoal'):setMode('default')}}> <FaPlus/> </button>
+                    </div>
                 </div>
             </div>
 
@@ -132,15 +148,41 @@ const GoalsPage = () => {
 
 const GoalContainer = (props) => {
     const [opened, setOpened] = useState(false)
+    const [editing, setEditing] = useState(false)
 
+    useEffect(() => {
+        props.setNewEditedGoal(props.goal)
+    }, [editing])
+    
     return (
         <div className="bg-gray-800 rounded-md  
         mx-2 my-2 p-2 xl:w-3/4 xl:mx-auto">
-            <div className="flex flex-row justify-between">
-                <div className="text-2xl"> {props.goal.contents} </div>
-                <button className="p-2 text-2xl mr-2 rounded-full text-gray-500
-                hover:bg-gray-700 hover:text-gray-300 transition-all"
-                onClick={() => {setOpened(!opened)}}> {opened? <FaMinus /> :<FaPlus/>}  </button>
+            <div className="grid grid-cols-2 ">
+                {editing? 
+                <div className="col-span-1 mt-1">
+                    <input className="ml-2 rounded-md p-1 text-gray-200 bg-gray-700 
+                    hover:bg-gray-600 text-2xl w-full
+                    focus:outline-none focus:ring focus:border-blue-300 focus:bg-gray-600"
+                    value={props.newEditedGoal.contents}
+                    onChange={(ev) => {props.setNewEditedGoal({contents:ev.target.value})}}/>
+                    <div className="-ml-2 grid grid-cols-2 ">
+                        <ButtonSubmit1 text="Edit Goal" onClick={() => {setEditing(false); props.editGoal()}}/>
+                        <div className="mt-3">
+                            <ButtonSubmit2 text="Cancel" onClick={() => {setEditing(false)}} />
+                        </div>
+                    </div>
+                </div>:
+                <div className="text-2xl col-span-1"> {props.goal.contents} </div>}
+                
+                
+                <div className="text-right">
+                    <button className="p-2 text-2xl mr-2 rounded-full text-gray-500
+                    hover:bg-gray-700 hover:text-gray-300 transition-all"
+                    onClick={() => {setEditing(!editing)}}><FaEdit/></button>
+                    <button className="p-2 text-2xl mr-2 rounded-full text-gray-500
+                    hover:bg-gray-700 hover:text-gray-300 transition-all"
+                    onClick={() => {setOpened(!opened)}}> {opened? <FaMinus /> :<FaPlus/>}  </button>
+                </div>
             </div>
             <div className={`${opened?'max-h-96':'max-h-0'} overflow-hidden transition-[max-height] ease-in-out duration-500 mt-1`}>
                 <div className="grid grid-cols-4 gap-1">
