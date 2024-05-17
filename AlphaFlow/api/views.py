@@ -331,11 +331,8 @@ def tasks(request):
         if not contents or not deadline:
             return Response({'detail': 'not enough info'})
         
-        task = Task.objects.get(id=task_id)
-        task[0].contents=contents
-        task[0].deadline=deadline,
-        task[0].stage=stage
-        task[0].save()
+        task = Task.objects.filter(id=task_id).update(contents=contents, deadline=deadline, stage=stage)
+        task.save()
 
     if request.method == 'DELETE':
         task_id = request.data.get('id')
@@ -361,56 +358,24 @@ def goals(request):
 
     if request.method == 'POST':
         contents = request.data.get('text')
-        deadline = request.data.get('deadline')
         
-        if not deadline or not contents:
+        if not contents:
             return Response({'detail': 'not enough info'})
-        
-        dl = deadline.split('.')
-        deadline = dl[2]+'-'+dl[1]+'-' +dl[0]
 
-        attached_notes_ids = request.data.get('notes')
+        goal = Goal.objects.create(user=request.user, contents=contents)
 
-        attached_notes = []
-        if attached_notes_ids:
-            for id in attached_notes_ids:
-                try:
-                    attached_notes.append(Note.objects.get(id=id))
-                except IntegrityError:
-                    pass
-
-            if not contents or not deadline:
-                return Response({'detail':'not enough info'}, status=400)
-
-
-        goal = Goal.objects.create(user=request.user, contents=contents, deadline=deadline)
-        goal.notes.add(*attached_notes)
-
-        goal.save()
     
     if request.method == 'PUT':
         contents = request.data.get('contents')
-        deadline = request.data.get('deadline')
         id = request.data.get('id')
 
-        attached_notes_ids = request.data.get('notes')
-
-        attached_notes = []
-        for id in attached_notes_ids:
-            try:
-                attached_notes.append(Note.objects.get(id=id))
-            except IntegrityError:
-                pass
-
-        if not contents or not deadline:
+        if not contents :
             return Response({"detail":"not enough info"}, status=400)
         if not id:
             return Response({"detail":"no id found"}, status=400)
         
         goal = Goal.objects.get(id=id)
         goal.contents = contents
-        goal.deadline = deadline
-        goal.save()
 
     if request.method == 'DELETE':
         id = request.data.get('id')
