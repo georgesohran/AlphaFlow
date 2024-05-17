@@ -44,7 +44,6 @@ class DailyEvent(TimeEvent):
 class Goal(models.Model):
     user = models.ForeignKey(User, on_delete=models.CASCADE, related_name='user_goal')
     contents = models.TextField()
-    deadline = models.DateField()
     reached = models.BooleanField(default=False)
 
 
