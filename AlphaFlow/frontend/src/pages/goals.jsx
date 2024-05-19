@@ -12,6 +12,7 @@ import { MdDeleteForever } from "react-icons/md";
 import { ButtonSubmit1, ButtonSubmit2 } from "../components/buttons"
 
 import Cookies from "universal-cookie"
+import { DateTime } from "luxon"
 const cookies = new Cookies()
 
 
@@ -19,11 +20,10 @@ const GoalsPage = () => {
     const [goals, setGoals] = useState([])
 
     const [newEditedTask, setNewEditedTask] = useState({
-        id: 1,
+        id: 0,
         goal_id: 0,
         contents: "",
-        deadline: "01.01.2001",
-        stage: ""
+        deadline: DateTime.now().plus({days:1}).toFormat('dd.MM.yyyy')
     })
     const [newEditedGoal, setNewEditedGoal] = useState({
         contents:''
@@ -59,11 +59,12 @@ const GoalsPage = () => {
         })
         .then(res => res.json())
         .then(res_data => {
-            console.log(res_data)
+            setGoals(res_data)
         })
     }
 
     const addGoal = async() => {
+        console.log(newEditedGoal)
         fetch('api/goals', {
             method:'POST',
             headers:{
@@ -82,7 +83,7 @@ const GoalsPage = () => {
             }
         })
     }
-    const editGoal = async() => {
+    const editGoal = async(id) => {
         fetch('api/goals', {
             method: 'PUT',
             headers:{
@@ -90,7 +91,7 @@ const GoalsPage = () => {
                 'X-CSRFToken': cookies.get('csrftoken')
             },
             credentials:'same-origin',
-            body: JSON.stringify(newEditedGoal)
+            body: JSON.stringify({...newEditedGoal, id:id})
         })
         .then(res => res.json())
         .then(res_data => {
@@ -106,7 +107,7 @@ const GoalsPage = () => {
             method: 'DELETE',
             headers: {
                 'Content-Type': 'application/json',
-                'X-CSRFRToken': cookies.get('csrftoken')
+                'X-CSRFToken': cookies.get('csrftoken')
             },
             credentials:'same-origin',
             body: JSON.stringify({id: id})
@@ -122,7 +123,7 @@ const GoalsPage = () => {
     }
 
 
-    const addTask = async() => {
+    const addTask = async(stage) => {
         fetch('api/tasks', {
             method: 'POST',
             headers: {
@@ -130,17 +131,17 @@ const GoalsPage = () => {
                 'X-CSRFToken': cookies.get('csrftoken')
             },
             credentials: 'same-origin',
-            body: JSON.stringify(newEditedTask)
+            body: JSON.stringify({...newEditedTask, stage:stage})
         })
         .then(res => res.json())
         .then(res_data => {
-            if (detail in res_data) {
+            if ('detail' in res_data) {
                 console.log(res_data.detail)
             }
-            return getGoals
+            return getGoals()
         })
     }
-    const editTask = async() => {
+    const editTask = async(task) => {
         fetch('api/tasks', {
             method: 'PUT',
             headers: {
@@ -148,13 +149,10 @@ const GoalsPage = () => {
                 'X-CSRFToken': cookies.get('csrftoken')
             },
             credentials: 'same-origin',
-            body: JSON.stringify(newEditedTask)
+            body: JSON.stringify(task)
         })
         .then(res => res.json())
         .then(res_data => {
-            if ('detail' in res_data) {
-                console.log(res_data.detail)
-            }
             return getGoals()
         })
     }
@@ -179,7 +177,7 @@ const GoalsPage = () => {
 
     return (
     <div className="bg-gray-900 min-h-screen">
-        <TopNavBar />
+        <TopNavBar authorized={true}/>
         <div className="text-white mt-8 mb-36">
             {goals && goals.map((goal, index) => 
             <GoalContainer key={index} goal={goal}
@@ -200,7 +198,7 @@ const GoalsPage = () => {
                         value={newEditedGoal.contents}
                         onChange={(ev) => {setNewEditedGoal({contents:ev.target.value})}}/>
                         <div className="-ml-2 grid grid-cols-2 ">
-                            <ButtonSubmit1 text="Edit Goal" onClick={() => {setMode('default'); editGoal()}}/>
+                            <ButtonSubmit1 text="Add Goal" onClick={() => {setMode('default'); addGoal()}}/>
                             <div className="mt-3">
                                 <ButtonSubmit2 text="Cancel" onClick={() => {setMode('default')}} />
                             </div>
@@ -243,7 +241,7 @@ const GoalContainer = (props) => {
                     value={props.newEditedGoal.contents}
                     onChange={(ev) => {props.setNewEditedGoal({contents:ev.target.value})}}/>
                     <div className="-ml-2 grid grid-cols-2 ">
-                        <ButtonSubmit1 text="Edit Goal" onClick={() => {setEditing(false); props.editGoal()}}/>
+                        <ButtonSubmit1 text="Edit Goal" onClick={() => {setEditing(false); props.editGoal(props.goal.id)}}/>
                         <div className="mt-3">
                             <ButtonSubmit2 text="Cancel" onClick={() => {setEditing(false)}} />
                         </div>
@@ -272,7 +270,7 @@ const GoalContainer = (props) => {
                     <TasksSection name="TODO" tasks={props.goal.goal_tasks.filter((task) => task.stage == 'TODO')}
                     newEditedTask={props.newEditedTask} setNewEditedTask={props.setNewEditedTask} goalId={props.goal.id}
                     addTask={props.addTask} editTask={props.editTask} deleteTask={props.deleteTask}/>
-                    <TasksSection name="In progress" tasks={props.goal.goal_tasks.filter((task) => task.stage == 'In Progress')}
+                    <TasksSection name="In Progress" tasks={props.goal.goal_tasks.filter((task) => task.stage == 'In Progress')}
                     newEditedTask={props.newEditedTask} setNewEditedTask={props.setNewEditedTask} goalId={props.goal.id}
                     addTask={props.addTask} editTask={props.editTask} deleteTask={props.deleteTask}/>
                     <TasksSection name="Done" tasks={props.goal.goal_tasks.filter((task) => task.stage == 'Done')}
@@ -294,8 +292,7 @@ const TasksSection = (props) => {
         }}  
         onDrop={(ev) => {
             ev.preventDefault()
-            props.setNewEditedTask({...JSON.parse(ev.dataTransfer.getData("text/plain")), stage: props.name, goal_id: props.goalId})
-            props.editTask()
+            props.editTask({...JSON.parse(ev.dataTransfer.getData("text/plain")), stage:props.name, goal_id:props.goalId})
         }}>
             <div className="flex flex-row justify-between"> 
                 <div className="text-gray-100 text-xl">{props.name}</div>
@@ -309,7 +306,7 @@ const TasksSection = (props) => {
                     <div className="flex flex-row justify-between">
                         <input placeholder="new task here"
                         value={props.newEditedTask.contents} 
-                        onChange={(ev) => {props.setNewEditedTask({...props.newEditedTask, contents:ev.target.value})}}
+                        onChange={(ev) => {props.setNewEditedTask({...props.newEditedTask, contents:ev.target.value, goal_id: props.goalId})}}
                         className="rounded-md p-1 w-28 md:w-32 xl:w-44
                         text-gray-200 bg-gray-700 
                         hover:bg-gray-600
@@ -320,11 +317,14 @@ const TasksSection = (props) => {
                         </button>
                     </div>
                     <div className="mt-1 text-gray-400">deadline:</div>
-                    <div>
+                    <div className="relative">
                         <DateInputField value={props.newEditedTask.deadline} 
                         changeValue={(val) => {props.setNewEditedTask({...props.newEditedTask, deadline:val})}}/>     
                     </div>
-                    <ButtonSubmit2 text="add task" onClick={props.addTask}/>
+                    {<ButtonSubmit2 text="add task" onClick={() => {
+                        props.addTask(props.name)
+                        setCreatingTask(false)
+                    }}/>}
                 </div>
                 {props.tasks && props.tasks.map((task, index) => <TaskBlock task={task} deleteTask={props.deleteTask}/>)}
             </div>
