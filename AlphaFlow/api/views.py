@@ -329,6 +329,8 @@ def tasks(request):
         deadline = request.data.get('deadline')
         stage = request.data.get('stage')
         
+        deadline = '-'.join(reversed(deadline.split('.')))
+
         task_id = request.data.get('id')
 
         goal_id = request.data.get('goal_id')
@@ -338,8 +340,7 @@ def tasks(request):
         if not contents or not deadline:
             return Response({'detail': 'not enough info'})
         
-        task = Task.objects.filter(id=task_id).update(contents=contents, deadline=deadline, stage=stage)
-        task.save()
+        Task.objects.filter(id=task_id).update(contents=contents, deadline=deadline, stage=stage)
 
     if request.method == 'DELETE':
         task_id = request.data.get('id')
@@ -361,7 +362,7 @@ def goals(request):
         return Response({"detail":"not authorized"}, status=400)
 
     if request.method == 'POST':
-        contents = request.data.get('text')
+        contents = request.data.get('contents')
         
         if not contents:
             return Response({'detail': 'not enough info'})
@@ -377,8 +378,7 @@ def goals(request):
         if not id:
             return Response({"detail":"no id found"}, status=400)
         
-        goal = Goal.objects.get(id=id)
-        goal.contents = contents
+        Goal.objects.filter(id=id).update(contents=contents)
 
     if request.method == 'DELETE':
         id = request.data.get('id')
