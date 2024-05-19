@@ -70,7 +70,7 @@ const TopNavBar = (props) => {
 
 const TopNavBarLinkButton = (props) => {
     return (
-        <Link to={props.link} className="px-3 py-1 outline outline-1 outline-gray-300 rounded-md hover:bg-black ">{props.name}</Link>
+        <Link to={props.link} className="px-3 py-1 outline outline-1 outline-gray-300 rounded-md hover:bg-black transition-color">{props.name}</Link>
     )
 }
 const TopNavBarButton = (props) => {
