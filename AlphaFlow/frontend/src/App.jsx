@@ -14,7 +14,7 @@ const cookies = new Cookies()
 const router = createBrowserRouter(
   createRoutesFromElements(
     <Route path="/">
-      <Route index element={<LandingPage/>} />
+      <Route index element={<LandingPage/>} /> <Route path="static/land" element={<LandingPage/>} />
       <Route path="login" element={<LoginPage />}/> <Route path="static/login" element={<LoginPage />}/>
       <Route path="register" element={<RegisterPage/>}/> <Route path="static/register" element={<RegisterPage />} />
       <Route path="dashboard" element={<Dashboard/>}/> <Route path="static/dashboard" element={<Dashboard/>}/>

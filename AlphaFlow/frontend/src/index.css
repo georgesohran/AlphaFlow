@@ -1,3 +1,18 @@
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
+
+
+.radial-gradient {
+    background: radial-gradient(300px circle at 192px 192px,#4c1d95 1px, #1f2937 60%);
+}
+.outer-radial-gradient {
+    background: radial-gradient(300px circle at 192px 192px,#4c1d95 1px, #111827 60%);
+}
+
+.hover-gradient-element {
+    background: radial-gradient(300px circle at 192px 192px,
+    #4b5563 1px, #1e293b 60%);
+    position: absolute;
+}
+
