@@ -21,19 +21,19 @@ const LandingPage = () => {
         })
     }, [])
 
-    onmousemove = (ev) => {setEffectPos({x:ev.clientX, y:ev.clientY+ window.scrollY})}
+    onmousemove = (ev) => {setEffectPos({x:ev.clientX, y:ev.clientY+window.scrollY})}
 
 
     return (
-        <div className='bg-gray-900 min-h-screen'>
+        <div className='bg-gray-900 min-h-screen '>
             <TopNavBar authorized={false}/>
-            <div className='absolute size-96 outer-radial-gradient' style={{
-                top:effectPos.y-198,
-                left:effectPos.x-198
-            }}></div>
-            <div className='relative text-white px-2'>
-                <div className='relative rounded-md bg-gray-800 w-3/4 mx-auto text-center my-40 py-8 md:w-1/2 overflow-hidden'>
-                    
+            
+            <div className=' relative text-white px-2  overflow-hidden'>
+                <div className='absolute size-96 outer-radial-gradient' style={{
+                    top:effectPos.y-264,
+                    left:effectPos.x-192
+                }}></div>
+                <div className='relative rounded-md bg-gray-800 w-3/4 mx-auto text-center my-40 py-8 md:w-1/2'>    
                     <div className='relative text-3xl mb-2 flex flex-row justify-center transition-all gap-0 hover:gap-5'>                
                         {titleText.split('').map((c) => 
                         <span>
@@ -47,10 +47,10 @@ const LandingPage = () => {
                     <TextCard num='1' title="Make a schedule" effectPos={effectPos} setEffectPos={setEffectPos}
                     text="Intarractive schedule, for planning and sticking to your habits"/>
                     
-                    <div className='rounded-md p-2 '>
+                    <div className='rounded-md p-2 relative'>
                             picture here
                     </div>
-                    <div className='rounded-md p-2 '>
+                    <div className='rounded-md p-2 relative'>
                             picture here
                     </div>
 
@@ -60,14 +60,14 @@ const LandingPage = () => {
                     <TextCard num='3' title="Take notes" effectPos={effectPos}
                     text="Take notes aboute everything important"/>
 
-                    <div className='rounded-md p-2 '>
+                    <div className='rounded-md p-2 relative'>
                             picture here
                     </div>
                 </div>
                 <div className='text-center mt-4 mb-10' >
                     <button className='rounded-md bg-indigo-800 w-1/2 p-2 text-lg text-center 
-                    hover:bg-indigo-700 hover: transition-all mr-4'
-                    onClick={() => {navigate('/login')}}>Sign up right now</button>
+                    hover:bg-indigo-700 hover: transition-all mr-4 relative'
+                    onClick={() => {window.scroll(0,0);navigate('/login')}}>Sign up right now</button>
                 </div>
             </div>
             <MyFoter text='AlphaFlow: Focus'/>
