@@ -48,16 +48,26 @@ const RegisterContainer = (props) => {
     return (
         <div className="bg-gray-800 text-white
         p-4 rounded-lg text-center
-        mx-auto w-2/4 mb-32 mt-28
+        mx-auto w-3/4 mb-32 mt-28
         md:w-1/3">
             <div>
                 <p className="text-4xl mb-6">Register</p>
             </div>
-            <InputField name='username' value={username} type='text'/>
-            <InputField name='email' value={email} type='text'/>
-            <InputField name='password' value={password} type='password'/>
-            <InputField name='password again' value={password2} type='password'/>
-            <ButtonSubmit1 text='register' onClick={registerUser}/>
+            <div className="mb-4">
+                <InputField name='username' value={username} type='text'/>
+            </div>
+            <div className="mb-4">
+                <InputField name='email' value={email} type='text'/>
+            </div>
+            <div className="mb-4">
+                <InputField name='password' value={password} type='password'/>
+            </div>
+            <div className="mb-4">
+                <InputField name='password again' value={password2} type='password'/>
+            </div>
+            <div>
+                <ButtonSubmit1 text='register' onClick={registerUser}/>
+            </div>
             <p className="mb-3 text-gray-300">{detail}</p>
         </div>
     )
