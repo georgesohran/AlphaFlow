@@ -155,4 +155,4 @@ MEDIA_ROOT = os.path.join(BASE_DIR, "media")
 STATICFILES_DIRS = (
     BASE_DIR.joinpath('frontend', 'dist'),
 )
-STATIC_ROOT = 'static/assets/'
+STATIC_ROOT = 'static/'
