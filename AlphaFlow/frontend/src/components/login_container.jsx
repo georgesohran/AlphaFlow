@@ -43,14 +43,18 @@ const LoginContainer = () => {
     
     return (
         <div className="bg-gray-800 text-white
-        p-4 rounded-lg text-center
-        mx-auto w-2/4 mb-32 mt-28
+        py-4 rounded-lg text-center
+        mx-auto w-3/4 mb-32 mt-28
         md:w-1/3">
             <div>
                 <p className="text-4xl mb-6">Log In</p>
             </div>
-            <InputField name='username' value={username} type='text'/>
-            <InputField name='password' value={password} type='password'/>
+            <div className="w-auto mb-4">
+                <InputField name='username' value={username} type='text'/>
+            </div>
+            <div className="w-auto mb-2">
+                <InputField name='password' value={password} type='password'/>            
+            </div>
             <ButtonSubmit1 text={'login'} onClick={loginUser}/>
             <p className="mb-3 text-gray-300">{detail}</p>
         </div>
