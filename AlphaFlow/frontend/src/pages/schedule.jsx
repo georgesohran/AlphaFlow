@@ -8,6 +8,11 @@ import { ButtonSubmit1, ButtonSubmit2 } from "../components/buttons"
 
 import Select from "react-select"
 
+import { IoMdArrowDropright, IoMdArrowDropleft  } from "react-icons/io";
+import { MdDoubleArrow } from "react-icons/md";
+
+//<IoMdArrowDropright />  <IoMdArrowDropleft />
+
 import { DateTime, Info } from "luxon"
 import { CirclePicker } from 'react-color'
 
@@ -32,7 +37,7 @@ const SchedulePage = () => {
     const [editedEvent, setEditedEvent] = useState(null)
     const [offsetDays, setOffsetDays ] = useState(0)
 
-    const secNum = Math.round((window.innerWidth - 456) / 172)
+    const [secNum, setSecNum] = useState(Math.round((window.innerWidth - 456) / 172))
     const navigate = useNavigate()
 
     useEffect(() => {
@@ -372,7 +377,8 @@ const SchedulePage = () => {
                         deleteOnetimeEvent={deleteOnetimeEvent} deleteWeeklyEvent={deleteWeeklyEvent} deleteDailyEvent={deleteDailyEvent}/>                        
 
                         <CreateEventsSideBar newTimeEvent={newTimeEvent} setNewEvent={setNewTimeEvent} editedEvent={editedEvent}
-                        submitOnetimeEvent={createOnetimeEvent} submitWeeklyEvent={createWeeklyEvent} submitDailyEvent={createDailyEvent}/>
+                        submitOnetimeEvent={createOnetimeEvent} submitWeeklyEvent={createWeeklyEvent} submitDailyEvent={createDailyEvent}
+                        setSecNum={setSecNum}/>
                     </div>
                 </div>
                 
@@ -428,8 +434,14 @@ const EventElement = (props) => {
 const CreateEventsSideBar = (props) => {
     const modes = ['dailyEvent', 'weeklyEvent', 'onetimeEvent']
     const [modeIndex, setModeIndex] = useState(0)
+    const [show, setShow] = useState(true)
     if(!props.editedEvent) return (
-        <div className="my-2 py-4 flex flex-row">
+        <div className="relative my-2 py-4 flex flex-row">
+            <div className="absolute rounded-br-xl bg-gray-900 w-9 h-16 -top-4 -left-2">
+                <button className="font-black text-2xl text-center bg-gray-800 rounded-md h-14 w-7">
+                    <MdDoubleArrow />
+                </button>
+            </div>
             <button className="mr-1 rounded-md font-bold text-xl transition-all
             hover:bg-gray-700 hover:font-black"
             onClick={() => {modeIndex > 0 && setModeIndex(modeIndex-1)}}>
@@ -463,24 +475,24 @@ const CreateEventsSideBar = (props) => {
                         }}/>
                     </div>
                 </div>
-                <div className="ml-auto" style={{display: modes[modeIndex]=='onetimeEvent'? 'block' : 'none'}}>
+                <div style={{display: modes[modeIndex]=='onetimeEvent'? 'block' : 'none'}}>
                         <div className="text-gray-400">date</div>
                         <DateInputField value={props.newTimeEvent.date} 
                         changeValue={(val) => {props.setNewEvent({...props.newTimeEvent, date: val})}}/>
                     </div>
                 <div>
-                <div className="flex flex-row">
-                    <div className="inline">
-                        <div className="text-gray-400">time period</div>
-                        <div>
-                            <span className="inline-block"><TimeInputField value={props.newTimeEvent.start} 
-                            changeValue={(val) => {props.setNewEvent({...props.newTimeEvent, start: val})}}/></span>
-                            <span className="mx-auto font-extrabold"> — </span>
-                            <span className="inline-block"><TimeInputField value={props.newTimeEvent.finish} 
-                            changeValue={(val) => {props.setNewEvent({...props.newTimeEvent, finish: val})}}/></span>
+                    <div className="flex flex-row">
+                        <div className="inline">
+                            <div className="text-gray-400">time period</div>
+                            <div>
+                                <span className="inline-block"><TimeInputField value={props.newTimeEvent.start} 
+                                changeValue={(val) => {props.setNewEvent({...props.newTimeEvent, start: val})}}/></span>
+                                <span className="mx-auto font-extrabold"> — </span>
+                                <span className="inline-block"><TimeInputField value={props.newTimeEvent.finish} 
+                                changeValue={(val) => {props.setNewEvent({...props.newTimeEvent, finish: val})}}/></span>
+                            </div>
                         </div>
                     </div>
-                </div>
                 </div>
                 <div>
                     <div className="text-gray-400 flex flex-wrap gap-2 mb-2">
