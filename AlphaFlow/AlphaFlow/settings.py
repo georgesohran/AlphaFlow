@@ -102,6 +102,9 @@ DATABASES = {
         'USER': 'georgesohran',
         'PASSWORD': 'bruhsql3000',
         'HOST': 'georgesohran.mysql.pythonanywhere-services.com',
+        'OPTIONS': {
+            'init_command': "SET sql_mode='STRICT_ALL_TABLES'"    
+        }
     }
 }
 
