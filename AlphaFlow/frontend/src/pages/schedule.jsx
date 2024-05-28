@@ -8,8 +8,8 @@ import { ButtonSubmit1, ButtonSubmit2 } from "../components/buttons"
 
 import Select from "react-select"
 
-import { IoMdArrowDropright, IoMdArrowDropleft  } from "react-icons/io";
-import { MdDoubleArrow } from "react-icons/md";
+import { MdKeyboardDoubleArrowLeft, MdKeyboardDoubleArrowRight } from "react-icons/md";
+
 
 //<IoMdArrowDropright />  <IoMdArrowDropleft />
 
@@ -37,7 +37,7 @@ const SchedulePage = () => {
     const [editedEvent, setEditedEvent] = useState(null)
     const [offsetDays, setOffsetDays ] = useState(0)
 
-    const [secNum, setSecNum] = useState(Math.round((window.innerWidth - 456) / 172))
+    const [secNum, setSecNum] = useState(Math.round((window.innerWidth - 384) / 224))
     const navigate = useNavigate()
 
     useEffect(() => {
@@ -303,7 +303,7 @@ const SchedulePage = () => {
         <div className='bg-gray-900 min-h-screen'>
             <TopNavBar authorized={true}/>
             <div className="p-2 flex flex-row">
-                <div className="">
+                <div className="relative">
                     <div className=" ml-7 relative flex flex-row">
                         <button className="mx-2 rounded-md font-bold text-xl transition-all bg-gray-800 text-white
                         hover:bg-gray-700"
@@ -369,17 +369,14 @@ const SchedulePage = () => {
                         </div>
                     </div>
                 </div>
+                <div className="ml-auto w-96 text-white overflow-hidden"> 
+                    <EditEventsSideBar editedEvent={editedEvent} setEditedEvent={setEditedEvent}
+                    editOnetimeEvent={editOnetimeEvent} editWeeklyEvent={editWeeklyEvent} editDailyEvent={editDailyEvent}
+                    deleteOnetimeEvent={deleteOnetimeEvent} deleteWeeklyEvent={deleteWeeklyEvent} deleteDailyEvent={deleteDailyEvent}/>                        
 
-                <div className="ml-auto w-96">
-                    <div className="bg-gray-800 p-2 rounded-xl divide-y divide-gray-600 text-white">
-                        <EditEventsSideBar editedEvent={editedEvent} setEditedEvent={setEditedEvent}
-                        editOnetimeEvent={editOnetimeEvent} editWeeklyEvent={editWeeklyEvent} editDailyEvent={editDailyEvent}
-                        deleteOnetimeEvent={deleteOnetimeEvent} deleteWeeklyEvent={deleteWeeklyEvent} deleteDailyEvent={deleteDailyEvent}/>                        
-
-                        <CreateEventsSideBar newTimeEvent={newTimeEvent} setNewEvent={setNewTimeEvent} editedEvent={editedEvent}
-                        submitOnetimeEvent={createOnetimeEvent} submitWeeklyEvent={createWeeklyEvent} submitDailyEvent={createDailyEvent}
-                        setSecNum={setSecNum}/>
-                    </div>
+                    <CreateEventsSideBar newTimeEvent={newTimeEvent} setNewEvent={setNewTimeEvent} editedEvent={editedEvent}
+                    submitOnetimeEvent={createOnetimeEvent} submitWeeklyEvent={createWeeklyEvent} submitDailyEvent={createDailyEvent}
+                    setSecNum={setSecNum}/>
                 </div>
                 
             </div>
@@ -435,13 +432,22 @@ const CreateEventsSideBar = (props) => {
     const modes = ['dailyEvent', 'weeklyEvent', 'onetimeEvent']
     const [modeIndex, setModeIndex] = useState(0)
     const [show, setShow] = useState(true)
-    if(!props.editedEvent) return (
-        <div className="relative my-2 py-4 flex flex-row">
-            <div className="absolute rounded-br-xl bg-gray-900 w-9 h-16 -top-4 -left-2">
-                <button className="font-black text-2xl text-center bg-gray-800 rounded-md h-14 w-7">
-                    <MdDoubleArrow />
-                </button>
-            </div>
+    if(!props.editedEvent ) return (<div className="relative">
+        <div className={`absolute z-10 rounded-br-xl bg-gray-900 w-9 h-16 top-0 ${show? '': 'left-5'}`}>
+            <button className="text-3xl text-center bg-gray-800 rounded-md h-14 w-7 hover:bg-gray-700 transition-all"
+            onClick={() => {
+                if(show) {
+                    props.setSecNum(Math.round((window.innerWidth /224)))
+                } else {
+                    props.setSecNum(Math.round(((window.innerWidth - 384)/224)))
+                }
+                setShow(!show)
+            }}>
+                {show ? <MdKeyboardDoubleArrowRight /> : <MdKeyboardDoubleArrowLeft /> }
+            </button>
+        </div>
+        <div className={`relative bg-gray-800 p-2 rounded-xl py-4 flex flex-row h-full transition-[left] duration-500 ${show? 'left-0': 'left-96'}`}>
+            
             <button className="mr-1 rounded-md font-bold text-xl transition-all
             hover:bg-gray-700 hover:font-black"
             onClick={() => {modeIndex > 0 && setModeIndex(modeIndex-1)}}>
@@ -519,7 +525,7 @@ const CreateEventsSideBar = (props) => {
                 <span className="flex-col self-center">&gt;</span>
             </button>
         </div>
-    )
+    </div>)
 }
 
 
