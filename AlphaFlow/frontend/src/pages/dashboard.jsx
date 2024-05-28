@@ -376,10 +376,11 @@ const UpcomingEventsContainer = (props) => {
 const EventsVisualizer = (props) => {
     const navigate = useNavigate()
     return (
-    <div className={`size-64 text-left ${props.relNow.weekday==DateTime.now().weekday? 'border-red-500':'border-gray-600'} 
+    <div className={`w-64 max-h-64 text-left ${props.relNow.weekday==DateTime.now().weekday? 'border-red-500':'border-gray-600'} 
     border-2 p-2 rounded-md m-2`}>
         <div className="text-xl">{Info.weekdays('long')[props.relNow.weekday-1]}</div>
-        <div className=" h-42">
+        <div className="max-h-42">
+            {!props.events && <div className=" text-gray-400">No events here</div>}
             {props.events &&  props.events.slice(0,3).map((timeEvent, index) => (
                 <div className={`border-l-4 pr-2 border-t-2 border-b-2 border-b-gray-600 border-t-gray-600 border-r-2 border-r-gray-600 rounded-md mt-1
                 ${Interval.fromDateTimes(timeEvent.start, timeEvent.finish).contains(props.relNow)?'bg-gray-gray-700':''}`}
