@@ -1,1 +1,5 @@
 .vscode
+AlphaFlow/api/__pycache__
+AlphaFlow/AlphaFlow/__pycache__
+AlphaFlow/api/migrations
+AlphaFlow/db.sqlite3
