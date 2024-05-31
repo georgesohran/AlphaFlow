@@ -37,7 +37,7 @@ const SchedulePage = () => {
     const [editedEvent, setEditedEvent] = useState(null)
     const [offsetDays, setOffsetDays ] = useState(0)
 
-    const [secNum, setSecNum] = useState(Math.round((window.innerWidth - 384) / 224))
+    const [secNum, setSecNum] = useState(Math.round((window.innerWidth - 384) / 182))
     const navigate = useNavigate()
 
     useEffect(() => {
@@ -437,9 +437,9 @@ const CreateEventsSideBar = (props) => {
             <button className="text-3xl text-center bg-gray-800 rounded-md h-14 w-7 hover:bg-gray-700 transition-all"
             onClick={() => {
                 if(show) {
-                    props.setSecNum(Math.round((window.innerWidth /224)))
+                    props.setSecNum(Math.round((window.innerWidth /216)))
                 } else {
-                    props.setSecNum(Math.round(((window.innerWidth - 384)/224)))
+                    props.setSecNum(Math.round(((window.innerWidth - 384)/182)))
                 }
                 setShow(!show)
             }}>
