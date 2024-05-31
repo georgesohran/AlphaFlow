@@ -218,10 +218,10 @@ const Dashboard = () => {
                         <LargeInputField value={newNoteContent} changeValue={setNewNoteContent}
                         placeholder="new note here"/>
                     </div>
-                    <span>
+                    <div className="grid grid-rows-2 gap-2 md:grid-cols-2">
                         <ButtonSubmit1 onClick={addNote} text="Add Note"/>
                         <ButtonSubmit1 onClick={() => {setMode('default')}} text="Close"/>
-                    </span>
+                    </div>
                 </PopUp1>}
 
                 {mode.includes('editNote') && 
@@ -230,10 +230,10 @@ const Dashboard = () => {
                         <LargeInputField value={newNoteContent} changeValue={setNewNoteContent}
                         placeholder="new note here"/>
                     </div>
-                    <span>
+                    <div className="grid grid-rows-2 gap-2 md:grid-cols-2">
                         <ButtonSubmit1 onClick={() => {editNote(parseInt(mode.split('-')[1]))}} text="Edit Note"/>
                         <ButtonSubmit1 onClick={() => {setMode('default')}} text="Close"/>
-                    </span>
+                    </div>
                 </PopUp1>}
 
                 
@@ -284,11 +284,14 @@ const NotesContainer = (props) => {
             <div className="z-10">
                 <div>
                     {props.mode != 'addNote'? 
-                    (<ButtonSubmit1 text='Add new note' 
-                    onClick={() => {
+                    (<div className="mx-auto w-64">
+                        <ButtonSubmit1 text='Add new note' 
+                        onClick={() => {
                         props.setMode('addNote');
                         props.changeNewContent('')
-                        }}/>):
+                        }}/>
+                    </div>
+                    ):
                     (<></>)}
                 </div>
             </div>
@@ -347,7 +350,9 @@ const GoalsContainer = (props) => {
                 }
                 </div>  
             </div>
-            <ButtonSubmit1 text="Add or Edit Goals" onClick={() => {navigate('/goals')}} />
+            <div className="mx-auto w-64">
+                <ButtonSubmit1 text="Add or Edit Goals" onClick={() => {navigate('/goals')}} />
+            </div>
         </div>
     )
 }
