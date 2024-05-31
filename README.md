@@ -11,6 +11,14 @@ This is a productivity website for taking notes, making day schedule, and settin
 
 The most important and impressive function of my websit is it's schedule. You can make your personal schedule by createing onetime events, weekly events, and event daily events there. Than you can click on already existing event, to edit it in a special sidebar
 
+### Notes
+
+You can take notes, delete and edit them, all on one Dashboard page. It is the simplest aspect of my app, wich i am going to change later, to match the complexity of some other features. 
+
+### Goals
+
+On a dedicated /goals page you can set, edit and delete goals. To make it more interactive, I added the ability to create tasks for every goal. The task can be in four stages: Delayed, TODO, In Progress, Done. 
+
 ## Distinctiveness and Complexity
 
 This web application is not a social media platform, nither an e-commerce, it is a productivity website, as I mentioned earlier. Currently my webapp has 8 models in my backend, and I tried my best to make the design responsive for mobile devices using tailwind css. 
@@ -42,7 +50,7 @@ Here are all my frontend files, including index.html, as my tamplate vite config
 
 ## Running my app
 
-Right now my app is running on pythonanywhere.com. It has no npm installed, so i had to include /dist directory in my source control.
+Right now my app is running on pythonanywhere.com. It has no npm installed, so i had to include /dist directory in my source control. Speaking about database, i used MySQL database on pythonanywhere.com
 
 So to run my app you can do the following:
 
