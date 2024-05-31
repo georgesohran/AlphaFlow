@@ -197,9 +197,11 @@ const GoalsPage = () => {
                         focus:outline-none focus:ring focus:border-blue-300 focus:bg-gray-600"
                         value={newEditedGoal.contents}
                         onChange={(ev) => {setNewEditedGoal({contents:ev.target.value})}}/>
-                        <div className="-ml-2 grid grid-cols-2 ">
-                            <ButtonSubmit1 text="Add Goal" onClick={() => {setMode('default'); addGoal()}}/>
-                            <div className="mt-3">
+                        <div className="md:grid md:grid-cols-2 md:gap-2 flex flex-col ml-2">
+                            <div className="mt-2 md:mt-3 ">
+                                <ButtonSubmit1 text="Add Goal" onClick={() => {setMode('default'); addGoal()}}/>
+                            </div>
+                            <div className="mt-2 ">
                                 <ButtonSubmit2 text="Cancel" onClick={() => {setMode('default')}} />
                             </div>
                         </div>
@@ -234,14 +236,16 @@ const GoalContainer = (props) => {
         mx-2 my-2 p-2 xl:w-3/4 xl:mx-auto">
             <div className="grid grid-cols-2 ">
                 {editing? 
-                <div className="col-span-1 mt-1">
+                <div className="col-span-1 mt-2">
                     <input className="ml-2 rounded-md p-1 text-gray-200 bg-gray-700 
                     hover:bg-gray-600 text-2xl w-full
                     focus:outline-none focus:ring focus:border-blue-300 focus:bg-gray-600"
                     value={props.newEditedGoal.contents}
                     onChange={(ev) => {props.setNewEditedGoal({contents:ev.target.value})}}/>
-                    <div className="-ml-2 grid grid-cols-2 ">
-                        <ButtonSubmit1 text="Edit Goal" onClick={() => {setEditing(false); props.editGoal(props.goal.id)}}/>
+                    <div className="md:grid md:grid-cols-2 md:gap-2 flex flex-col ml-2 ">
+                        <div className="mt-2 md:mt-3 ">
+                            <ButtonSubmit1 text="Edit Goal" onClick={() => {setEditing(false); props.editGoal(props.goal.id)}}/>
+                        </div>
                         <div className="mt-3">
                             <ButtonSubmit2 text="Cancel" onClick={() => {setEditing(false)}} />
                         </div>
