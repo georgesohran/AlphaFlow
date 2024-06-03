@@ -1,6 +1,9 @@
 import React, { useEffect, useState } from 'react'
 import TopNavBar from '../components/navbar'
 import MyFoter from '../components/footer'
+import schedule from '../images/schedule.png'
+import goals from '../images/goals.png'
+import notes from '../images/notes.png'
 
 import { getAuth } from "../util";
 
@@ -47,11 +50,11 @@ const LandingPage = () => {
                     <TextCard num='1' title="Make a schedule" effectPos={effectPos} setEffectPos={setEffectPos}
                     text="Intarractive schedule, for planning and sticking to your habits"/>
                     
-                    <div className='rounded-md p-2 relative'>
-                            picture here
+                    <div className='rounded-md p-2 relative overflow-hidden border border-gray-700 ml-4'>
+                        <img src={schedule}></img>
                     </div>
-                    <div className='rounded-md p-2 relative'>
-                            picture here
+                    <div className='rounded-md p-2 relative  border border-gray-700 mr-4'>
+                        <img src={goals}></img>
                     </div>
 
                     <TextCard num='2' title="Set your Goals" effectPos={effectPos}
@@ -60,8 +63,8 @@ const LandingPage = () => {
                     <TextCard num='3' title="Take notes" effectPos={effectPos}
                     text="Take notes aboute everything important"/>
 
-                    <div className='rounded-md p-2 relative'>
-                            picture here
+                    <div className='rounded-md p-2 relative  border border-gray-700 ml-4'>
+                        <img src={notes}></img>
                     </div>
                 </div>
                 <div className='text-center mt-4 mb-10' >
