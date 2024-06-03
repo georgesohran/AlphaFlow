@@ -65,7 +65,7 @@ const RegisterContainer = (props) => {
             <div className="mb-4">
                 <InputField name='password again' value={password2} type='password'/>
             </div>
-            <div>
+            <div className="w-48 mx-auto">
                 <ButtonSubmit1 text='register' onClick={registerUser}/>
             </div>
             <p className="mb-3 text-gray-300">{detail}</p>

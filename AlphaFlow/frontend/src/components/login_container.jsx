@@ -52,10 +52,12 @@ const LoginContainer = () => {
             <div className="w-auto mb-4">
                 <InputField name='username' value={username} type='text'/>
             </div>
-            <div className="w-auto mb-2">
+            <div className="w-auto mb-4">
                 <InputField name='password' value={password} type='password'/>            
             </div>
-            <ButtonSubmit1 text={'login'} onClick={loginUser}/>
+            <div className="w-48 mx-auto">
+                <ButtonSubmit1 text={'login'} onClick={loginUser}/>
+            </div>
             <p className="mb-3 text-gray-300">{detail}</p>
         </div>
     )
