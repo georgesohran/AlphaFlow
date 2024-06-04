@@ -28,7 +28,7 @@ def api_login(request):
     if not password:
         return Response({"detail":"insert your password"}, status=400) 
     
-    user = authenticate(username=username, password=password)
+    user = authenticate(request, username=username, password=password)
 
     if user is None:
         return Response({"detail":"invalid password/username"}, status=400)
@@ -67,7 +67,7 @@ def api_register(request):
         return Response({"detail":"1th password doesn't match 2nd"}, status=400)
 
     try:
-        new_user = User.objects.create(username=username, email=email, password=password)
+        new_user = User.objects.create_user(username=username, email=email, password=password)
         new_user.save()
     except IntegrityError:
         return Response({"detail":"username has already been taken"}, status=400)
