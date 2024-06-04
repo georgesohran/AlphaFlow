@@ -178,7 +178,7 @@ const GoalsPage = () => {
     return (
     <div className="bg-gray-900 min-h-screen">
         <TopNavBar authorized={true}/>
-        <div className="text-white mt-8 mb-36">
+        <div className="text-white mt-8 min-h-screen">
             {goals && goals.map((goal, index) => 
             <GoalContainer key={index} goal={goal}
             addGoal={addGoal} editGoal={editGoal} deleteGoal={deleteGoal}
